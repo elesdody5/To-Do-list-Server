@@ -7,13 +7,12 @@ package to.pkgdo.list.server.db.entity;
 
 import java.util.Date;
 import java.util.List;
-import to.pkgdo.list.server.db.DAO;
 
 /**
  *
  * @author Elesdody
  */
-public class Items implements DAO<Items>{
+public class Items {
     private int id ;
     private int listId;
     private String title;
@@ -53,24 +52,6 @@ public class Items implements DAO<Items>{
         return startTime;
     }
 
-    @Override
-    public List<Items> getAllData() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Items getItem(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int insert(Items object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int delete(Items object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    
    
 }

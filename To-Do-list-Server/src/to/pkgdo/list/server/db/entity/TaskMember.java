@@ -6,13 +6,12 @@
 package to.pkgdo.list.server.db.entity;
 
 import java.util.List;
-import to.pkgdo.list.server.db.DAO;
 
 /**
  *
  * @author Elesdody
  */
-public class TaskMember implements DAO<TaskMember>{
+public class TaskMember{
     private int userId;
     private int itemId;
 
@@ -29,24 +28,5 @@ public class TaskMember implements DAO<TaskMember>{
         return itemId;
     }
 
-    @Override
-    public List<TaskMember> getAllData() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TaskMember getItem(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int insert(TaskMember object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int delete(TaskMember object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
+  
 }

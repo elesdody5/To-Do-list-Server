@@ -7,13 +7,12 @@ package to.pkgdo.list.server.db.entity;
 
 import java.util.Date;
 import java.util.List;
-import to.pkgdo.list.server.db.DAO;
 
 /**
  *
  * @author Elesdody
  */
-public class ToDoList implements DAO<ToDoList>{
+public class ToDoList {
     private int id ;
     private String title;
     private int ownerId;
@@ -28,25 +27,7 @@ public class ToDoList implements DAO<ToDoList>{
         this.startTime = startTime;
     }
 
-    @Override
-    public List<ToDoList> getAllData() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
-    @Override
-    public ToDoList getItem(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int insert(ToDoList object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int delete(ToDoList object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     public int getId() {
         return id;

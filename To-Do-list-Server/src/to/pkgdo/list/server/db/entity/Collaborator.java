@@ -6,13 +6,12 @@
 package to.pkgdo.list.server.db.entity;
 
 import java.util.List;
-import to.pkgdo.list.server.db.DAO;
 
 /**
  *
  * @author Elesdody
  */
-public class Collaborator implements DAO<Collaborator>{
+public class Collaborator {
     private int userId;
     private int toDoId;
 
@@ -29,24 +28,6 @@ public class Collaborator implements DAO<Collaborator>{
         return toDoId;
     }
 
-    @Override
-    public List<Collaborator> getAllData() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Collaborator getItem(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int insert(Collaborator object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public int delete(Collaborator object) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+   
     
 }
