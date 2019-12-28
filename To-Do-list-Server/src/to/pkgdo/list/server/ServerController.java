@@ -5,13 +5,9 @@
  */
 package to.pkgdo.list.server;
 
-import java.net.ServerSocket;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 
 /**
  *
@@ -19,12 +15,12 @@ import javafx.scene.control.Label;
  */
 public class ServerController implements Initializable {
     
-       ServerSocket serverSocket;
-       private static final int  port=5005;
+    
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+         
+    
     }    
     
 }
