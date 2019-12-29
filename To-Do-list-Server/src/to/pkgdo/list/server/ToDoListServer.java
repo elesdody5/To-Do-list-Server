@@ -19,7 +19,7 @@ public class ToDoListServer extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/to/pkgdo/list/server/ServerGUI.fxml"));
         
         Scene scene = new Scene(root);
         
