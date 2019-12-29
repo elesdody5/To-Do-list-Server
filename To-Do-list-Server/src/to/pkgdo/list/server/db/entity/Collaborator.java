@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Elesdody
  */
-public class Collaborator {
+public class Collaborator implements Entity{
     private int userId;
     private int toDoId;
 

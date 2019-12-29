@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author Elesdody
  */
-public class ToDoList {
+public class ToDoList implements Entity{
     private int id ;
     private String title;
     private int ownerId;
