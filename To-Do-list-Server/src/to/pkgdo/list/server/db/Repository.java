@@ -7,13 +7,8 @@ package to.pkgdo.list.server.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import to.pkgdo.list.server.db.entity.Collaborator;
-import to.pkgdo.list.server.db.entity.Items;
-import to.pkgdo.list.server.db.entity.TaskMember;
-import to.pkgdo.list.server.db.entity.ToDoList;
 
 /**
  *
@@ -32,4 +27,14 @@ public class Repository {
     }
     
    // TODO write query methods (select ,update ,insert ,delete )
+    /*Elesdody*/
+    /*Elesdody*/
+    /*Ashraf*/
+    /*Ashraf*/
+    /*Aml*/
+    /*Aml*/
+    /*Ghader*/
+    /*Ghader*/
+    /*Sara*/
+    /*Sara*/
 }
