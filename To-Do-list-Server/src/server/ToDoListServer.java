@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package to.pkgdo.list.server;
+package server;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -11,17 +11,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/**
- *
- * @author Elesdody
- */
+
 public class ToDoListServer extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-
-        Parent root = FXMLLoader.load(getClass().getResource("/to/pkgdo/list/server/ServerGUI.fxml"));
         
+        Parent root = FXMLLoader.load(getClass().getResource("/server/serverView.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

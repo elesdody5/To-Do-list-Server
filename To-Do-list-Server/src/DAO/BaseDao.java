@@ -5,7 +5,7 @@
  */
 package DAO;
 
-import to.pkgdo.list.server.db.entity.Entity;
+import serverEntity.Entity;
 
 /**
  *
@@ -13,9 +13,4 @@ import to.pkgdo.list.server.db.entity.Entity;
  */
 public interface BaseDao {
     
-    public void insert(Entity entity);
-    
-    public void delete(Entity entity);
-    
-    public void select (Entity entity);
 }

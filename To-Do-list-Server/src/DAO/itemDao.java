@@ -9,6 +9,6 @@ package DAO;
  *
  * @author Ehab mohamed
  */
-public interface itemDao {
+public interface itemDao extends BaseDao{
     
 }

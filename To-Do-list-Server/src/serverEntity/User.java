@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package to.pkgdo.list.server.db.entity;
+package serverEntity;
 
 /**
  *
  * @author Ehab mohamed
  */
-public class User {
+public class User implements Entity{
+    
     
 }

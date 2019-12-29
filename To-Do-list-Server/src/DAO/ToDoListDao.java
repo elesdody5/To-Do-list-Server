@@ -9,6 +9,6 @@ package DAO;
  *
  * @author Ehab mohamed
  */
-public interface ToDoListDao {
+public interface ToDoListDao extends BaseDao{
     
 }

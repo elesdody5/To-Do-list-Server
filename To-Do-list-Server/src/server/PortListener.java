@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package to.pkgdo.list.server;
+package server;
 
 import connection.HttpRequestHandler;
 import java.io.BufferedReader;
@@ -29,7 +29,7 @@ public class PortListener {
 
     private void jsonPortListener() {
         try {
-            jsoServerSocket = new ServerSocket(5005);
+            jsoServerSocket = new ServerSocket(JSON_PORT);
             while (true) {
 
                 Socket s = jsoServerSocket.accept();

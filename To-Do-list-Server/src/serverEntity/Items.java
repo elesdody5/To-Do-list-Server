@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package to.pkgdo.list.server.db.entity;
+package serverEntity;
 
 import java.util.Date;
 import java.util.List;
@@ -12,33 +12,36 @@ import java.util.List;
  *
  * @author Elesdody
  */
-public class ToDoList implements Entity{
+public class Items implements Entity{
     private int id ;
+    private int listId;
     private String title;
-    private int ownerId;
+    private String description;
     private Date deadLine;
     private Date startTime;
 
-    public ToDoList(int id, String title, int ownerId, Date deadLine, Date startTime, int itemId) {
+    public Items(int id, int listId,String title, String description, Date deadLine, Date startTime) {
         this.id = id;
         this.title = title;
-        this.ownerId = ownerId;
+        this.description = description;
         this.deadLine = deadLine;
         this.startTime = startTime;
     }
 
-
-
     public int getId() {
         return id;
+    }
+    public int getListId()
+    {
+    return listId;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public int getOwnerId() {
-        return ownerId;
+    public String getDescription() {
+        return description;
     }
 
     public Date getDeadLine() {
@@ -48,6 +51,7 @@ public class ToDoList implements Entity{
     public Date getStartTime() {
         return startTime;
     }
+
     
-    
+   
 }

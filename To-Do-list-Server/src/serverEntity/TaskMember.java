@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package to.pkgdo.list.server.db.entity;
+package serverEntity;
 
 import java.util.List;
 
@@ -11,23 +11,22 @@ import java.util.List;
  *
  * @author Elesdody
  */
-public class Collaborator implements Entity{
+public class TaskMember implements Entity{
     private int userId;
-    private int toDoId;
+    private int itemId;
 
-    public Collaborator(int userId, int toDoId) {
+    public TaskMember(int userId, int itemId) {
         this.userId = userId;
-        this.toDoId = toDoId;
+        this.itemId = itemId;
     }
 
     public int getUserId() {
         return userId;
     }
 
-    public int getToDoId() {
-        return toDoId;
+    public int getItemId() {
+        return itemId;
     }
 
-   
-    
+  
 }

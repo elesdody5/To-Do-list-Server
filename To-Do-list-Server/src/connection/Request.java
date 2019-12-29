@@ -6,51 +6,52 @@
 package connection;
 
 import org.json.JSONObject;
-import to.pkgdo.list.server.db.Repository;
+import serverDatabase.Repository;
 
 /**
  *
  * @author Elesdody
  */
-public class Request implements HttpRequest{
+public class Request implements HttpRequest {
 
-    Repository repository ;
+    Repository repository;
 
     public Request() {
         repository = new Repository();
     }
 
     @Override
-    public  JSONObject post(String[] paramter, JSONObject body) {
+    public JSONObject post(String[] paramter, JSONObject body) {
 
-         /*Elesdody*/
-         if(paramter[0].equals("list"))
-         {
-         }
-    /*Elesdody*/
-    /*Ashraf*/
-    /*Ashraf*/
-    /*Aml*/
-    /*Aml*/
-    /*Ghader*/
-    /*Ghader*/
-    /*Sara*/
-    /*Sara*/
+        /*Elesdody*/
+        if (paramter[0].equals("list")) {
+
+        }
+        /*Elesdody*/
+
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
+ /*Sara*/
         return body;
     }
 
     @Override
-    public  JSONObject get(String[] paramter) {
+    public JSONObject get(String[] paramter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public  int put(String[] paramter, JSONObject body) {
+    public int put(String[] paramter, JSONObject body) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public  int delete(String[] paramter) {
+    public int delete(String[] paramter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
