@@ -16,15 +16,17 @@ import javafx.stage.Stage;
  * @author Elesdody
  */
 public class ToDoListServer extends Application {
-    
+
     @Override
     public void start(Stage stage) throws Exception {
+
         Parent root = FXMLLoader.load(getClass().getResource("/to/pkgdo/list/server/ServerGUI.fxml"));
         
         Scene scene = new Scene(root);
         
         stage.setScene(scene);
         stage.show();
+
     }
 
     /**
@@ -33,5 +35,6 @@ public class ToDoListServer extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
+
+   
 }
