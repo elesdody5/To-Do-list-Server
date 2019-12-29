@@ -23,7 +23,6 @@ public class ToDoListServer extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/to/pkgdo/list/server/ServerGUI.fxml"));
         
         Scene scene = new Scene(root);
-        
         stage.setScene(scene);
         stage.show();
 
