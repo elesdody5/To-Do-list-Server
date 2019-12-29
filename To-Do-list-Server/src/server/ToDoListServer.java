@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import serverDatabase.Repository;
 
 
 public class ToDoListServer extends Application {
@@ -17,7 +18,9 @@ public class ToDoListServer extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         
-        Parent root = FXMLLoader.load(getClass().getResource("/server/serverView.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/server/ServerGUI.fxml"));
+       /* Repository r = new Repository();
+        r.insertRecord();*/
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();

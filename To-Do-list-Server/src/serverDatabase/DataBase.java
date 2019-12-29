@@ -5,10 +5,11 @@
  */
 package serverDatabase;
 
+import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import org.apache.derby.jdbc.ClientDriver;
+
 
 /**
  *
@@ -22,8 +23,8 @@ public class DataBase {
         if (db == null) {
             synchronized (DataBase.class) {
 
-                DriverManager.registerDriver(new ClientDriver());
-                db = DriverManager.getConnection("jdbc:derby://localhost:1527/ToDoListDataBase2", "root", "root");
+                DriverManager.registerDriver(new SQLServerDriver());
+                db = DriverManager.getConnection("jdbc:sqlserver://localhost:1433/TodoListDB", "root", "root");
 
             }
         }

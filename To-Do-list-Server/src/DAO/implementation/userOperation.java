@@ -3,16 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package DAO;
+package DAO.implementation;
 
+import DAO.UserDao;
 import serverEntity.Entity;
 
 /**
  *
  * @author Ehab mohamed
  */
-public interface UserDao extends BaseDao{
+public class userOperation implements UserDao{
+
+    @Override
+    public void insert(Entity entity) {
+        
+    }
     
-    public void insert(Entity entity);
     
 }
