@@ -10,20 +10,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import serverDatabase.Repository;
-
+import serverEntity.User;
 
 public class ToDoListServer extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        
-        Parent root = FXMLLoader.load(getClass().getResource("/server/ServerGUI.fxml"));
-       /* Repository r = new Repository();
-        r.insertRecord();*/
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+
+//        Parent root = FXMLLoader.load(getClass().getResource("/server/ServerGUI.fxml"));
+//        Scene scene = new Scene(root);
+//        
+//        
+//        stage.setScene(scene);
+//        stage.show();
+        new PortListener();
 
     }
 
@@ -34,5 +34,4 @@ public class ToDoListServer extends Application {
         launch(args);
     }
 
-   
 }

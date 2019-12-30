@@ -30,6 +30,7 @@ public class PortListener {
     private void jsonPortListener() {
         try {
             jsoServerSocket = new ServerSocket(JSON_PORT);
+           
             while (true) {
 
                 Socket s = jsoServerSocket.accept();

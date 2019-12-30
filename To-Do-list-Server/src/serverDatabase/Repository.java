@@ -7,9 +7,11 @@ package serverDatabase;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import serverEntity.User;
 
 /**
  *
@@ -32,17 +34,36 @@ public class Repository {
     /*Elesdody*/
  /*Elesdody*/
  /*Ashraf*/
-    public void insertRecord() {
+    public void insertUser(User user) {
+        if (user == null) {
+            return;
+        }
         try {
-            System.out.println("insert recode");
-            PreparedStatement statement = db.prepareStatement("INSERT INTO USER_TABLE (USER_NAME,PASSWORD) VALUES(?,?)");
-            statement.setString(1, "ASHRAF");
-            statement.setString(2, "PASSWORD");
-            statement.executeUpdate();
+            PreparedStatement statement = db.prepareStatement("INSERT INTO UserTable (USER_NAME , PASSWORD) VALUES(?,?)");
+            statement.setString(1, user.getUserName());
+            statement.setString(2, user.getPassword());
+            int insertionResult = statement.executeUpdate();
 
         } catch (SQLException ex) {
+            System.out.println("insert exception");
             System.out.println(ex.getCause());
-            System.out.println("insert record exception");
+        }
+    }
+
+    public void getUser(User user){
+        if(user == null)return;
+        
+        try{
+            PreparedStatement statement = db.prepareStatement("SELECT * FROM UserTable WHERE USER_NAME =? AND PASSWORD =?");
+            statement.setString(1,user.getUserName());
+            statement.setString(2, user.getPassword());
+            ResultSet result = statement.executeQuery();
+            boolean hasRow = result.next();
+            System.out.println(result.getString("USER_NAME"));
+            System.out.println(result.getString("PASSWORD"));
+            System.out.println("has row "+hasRow);
+        }catch(SQLException ex){
+            
         }
     }
     /*Ashraf*/

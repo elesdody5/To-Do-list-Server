@@ -24,7 +24,7 @@ public class DataBase {
             synchronized (DataBase.class) {
 
                 DriverManager.registerDriver(new SQLServerDriver());
-                db = DriverManager.getConnection("jdbc:sqlserver://localhost:1433/TodoListDB", "root", "root");
+                db = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=TodoListDB", "root", "root");
 
             }
         }

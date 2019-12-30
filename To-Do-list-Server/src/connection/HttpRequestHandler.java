@@ -34,7 +34,6 @@ public class HttpRequestHandler extends Thread {
             ps = new PrintStream(s.getOutputStream());
             start();
         } catch (IOException ex) {
-            System.out.println("2");
             ex.printStackTrace();
         }
 
@@ -51,8 +50,8 @@ public class HttpRequestHandler extends Thread {
             switch (clientRequest) {
                 case REQUEST.POST:
                     JSONObject requestJson = readJson();
-
                     JSONObject responseJson = request.post(paramter, requestJson);
+                    System.out.println("respond :"+responseJson.toString());
                     ps.println(responseJson.toString());
                     // to notifay the client the response was ended 
                     ps.println(REQUEST.END);
@@ -82,7 +81,6 @@ public class HttpRequestHandler extends Thread {
 
             }
         } catch (IOException | JSONException ex) {
-            System.out.println("1");
             Logger.getLogger(HttpRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -101,7 +99,6 @@ public class HttpRequestHandler extends Thread {
 
     private void close() throws IOException {
         in.close();
-
         s.close();
     }
 }
