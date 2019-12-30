@@ -48,7 +48,7 @@ public class HttpRequestHandler extends Thread {
             switch (clientRequest) {
                 case "POST":
                     JSONObject requestJson = readJson();
-
+                    System.out.println("hi server");
                     JSONObject responseJson = request.post(paramter, requestJson);
                     ps.println(responseJson.toString());
                     // to notifay the client the response was ended 
