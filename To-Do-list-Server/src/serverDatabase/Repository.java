@@ -6,9 +6,12 @@
 package serverDatabase;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import serverEntity.Items;
 
 /**
  *
@@ -20,21 +23,29 @@ public class Repository {
     public Repository() {
         try {
             db = DataBase.getDatabase();
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-   // TODO write query methods (select ,update ,insert ,delete )
+
+    // TODO write query methods (select ,update ,insert ,delete )
     /*Elesdody*/
-    /*Elesdody*/
-    /*Ashraf*/
-    /*Ashraf*/
-    /*Aml*/
-    /*Aml*/
-    /*Ghader*/
-    /*Ghader*/
-    /*Sara*/
+ /*Elesdody*/
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
+    public void insertItemToDataBase(Items item) throws SQLException {
+        String sql = "INSERT INTO Item(title) VALUES(?)";
+
+        PreparedStatement pstmt = db.prepareStatement(sql);
+        pstmt.setString(1, item.getTitle());
+        pstmt.executeUpdate();
+
+    }
     /*Sara*/
 }

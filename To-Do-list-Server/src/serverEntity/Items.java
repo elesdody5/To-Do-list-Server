@@ -7,16 +7,19 @@ package serverEntity;
 
 import java.util.Date;
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  *
  * @author Elesdody
  */
-public class Items implements Entity{
-    private int id ;
+public class Items implements Entity {
+
+      private int id ;
     private int listId;
     private String title;
-    private String description;
+
+     private String description;
     private Date deadLine;
     private Date startTime;
 
@@ -27,7 +30,7 @@ public class Items implements Entity{
         this.deadLine = deadLine;
         this.startTime = startTime;
     }
-
+ 
     public int getId() {
         return id;
     }
@@ -35,11 +38,18 @@ public class Items implements Entity{
     {
     return listId;
     }
+     
+    public Items(String title) {
+
+        this.title = title;
+
+    }
 
     public String getTitle() {
         return title;
     }
 
+    
     public String getDescription() {
         return description;
     }
@@ -51,7 +61,13 @@ public class Items implements Entity{
     public Date getStartTime() {
         return startTime;
     }
+     
 
-    
+    public JSONObject writeTaskInfoObjectAsJson() {
+        JSONObject toDoTaskJsonObject = new JSONObject();
+        toDoTaskJsonObject.put("title", this.getTitle());
+        return toDoTaskJsonObject;
+
    
+    }
 }

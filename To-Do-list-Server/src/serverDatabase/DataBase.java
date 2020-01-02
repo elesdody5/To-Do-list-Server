@@ -23,7 +23,7 @@ public class DataBase {
             synchronized (DataBase.class) {
 
                 DriverManager.registerDriver(new ClientDriver());
-                db = DriverManager.getConnection("jdbc:derby://localhost:1527/ToDoListDataBase2", "root", "root");
+                db = DriverManager.getConnection("jdbc:sqlite:D:\\New\\javaProject\\To-Do-List-Client\\ToDoListClient\\TODO.db","root","root");
 
             }
         }
