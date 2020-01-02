@@ -6,7 +6,6 @@
 package serverEntity;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -16,16 +15,57 @@ public class ToDoList implements Entity{
     private int id ;
     private String title;
     private int ownerId;
-    private Date deadLine;
-    private Date startTime;
+    private String deadLine;
+    private String startTime;
+    private String color;
+    private String description;
 
-    public ToDoList(int id, String title, int ownerId, Date deadLine, Date startTime, int itemId) {
-        this.id = id;
+    public ToDoList(String title, int ownerId,  String startTime,String deadLine, String color) {
         this.title = title;
         this.ownerId = ownerId;
         this.deadLine = deadLine;
         this.startTime = startTime;
+        this.color = color;
     }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setOwnerId(int ownerId) {
+        this.ownerId = ownerId;
+    }
+
+    public void setDeadLine(String deadLine) {
+        this.deadLine = deadLine;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+   
+    
 
 
 
@@ -41,11 +81,11 @@ public class ToDoList implements Entity{
         return ownerId;
     }
 
-    public Date getDeadLine() {
+    public String getDeadLine() {
         return deadLine;
     }
 
-    public Date getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
     

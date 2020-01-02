@@ -8,7 +8,7 @@ package serverDatabase;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import org.apache.derby.jdbc.ClientDriver;
+
 
 /**
  *
@@ -22,8 +22,8 @@ public class DataBase {
         if (db == null) {
             synchronized (DataBase.class) {
 
-                DriverManager.registerDriver(new ClientDriver());
-                db = DriverManager.getConnection("jdbc:derby://localhost:1527/ToDoListDataBase2", "root", "root");
+                
+                db = DriverManager.getConnection("jdbc:sqlite:H:\\Projects\\ITI\\java\\project\\To-Do-list-Server\\TODO.db");
 
             }
         }
