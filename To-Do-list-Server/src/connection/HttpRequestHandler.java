@@ -5,6 +5,7 @@
  */
 package connection;
 
+import Enum.REQUEST;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,6 +25,7 @@ public class HttpRequestHandler extends Thread {
     BufferedReader in;
     PrintStream ps;
     Socket s;
+    
 
     public HttpRequestHandler(Socket s) {
         try {
@@ -32,6 +34,7 @@ public class HttpRequestHandler extends Thread {
             ps = new PrintStream(s.getOutputStream());
             start();
         } catch (IOException ex) {
+            System.out.println("2");
             ex.printStackTrace();
         }
 
@@ -46,39 +49,40 @@ public class HttpRequestHandler extends Thread {
             String[] paramter = in.readLine().split("/");
 
             switch (clientRequest) {
-                case "POST":
+                case REQUEST.POST:
                     JSONObject requestJson = readJson();
                     System.out.println("hi server");
                     JSONObject responseJson = request.post(paramter, requestJson);
                     ps.println(responseJson.toString());
                     // to notifay the client the response was ended 
-                    ps.println("-1");
+                    ps.println(REQUEST.END);
                     close();
                     break;
 
-                case "GET":
+                case REQUEST.GET:
                     responseJson = request.get(paramter);
                     ps.println(responseJson.toString());
                     // to notifay the client the response was ended 
-                    ps.println("-1");
+                    ps.println(REQUEST.END);
                     close();
                     break;
-                case "PUT":
+                case REQUEST.PUT:
                     requestJson = readJson();
                     int response = request.put(paramter, requestJson);
                     ps.println(response);
-                    ps.println("-1");
+                    ps.println(REQUEST.END);
                     close();
                     break;
-                case "DELETE":
+                case REQUEST.DELETE:
                     response = request.delete(paramter);
                     ps.println(response);
-                    ps.println("-1");
+                    ps.println(REQUEST.END);
                     close();
                     break;
 
             }
         } catch (IOException | JSONException ex) {
+            System.out.println("1");
             Logger.getLogger(HttpRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -87,7 +91,7 @@ public class HttpRequestHandler extends Thread {
         StringBuilder body = new StringBuilder();
         String data = in.readLine();
 
-        while (!data.equals("-1")) {
+        while (!data.equals(REQUEST.END)) {
             body.append(data);
             data = in.readLine();
 

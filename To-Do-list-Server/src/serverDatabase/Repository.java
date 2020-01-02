@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package to.pkgdo.list.server.db;
+package serverDatabase;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,10 +13,6 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import to.pkgdo.list.server.db.entity.Collaborator;
-import to.pkgdo.list.server.db.entity.Items;
-import to.pkgdo.list.server.db.entity.TaskMember;
-import to.pkgdo.list.server.db.entity.ToDoList;
 
 /**
  *
@@ -34,7 +30,7 @@ public class Repository {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    /*Aml*/
     public int insertUser(String userName, String password) {
         int x =-10;
         try {
@@ -55,5 +51,19 @@ public class Repository {
 
     // TODO write query methods (select ,update ,insert ,delete )
 }
+       /*Aml*/
     
+
+   // TODO write query methods (select ,update ,insert ,delete )
+    /*Elesdody*/
+    /*Elesdody*/
+    /*Ashraf*/
+    /*Ashraf*/
+
+ 
+    /*Ghader*/
+    /*Ghader*/
+    /*Sara*/
+    /*Sara*/
+
 }
