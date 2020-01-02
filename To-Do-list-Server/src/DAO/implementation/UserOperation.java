@@ -38,7 +38,7 @@ public class UserOperation implements UserDao{
 
     @Override
     public void select(User user) {
-        repo.getUser(user);
+        //repo.getUser(user);
     }
     
     

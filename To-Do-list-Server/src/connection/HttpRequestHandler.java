@@ -60,6 +60,7 @@ public class HttpRequestHandler extends Thread {
 
                 case REQUEST.GET:
                     responseJson = request.get(paramter);
+                    System.out.println("request :"+responseJson);
                     ps.println(responseJson.toString());
                     // to notifay the client the response was ended 
                     ps.println(REQUEST.END);
@@ -81,6 +82,7 @@ public class HttpRequestHandler extends Thread {
 
             }
         } catch (IOException | JSONException ex) {
+            System.out.println("request handler exception");
             Logger.getLogger(HttpRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -98,7 +100,7 @@ public class HttpRequestHandler extends Thread {
     }
 
     private void close() throws IOException {
-        in.close();
-        s.close();
+        //in.close();
+        //s.close();
     }
 }

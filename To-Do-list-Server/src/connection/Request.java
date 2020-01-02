@@ -5,6 +5,7 @@
  */
 package connection;
 
+import Enum.REQUEST;
 import org.json.JSONObject;
 import serverDatabase.Repository;
 
@@ -29,20 +30,26 @@ public class Request implements HttpRequest {
         }
         /*Elesdody*/
 
- /*Ashraf*/
- /*Ashraf*/
  /*Aml*/
  /*Aml*/
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
  /*Sara*/
+ /*Ashraf*/
+        if(paramter[1].equals(REQUEST.LOGIN)){
+            JSONObject respond =repository.getUser(paramter, body);
+            return respond;
+        }
+ /*Ashraf*/
         return body;
     }
 
     @Override
     public JSONObject get(String[] paramter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*Ashraf*/
+        return new JSONObject();
+        /*Ashraf*/
     }
 
     @Override
