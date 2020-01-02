@@ -13,6 +13,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import serverEntity.Items;
 
 /**
  *
@@ -30,6 +31,7 @@ public class Repository {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
     /*Aml*/
     public int insertUser(String userName, String password) {
         int x =-10;
@@ -64,6 +66,17 @@ public class Repository {
     /*Ghader*/
     /*Ghader*/
     /*Sara*/
+
+ /*Sara*/
+    public void insertItemToDataBase(Items item) throws SQLException {
+        String sql = "INSERT INTO Item(title) VALUES(?)";
+
+        PreparedStatement pstmt = db.prepareStatement(sql);
+        pstmt.setString(1, item.getTitle());
+        pstmt.executeUpdate();
+
+    }
+
     /*Sara*/
 
 }
