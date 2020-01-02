@@ -7,20 +7,26 @@ package serverEntity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author Elesdody
  */
-public class Items implements Entity{
-    private int id ;
+public class Items implements Entity {
+
+    private int id;
     private int listId;
     private String title;
+
     private String description;
     private Date deadLine;
     private Date startTime;
 
-    public Items(int id, int listId,String title, String description, Date deadLine, Date startTime) {
+    public Items(int id, int listId, String title, String description, Date deadLine, Date startTime) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -31,9 +37,15 @@ public class Items implements Entity{
     public int getId() {
         return id;
     }
-    public int getListId()
-    {
-    return listId;
+
+    public int getListId() {
+        return listId;
+    }
+
+    public Items(String title) {
+
+        this.title = title;
+
     }
 
     public String getTitle() {
@@ -52,6 +64,16 @@ public class Items implements Entity{
         return startTime;
     }
 
-    
-   
+    public JSONObject writeTaskInfoObjectAsJson() {
+        JSONObject toDoTaskJsonObject = null;
+        try {
+            toDoTaskJsonObject = new JSONObject();
+            toDoTaskJsonObject.put("title", this.getTitle());
+
+        } catch (JSONException ex) {
+            Logger.getLogger(Items.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return toDoTaskJsonObject;
+
+    }
 }

@@ -5,18 +5,17 @@
  */
 package serverDatabase;
 
-import com.microsoft.sqlserver.jdbc.SQLServerDriver;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
 
 /**
  *
  * @author Elesdody
  */
 public class DataBase {
-    private static final String DATABASE_URL="jdbc:sqlite:D:\\java work space\\other projects\\Java Project\\To-Do-list-Server\\TODO.db";
+
+    private static final String DATABASE_URL = "jdbc:sqlite:D:\\java work space\\other projects\\Java Project\\To-Do-list-Server\\TODO.db";
     private static volatile Connection db;
 
     static Connection getDatabase() throws SQLException {

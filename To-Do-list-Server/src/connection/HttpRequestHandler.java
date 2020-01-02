@@ -50,6 +50,7 @@ public class HttpRequestHandler extends Thread {
             switch (clientRequest) {
                 case REQUEST.POST:
                     JSONObject requestJson = readJson();
+                    System.out.println("hi server");
                     JSONObject responseJson = request.post(paramter, requestJson);
                     System.out.println("respond :"+responseJson.toString());
                     ps.println(responseJson.toString());

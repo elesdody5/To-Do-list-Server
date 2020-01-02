@@ -9,12 +9,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import serverEntity.User;
 import Enum.RESPOND_CODE;
+
+import serverEntity.Items;
+
 
 /**
  *
@@ -33,7 +38,36 @@ public class Repository {
         }
     }
 
+
     // TODO write query methods (select ,update ,insert ,delete )
+
+    /*Aml*/
+    public int insertUser(String userName, String password) {
+        int x =-10;
+        try {
+        String insertString = "INSERT INTO USER_TABLE  (USER_NAME, PASSWORD)  VALUES  (" + "'" + userName + "' , " + "'" + password + "'" + ")";
+           //String insertString = "INSERT INTO CONTACTS  (NAME, PHONENUMBER)  VALUES  (" + "'" + "xyzz" + "' , " + "'" + "8888888888888" + "'" + ")";
+        System.out.println(insertString);
+        Statement statment = db.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+        //    connection.prepareStatement(queryString);
+        //       x = statment.executeUpdate(queryString);
+        PreparedStatement pst = db.prepareStatement(insertString);
+         x = pst.executeUpdate();
+        System.out.println("Result of insert" + x);
+       
+         } catch (SQLException ex) {
+             ex.printStackTrace();
+    }
+         return x;
+
+    // TODO write query methods (select ,update ,insert ,delete )
+}
+       /*Aml*/
+    
+
+   // TODO write query methods (select ,update ,insert ,delete )
+    /*Elesdody*/
+
     /*Elesdody*/
  /*Elesdody*/
  /*Ashraf*/
@@ -101,10 +135,32 @@ public class Repository {
         return respondJson;
     }
     /*Ashraf*/
+
  /*Aml*/
  /*Aml*/
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
  /*Sara*/
+
+    /*Ashraf*/
+
+ 
+    /*Ghader*/
+    /*Ghader*/
+    /*Sara*/
+
+ /*Sara*/
+    public void insertItemToDataBase(Items item) throws SQLException {
+        String sql = "INSERT INTO Item(title) VALUES(?)";
+
+        PreparedStatement pstmt = db.prepareStatement(sql);
+        pstmt.setString(1, item.getTitle());
+        pstmt.executeUpdate();
+
+    }
+
+    /*Sara*/
+
+
 }

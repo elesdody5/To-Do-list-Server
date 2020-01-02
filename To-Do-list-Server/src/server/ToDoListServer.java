@@ -21,6 +21,8 @@ public class ToDoListServer extends Application {
 //        Scene scene = new Scene(root);
 //        
 //        
+//        Parent root = FXMLLoader.load(getClass().getResource("/server/serverView.fxml"));
+//        Scene scene = new Scene(root);
 //        stage.setScene(scene);
 //        stage.show();
         new PortListener();
