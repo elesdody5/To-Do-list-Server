@@ -25,7 +25,7 @@ public class DataBase {
         if (db == null) {
             synchronized (DataBase.class) {
 
-                db = DriverManager.getConnection("jdbc:sqlite:H:\\Projects\\ITI\\java\\project\\TODO.db");
+                db = DriverManager.getConnection(DATABASE_URL);
 
             }
         }
