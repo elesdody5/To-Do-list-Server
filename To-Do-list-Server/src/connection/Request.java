@@ -142,11 +142,12 @@ public class Request implements HttpRequest {
     @Override
     public int put(String[] paramter, JSONObject body) {
         /*Ghader*/
- 
+
         if (paramter[1].equals("setNewName")) {
             try {
-                String id = body.getString("id");
-                String name = body.getString("username");
+                System.out.println(body.toString());
+                String id = body.getJSONArray("id").getString(0);
+                String name = body.getJSONArray("username").getString(0);
                 // 0 -> error to excute query 
                 // 1-> is updated
                 // 2-> name is already found
@@ -158,8 +159,8 @@ public class Request implements HttpRequest {
         }
          if (paramter[1].equals("setPassword")) {
                try {
-                String id = body.getString("id");
-                String password = body.getString("password");
+                String id = body.getJSONArray("id").getString(0);
+                String password = body.getJSONArray("password").getString(0);
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
