@@ -5,6 +5,7 @@
  */
 package serverEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -19,6 +20,26 @@ public class ToDoList implements Entity{
     private String startTime;
     private String color;
     private String description;
+    private ArrayList<Items> taskes;
+
+    public void setTaskes(ArrayList<Items> taskes) {
+        this.taskes = taskes;
+    }
+
+    public ArrayList<Items> getTaskes() {
+        return taskes;
+    }
+
+    public ToDoList(int id, String title, int ownerId, String deadLine, String startTime, String color, String description, ArrayList<Items> taskes) {
+        this.id = id;
+        this.title = title;
+        this.ownerId = ownerId;
+        this.deadLine = deadLine;
+        this.startTime = startTime;
+        this.color = color;
+        this.description = description;
+        this.taskes = taskes;
+    }
 
     public ToDoList(String title, int ownerId,  String startTime,String deadLine, String color) {
         this.title = title;

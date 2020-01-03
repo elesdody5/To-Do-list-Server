@@ -22,5 +22,7 @@ public class REQUEST {
     
     public static final String DELETE ="DELETE";
     
+    public static final String LOGIN ="LOGIN";
+    
     public static final String END ="-1";
 }

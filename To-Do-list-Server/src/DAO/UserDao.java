@@ -5,11 +5,20 @@
  */
 package DAO;
 
+import serverEntity.Entity;
+import serverEntity.User;
+
 /**
  *
  * @author Ehab mohamed
  */
 public interface UserDao extends BaseDao{
+    
+    public void insert(User user);
+    public void delete(User user);
+    public void update(User user);
+    public void select(User user);
+    
     
     
 }

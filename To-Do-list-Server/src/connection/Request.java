@@ -5,15 +5,25 @@
  */
 package connection;
 
+import Enum.REQUEST;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONException;
+import org.json.JSONArray;
+
 import org.json.JSONObject;
 import serverDatabase.Repository;
+
+import serverEntity.Items;
 import serverEntity.ToDoList;
+import serverEntity.User;
 
 /**
  *
@@ -52,23 +62,81 @@ public class Request implements HttpRequest {
             } catch (ParseException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        /*Elesdody*/
 
- /*Ashraf*/
- /*Ashraf*/
+        } /*Elesdody*/ /*Aml*/ else if (paramter[1].equals("register")) {
+            try {
+                String userName = body.getString("username");
+                String password = body.getString("password");
+                int insertResult = repository.insertUser(userName, password);
+
+                body = new JSONObject();
+                if (insertResult == 1) {
+                    body.put("result", "successfullyRegisteration");
+                } else {
+                    body.put("result", "User already exist in DB");
+                }
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+        }
+        /*Aml*/
+
  /*Aml*/
  /*Aml*/
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
- /*Sara*/
+        if (paramter[1].equals("Task")) {
+            try {
+                String titleFromJson = (String) body.get("title");
+                Items item = new Items(titleFromJson);
+                System.out.print(titleFromJson);
+                try {
+                    repository.insertItemToDataBase(item);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
+            JSONObject respond = repository.getUser(paramter, body);
+            return respond;
+        }
+        /*Ashraf*/
         return body;
     }
 
     @Override
     public JSONObject get(String[] paramter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*Elesdody*/
+        if (paramter[1].equals("todo")) {
+            try {
+                ArrayList<ToDoList> toDoList = repository.getUserToDo(Integer.parseInt(paramter[2]));
+                User user = repository.getUserData(Integer.parseInt(paramter[2]));
+                Gson gson = new GsonBuilder().create();
+                String TodoArray = gson.toJson(toDoList);
+                JSONArray todojsonArray = new JSONArray(TodoArray);
+                JSONObject userJosn = user.getUserAsJson();
+                userJosn.put("todo_list", todojsonArray);
+                System.out.println(userJosn);
+                return userJosn;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                System.out.println(ex);
+            }
+        }
+        /*Elesdody*/
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
+ /*Sara*/
+        return null;
     }
 
     @Override
@@ -79,6 +147,17 @@ public class Request implements HttpRequest {
     @Override
     public int delete(String[] paramter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*Elesdody*/
+ /*Elesdody*/
+
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
+ /*Sara*/
     }
 
     private ToDoList getTodoObject(JSONObject body) throws JSONException, ParseException {
