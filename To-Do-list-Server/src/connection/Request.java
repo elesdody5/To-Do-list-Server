@@ -110,7 +110,35 @@ public class Request implements HttpRequest {
 
     @Override
     public int put(String[] paramter, JSONObject body) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*Ghader*/
+ 
+        if (paramter[1].equals("setNewName")) {
+            try {
+                String id = body.getString("id");
+                String name = body.getString("username");
+                // 0 -> error to excute query 
+                // 1-> is updated
+                // 2-> name is already found
+                int status = repository.updateUserName(id, name);
+                return status;
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+         if (paramter[1].equals("setPassword")) {
+               try {
+                String id = body.getString("id");
+                String password = body.getString("password");
+                // 0 -> error to execute query
+                // 1 -> is updated 
+                int status = repository.updatePassword(id, password);
+                return status; 
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        /*Ghader*/
+        return 0;
     }
 
     @Override

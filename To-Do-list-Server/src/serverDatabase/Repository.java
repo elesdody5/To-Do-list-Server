@@ -147,6 +147,63 @@ public class Repository {
 
  
     /*Ghader*/
+    public int updateUserName(String id , String name) {
+      if(isNameNotFound(name) == 1){  
+        String sql = "Update User_table set User_name = ? where ID= ?";
+        PreparedStatement stmt;
+        try {
+            int ident = Integer.parseInt(id);
+            stmt = db.prepareStatement(sql);
+            stmt.setString(1,name);
+            stmt.setInt(2, ident);
+            stmt.executeUpdate();
+            return 1;
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }else if (isNameNotFound(name) == 0){
+            return 2;
+      }
+      
+        return 0;
+    }
+
+    private int isNameNotFound(String name) {
+        String sql = " select User_name from User_table where User_name = ?";
+        PreparedStatement stmt;
+        try {
+            ResultSet rs;
+            stmt = db.prepareStatement(sql);
+            stmt.setString(1,name);
+            rs = stmt.executeQuery();
+           //name is found so cannot change the name
+            if(rs.next()){
+                return 0;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+           
+        return 1;
+    }
+      public int updatePassword(String id , String password) {
+       
+        String sql = "Update User_table set password = ? where ID= ?";
+        PreparedStatement stmt;
+        try {
+            int ident = Integer.parseInt(id);
+            stmt = db.prepareStatement(sql);
+            stmt.setString(1,password);
+            stmt.setInt(2, ident);
+            stmt.executeUpdate();
+            return 1;
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      
+        return 0;
+    }
+
     /*Ghader*/
     /*Sara*/
 
