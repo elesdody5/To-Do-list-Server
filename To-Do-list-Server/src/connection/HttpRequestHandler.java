@@ -101,7 +101,7 @@ public class HttpRequestHandler extends Thread {
     }
 
     private void close() throws IOException {
-        //in.close();
-        //s.close();
+        in.close();
+        s.close();
     }
 }

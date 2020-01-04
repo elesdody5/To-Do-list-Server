@@ -22,7 +22,7 @@ public class PortListener {
     private static final int JSON_PORT = 5005;
     private ServerSocket serverSocket;
     private static final int PORT = 8080;
-
+    
     public PortListener() {
         jsonPortListener();
     }
@@ -34,7 +34,7 @@ public class PortListener {
             while (true) {
 
                 Socket s = jsoServerSocket.accept();
-               
+                
                 new HttpRequestHandler(s);
                 
                 

@@ -23,6 +23,7 @@ public class DataBase {
             synchronized (DataBase.class) {
 
                 db = DriverManager.getConnection(DATABASE_URL);
+                System.out.println("db connected");
 
             }
         }
