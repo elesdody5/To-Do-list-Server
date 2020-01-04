@@ -5,18 +5,25 @@
  */
 package connection;
 
-
 import Enum.REQUEST;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.JSONArray;
 
 import org.json.JSONObject;
 import serverDatabase.Repository;
+
 import serverEntity.Items;
+import serverEntity.ToDoList;
+import serverEntity.User;
 
 /**
  *
@@ -30,57 +37,59 @@ public class Request implements HttpRequest {
         repository = new Repository();
     }
 
-
     @Override
-    public  JSONObject post(String[] paramter, JSONObject body) {
-        System.out.println("length paramter : "+paramter.length);
-        for (int i = 0; i < paramter.length; i++) {
-            System.out.println("item"+i+" : "+paramter[i]);
-        }
-        if (paramter[0].equals("list")) {
-            /*Elesdody*/
-            
-            /*Elesdody*/
-            
-             /*Aml*/
-        } else if (paramter[1].equals("register"))
-        {
-            System.out.println("register");
+    public JSONObject post(String[] paramter, JSONObject body) {
+
+        /*Elesdody*/
+        if (paramter[1].equals("list")) {
+            try {
+                ToDoList list;
+
+                list = getTodoObject(body);
+
+                int resullt = repository.insertList(list);
+
+                return resullt != -1 ? new JSONObject("{id:" + resullt + "}") : new JSONObject("{Error:\"Error insert list \"}");
+            } catch (SQLException ex) {
+                try {
+                    System.out.println(ex.getMessage());
+                    return new JSONObject("{Error:\"Error insert list \"}");
+                } catch (JSONException ex1) {
+                    Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            } catch (JSONException ex) {
+                System.out.println(ex.getMessage());
+            } catch (ParseException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } /*Elesdody*/ /*Aml*/ else if (paramter[1].equals("register")) {
             try {
                 String userName = body.getString("username");
                 String password = body.getString("password");
-                System.out.println("username"+userName);
-                System.out.println("password"+password);
-              int insertResult =  repository.insertUser(userName,password);
-              
-              body = new JSONObject();
-              if (insertResult == 1)
-                  body.put("result", "successfullyRegisteration");
-              else
-                  body.put("result", "User already exist in DB");
+                int insertResult = repository.insertUser(userName, password);
+
+                body = new JSONObject();
+                if (insertResult == 1) {
+                    body.put("result", "successfullyRegisteration");
+                } else {
+                    body.put("result", "User already exist in DB");
+                }
             } catch (JSONException ex) {
                 ex.printStackTrace();
             }
         }
-         /*Aml*/
-            
-     
-
+        /*Aml*/
 
  /*Aml*/
  /*Aml*/
-
- /*Ashraf*/
- /*Ashraf*/
-
-
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
-    if (paramter[1].equals("Task")) {
+        if (paramter[1].equals("Task")) {
             try {
-                String titleFromJson=(String) body.get("title");
-                Items item=new Items(titleFromJson);
+                String titleFromJson = (String) body.get("title");
+                Items item = new Items(titleFromJson);
                 System.out.print(titleFromJson);
                 try {
                     repository.insertItemToDataBase(item);
@@ -90,32 +99,99 @@ public class Request implements HttpRequest {
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
- /*Sara*/
- /*Ashraf*/
-        if(paramter[1].equals(REQUEST.LOGIN)){
-            JSONObject respond =repository.getUser(paramter, body);
+        } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
+            JSONObject respond = repository.getUser(paramter, body);
             return respond;
         }
- /*Ashraf*/
+        /*Ashraf*/
         return body;
     }
 
     @Override
     public JSONObject get(String[] paramter) {
-        /*Ashraf*/
-        return new JSONObject();
-        /*Ashraf*/
+        /*Elesdody*/
+        if (paramter[1].equals("todo")) {
+            try {
+                ArrayList<ToDoList> toDoList = repository.getUserToDo(Integer.parseInt(paramter[2]));
+                User user = repository.getUserData(Integer.parseInt(paramter[2]));
+                Gson gson = new GsonBuilder().create();
+                String TodoArray = gson.toJson(toDoList);
+                JSONArray todojsonArray = new JSONArray(TodoArray);
+                JSONObject userJosn = user.getUserAsJson();
+                userJosn.put("todo_list", todojsonArray);
+                System.out.println(userJosn);
+                return userJosn;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                System.out.println(ex);
+            }
+        }
+        /*Elesdody*/
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
+ /*Sara*/
+        return null;
     }
 
     @Override
     public int put(String[] paramter, JSONObject body) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*Ghader*/
+
+        if (paramter[1].equals("setNewName")) {
+            try {
+                System.out.println(body.toString());
+                String id = body.getJSONArray("id").getString(0);
+                String name = body.getJSONArray("username").getString(0);
+                // 0 -> error to excute query 
+                // 1-> is updated
+                // 2-> name is already found
+                int status = repository.updateUserName(id, name);
+                return status;
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+         if (paramter[1].equals("setPassword")) {
+               try {
+                String id = body.getJSONArray("id").getString(0);
+                String password = body.getJSONArray("password").getString(0);
+                // 0 -> error to execute query
+                // 1 -> is updated 
+                int status = repository.updatePassword(id, password);
+                return status; 
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        /*Ghader*/
+        return 0;
     }
 
     @Override
     public int delete(String[] paramter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        /*Elesdody*/
+ /*Elesdody*/
+
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
+ /*Sara*/
+    }
+
+    private ToDoList getTodoObject(JSONObject body) throws JSONException, ParseException {
+        ToDoList oDoList = new ToDoList(body.getString("title"), body.getInt("ownerId"), body.getString("startDate"), body.getString("deadLine"), body.getString("color"));
+        return oDoList;
     }
 
 }
