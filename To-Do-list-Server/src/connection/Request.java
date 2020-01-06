@@ -119,7 +119,6 @@ public class Request implements HttpRequest {
                 JSONArray todojsonArray = new JSONArray(TodoArray);
                 JSONObject userJosn = user.getUserAsJson();
                 userJosn.put("todo_list", todojsonArray);
-                System.out.println(userJosn);
                 return userJosn;
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -145,9 +144,8 @@ public class Request implements HttpRequest {
 
         if (paramter[1].equals("setNewName")) {
             try {
-                System.out.println(body.toString());
-                String id = body.getJSONArray("id").getString(0);
-                String name = body.getJSONArray("username").getString(0);
+                String id = body.getString("id");
+                String name = body.getString("username");
                 // 0 -> error to excute query 
                 // 1-> is updated
                 // 2-> name is already found
@@ -159,8 +157,8 @@ public class Request implements HttpRequest {
         }
          if (paramter[1].equals("setPassword")) {
                try {
-                String id = body.getJSONArray("id").getString(0);
-                String password = body.getJSONArray("password").getString(0);
+                String id = body.getString("id");
+                String password = body.getString("password");
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
