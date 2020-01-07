@@ -22,8 +22,6 @@ public class PortListener {
 
     private ServerSocket jsoServerSocket;
     private static final int JSON_PORT = 5005;
-    private ServerSocket serverSocket;
-    private static final int PORT = 8080;
     private static Vector<ClientHandler> clientVector;
     private static HttpRequestHandler httpHandlerRequest;
     public PortListener() {
@@ -47,23 +45,7 @@ public class PortListener {
         }
     }
 
-    private void listener() {
-        try {
-            serverSocket = new ServerSocket(PORT);
-            while (true) {
-
-                Socket s = serverSocket.accept();
-                BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-
-                while (in.readLine() != null) {
-                    System.out.println(in.readLine());
-                };
-
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
+  
     
     
     public static void addClientToVector(int userId , String userName){
