@@ -25,7 +25,6 @@ public class HttpRequestHandler extends Thread {
     BufferedReader in;
     PrintStream ps;
     Socket s;
-    
 
     public HttpRequestHandler(Socket s) {
         try {
@@ -38,7 +37,7 @@ public class HttpRequestHandler extends Thread {
         }
 
     }
-
+    
     @Override
     public void run() {
         Request request = new Request();
@@ -50,12 +49,11 @@ public class HttpRequestHandler extends Thread {
             switch (clientRequest) {
                 case REQUEST.POST:
                     JSONObject requestJson = readJson();
-
+                    
                     JSONObject responseJson = request.post(paramter, requestJson);
                     ps.println(responseJson.toString());
                     // to notifay the client the response was ended 
                     ps.println(REQUEST.END);
-                    close();
                     break;
 
                 case REQUEST.GET:
@@ -63,20 +61,17 @@ public class HttpRequestHandler extends Thread {
                     ps.println(responseJson.toString());
                     // to notifay the client the response was ended 
                     ps.println(REQUEST.END);
-                    close();
                     break;
                 case REQUEST.PUT:
                     requestJson = readJson();
                     int response = request.put(paramter, requestJson);
                     ps.println(response);
                     ps.println(REQUEST.END);
-                    close();
                     break;
                 case REQUEST.DELETE:
                     response = request.delete(paramter);
                     ps.println(response);
                     ps.println(REQUEST.END);
-                    close();
                     break;
 
             }
@@ -97,7 +92,7 @@ public class HttpRequestHandler extends Thread {
         }
         return new JSONObject(body.toString());
     }
-
+        
     private void close() throws IOException {
         in.close();
         s.close();
