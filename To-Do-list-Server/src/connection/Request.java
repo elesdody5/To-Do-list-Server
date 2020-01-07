@@ -119,7 +119,6 @@ public class Request implements HttpRequest {
                 JSONArray todojsonArray = new JSONArray(TodoArray);
                 JSONObject userJosn = user.getUserAsJson();
                 userJosn.put("todo_list", todojsonArray);
-                System.out.println(userJosn);
                 return userJosn;
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -157,26 +156,57 @@ public class Request implements HttpRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-         if (paramter[1].equals("setPassword")) {
-               try {
+        if (paramter[1].equals("setPassword")) {
+            try {
                 String id = body.getJSONArray("id").getString(0);
                 String password = body.getJSONArray("password").getString(0);
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
-                return status; 
+                return status;
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         /*Ghader*/
+ /*Elesdody*/
+        if (paramter[1].equals("list")) {
+            try {
+                
+                int result = repository.updateList(getTodoObject(body));
+               return result;
+            } catch (JSONException ex) {
+                
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+                
+            } catch (ParseException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+            catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
+        /*Elesdody*/
         return 0;
     }
 
     @Override
     public int delete(String[] paramter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
         /*Elesdody*/
+        if(paramter[1].equals("list"))
+        {
+            try {
+               int result = repository.deleteList(Integer.parseInt(paramter[2]));
+               return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
  /*Elesdody*/
 
  /*Ashraf*/
@@ -187,6 +217,7 @@ public class Request implements HttpRequest {
  /*Ghader*/
  /*Sara*/
  /*Sara*/
+ return -1;
     }
 
     private ToDoList getTodoObject(JSONObject body) throws JSONException, ParseException {

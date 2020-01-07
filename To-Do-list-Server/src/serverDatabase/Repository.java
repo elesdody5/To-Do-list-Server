@@ -16,9 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import serverEntity.User;
 import Enum.RESPOND_CODE;
-import java.sql.Date;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import serverEntity.Items;
@@ -56,7 +53,7 @@ public class Repository {
             PreparedStatement pst = db.prepareStatement(insertString);
             x = pst.executeUpdate();
 
-            
+            pst.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -72,11 +69,12 @@ public class Repository {
         PreparedStatement pre = db.prepareStatement("insert into TODO_LIST (title,ownerId,startDate,deadLine,color,Descreption)VALUES (?,?,?,?,?,?)");
         pre.setString(1, list.getTitle());
         pre.setInt(2, list.getOwnerId());
-        pre.setDate(3, Date.valueOf(list.getStartTime()));
-        pre.setDate(4, Date.valueOf(list.getDeadLine()));
+        pre.setString(3,list.getStartTime());
+        pre.setString(4, list.getDeadLine());
         pre.setString(5, list.getColor());
         pre.setString(6, list.getDescription());
         int result = pre.executeUpdate();
+        pre.close();
         if (result != 0) {
             return getListWithTitle(list.getTitle());
         } else {
@@ -88,9 +86,13 @@ public class Repository {
     public int getListWithTitle(String title) throws SQLException {
         PreparedStatement pre = db.prepareStatement("Select id from TODO_LIST where title = ?");
         pre.setString(1, title);
-        ResultSet set = pre.executeQuery();
-        set.next();
-        return set.getInt(1);
+        int id;
+        try (ResultSet set = pre.executeQuery()) {
+            set.next();
+            id = set.getInt(1);
+        }
+        pre.close();
+        return id;
     }
 
     // return todo information and taskes in it belongs to user with id
@@ -103,7 +105,7 @@ public class Repository {
             ToDoList todo = new ToDoList(set.getString("title"), set.getInt("ownerId"), set.getString("startDate"),set.getString("deadLine"), set.getString("color"));
             int toDoId = set.getInt("ID");
             todo.setId(toDoId);
-            PreparedStatement sencond_pre = db.prepareStatement("Select * from Item where todo_id = ?");
+            PreparedStatement sencond_pre = db.prepareStatement("Select * from Item where TodoId = ?");
             sencond_pre.setInt(1, toDoId);
             ResultSet item_set = sencond_pre.executeQuery();
             ArrayList<Items> itemList = new ArrayList<>();
@@ -129,15 +131,43 @@ public class Repository {
     public User getUserData(int id) throws SQLException {
         PreparedStatement pre = db.prepareStatement("Select * from User_table where id = ?");
         pre.setInt(1, id);
-
-        ResultSet set = pre.executeQuery();
-        set.next();
-        User user = new User(id, set.getString("user_name"), set.getString("password"));
-        set.close();
+        User user;
+        try (ResultSet set = pre.executeQuery()) {
+            set.next();
+            user = new User(id, set.getString("user_name"), set.getString("password"));
+        }
+        pre.close();
+        
         return user;
         
     }
-
+    public int updateList(ToDoList list) throws SQLException
+    {
+        PreparedStatement pre = db.prepareStatement("Update TODO_List set Title=?,OwnerId=?,StartDate= ?,deadLine=?,Color=?,Descreption=? where id = ?");
+         pre.setString(1, list.getTitle());
+        pre.setInt(2, list.getOwnerId());
+        pre.setString(3,list.getStartTime());
+        pre.setString(4, list.getDeadLine());
+        pre.setString(5, list.getColor());
+        pre.setString(6, list.getDescription());
+        pre.setInt(7, list.getId());
+        int result = pre.executeUpdate();
+        pre.close();
+        if (result != 0) {
+            
+            return getListWithTitle(list.getTitle());
+        } else {
+            return -1;
+        }
+    }
+    public int deleteList(int id) throws SQLException
+    {
+        PreparedStatement pre =db.prepareStatement("Delete from TODO_List where id=?");
+        pre.setInt(1, id);
+        int result =pre.executeUpdate();
+        pre.close();
+        return result;
+    }
     /*Elesdody*/
  /*Ghader*/
  /*Ghader*/
@@ -198,11 +228,12 @@ public class Repository {
                     
                     System.out.println("no row with this email or passwords");
                 }
-                
+                result.close();
             } catch (SQLException | JSONException ex) {
                 System.out.println("Repository class , getUser method exception");
             }
         }
+        
         return respondJson;
     }
 
@@ -221,8 +252,10 @@ public class Repository {
             stmt.setString(1,name);
             stmt.setInt(2, ident);
             stmt.executeUpdate();
+            stmt.close();
             return 1;
         } catch (SQLException ex) {
+            
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
       }else if (isNameNotFound(name) == 0){
@@ -242,6 +275,7 @@ public class Repository {
             rs = stmt.executeQuery();
            //name is found so cannot change the name
             if(rs.next()){
+                rs.close();
                 return 0;
             }
         } catch (SQLException ex) {
@@ -260,11 +294,12 @@ public class Repository {
             stmt.setString(1,password);
             stmt.setInt(2, ident);
             stmt.executeUpdate();
+            stmt.close();
             return 1;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
-      
+     
         return 0;
     }
 
