@@ -27,6 +27,10 @@ public class Items implements Entity {
     private String startTime;
     private ArrayList<User> taskMember;
 
+    public String getComment() {
+        return comment;
+    }
+
     public ArrayList<User> getTaskMember() {
         return taskMember;
     }
@@ -56,9 +60,10 @@ public class Items implements Entity {
         return listId;
     }
 
-    public Items(String title) {
+    public Items(String title,int listId) {
 
         this.title = title;
+        this.listId=listId;
 
     }
 
@@ -115,6 +120,7 @@ public class Items implements Entity {
         try {
             toDoTaskJsonObject = new JSONObject();
             toDoTaskJsonObject.put("title", this.getTitle());
+            toDoTaskJsonObject.put("TodoId", this.listId);
 
         } catch (JSONException ex) {
             Logger.getLogger(Items.class.getName()).log(Level.SEVERE, null, ex);

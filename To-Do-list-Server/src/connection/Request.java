@@ -17,6 +17,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.Notification;
 import org.json.JSONArray;
 
 import org.json.JSONObject;
@@ -24,6 +25,7 @@ import server.PortListener;
 import serverDatabase.Repository;
 
 import serverEntity.Items;
+import serverEntity.Notifications;
 import serverEntity.ToDoList;
 import serverEntity.User;
 
@@ -39,8 +41,7 @@ public class Request implements HttpRequest {
         repository = new Repository();
     }
 
-    @Override
-    public JSONObject post(String[] paramter, JSONObject body) {
+    public JSONObject post(String[] paramter, JSONObject body, HttpRequestHandler handler) {
 
         /*Elesdody*/
         if (paramter[1].equals("list")) {
@@ -65,13 +66,25 @@ public class Request implements HttpRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-        }
-        else if(paramter[1].equals("notification"))
-        {
-            
-        }
-        
-        /*Elesdody*/ /*Aml*/ else if (paramter[1].equals("register")) {
+        } else if (paramter[1].equals("notification")) {
+            try {
+                ArrayList<Notifications> notifications = getNotificatinArray(body.getJSONArray("notification_List"));
+                // first insert in database
+                int resullt = repository.insertTodoNotification(notifications);
+                // notify other friends
+                if (resullt > 0) {
+                    ClientHandler.notifyCollaborator(notifications);
+
+                }
+                return resullt != -1 ? new JSONObject("{id:" + resullt + "}") : new JSONObject("{Error:\"Error insert list \"}");
+
+            } catch (JSONException ex) {
+                System.out.println(ex.getMessage());
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        } /*Elesdody*/ /*Aml*/ else if (paramter[1].equals("register")) {
             try {
                 String userName = body.getString("username");
                 String password = body.getString("password");
@@ -97,8 +110,18 @@ public class Request implements HttpRequest {
         if (paramter[1].equals("Task")) {
             try {
                 String titleFromJson = (String) body.get("title");
-                Items item = new Items(titleFromJson);
-                System.out.print(titleFromJson);
+                int listIdFromJson = (int) body.get("listId");
+                String description = (String) body.get("description");
+                String deadline = (String) body.get("deadLine");
+                String starttime = (String) body.get("startTime");
+                String comment = (String) body.get("comment");
+                Items item = new Items(titleFromJson, listIdFromJson);
+                item.setDeadLine(deadline);
+                item.setDescription(description);
+                item.setStartTime(starttime);
+                item.setComment(comment);
+
+                System.out.print(titleFromJson + "  " + listIdFromJson);
                 try {
                     repository.insertItemToDataBase(item);
                 } catch (SQLException ex) {
@@ -111,13 +134,19 @@ public class Request implements HttpRequest {
             try {
                 User user = getUserFromJson(body);
                 JSONObject respond = repository.getUser(user);
+                // get last one been add to victor
                 if (respond != null && respond.getInt("Code") == RESPOND_CODE.SUCCESS) {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
-                    PortListener.addClientToVector(userId, userName);
+                    ClientHandler.getclientVector().add(new ClientHandler(userId, userName, handler));
                 } else {
                     System.out.println("login respond faild, not added to portListener any client");
+                    // remove from vector
+                }
+                System.out.println(ClientHandler.getclientVector().size());
+                for (ClientHandler clientt : ClientHandler.getclientVector()) {
+                    System.out.println(clientt.getClientName());
                 }
                 return respond;
             } catch (JSONException ex) {
@@ -141,19 +170,19 @@ public class Request implements HttpRequest {
                 // get user friends
                 ArrayList<User> friends = repository.getUserFriends(Integer.parseInt(paramter[2]));
                 Gson gson = new GsonBuilder().create();
-               // convert friendsList to json
+                // convert friendsList to json
                 String friendsArray = gson.toJson(friends);
-                
+
                 JSONArray friendsjsonArray = new JSONArray(friendsArray);
-                
+
                 // convert todoList to jsonArray
                 String TodoArray = gson.toJson(toDoList);
-                
+
                 JSONArray todojsonArray = new JSONArray(TodoArray);
                 // convert user to json
                 JSONObject userJosn = user.getUserAsJson();
                 // add friends to user
-                userJosn.put("friends",friendsjsonArray);
+                userJosn.put("friends", friendsjsonArray);
                 // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
                 return userJosn;
@@ -171,7 +200,43 @@ public class Request implements HttpRequest {
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
- /*Sara*/
+        if (paramter[1].equals("getTasksOflist")) {
+            ArrayList<Items> itemList = null;
+            try {
+                itemList = repository.getTaskFromDataBase();
+                Gson gson = new GsonBuilder().create();
+                String TodoItemsArray = gson.toJson(itemList);
+                JSONArray todojsonArray = new JSONArray(TodoItemsArray);
+                JSONObject jsonObjectOfList = new JSONObject();
+                jsonObjectOfList.put("listOfTasks", todojsonArray);
+                return jsonObjectOfList;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
+        if (paramter[1].equals("getTeamMemberInToDo")) {
+            ArrayList<User> teamMember = null;
+            try {
+                teamMember = repository.getTeamMemberFromDataBase();
+                Gson gson = new GsonBuilder().create();
+                String TodoItemsArray = gson.toJson(teamMember);
+                JSONArray TeamMemberjsonArray = new JSONArray(TodoItemsArray);
+                JSONObject jsonObjectOfList = new JSONObject();
+                jsonObjectOfList.put("listOfTeamMember", TeamMemberjsonArray);
+                return jsonObjectOfList;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        /*Sara*/
         return null;
     }
 
@@ -208,7 +273,6 @@ public class Request implements HttpRequest {
  /*Elesdody*/
         if (paramter[1].equals("list")) {
             try {
-
                 int result = repository.updateList(getTodoObject(body));
                 return result;
             } catch (JSONException ex) {
@@ -257,6 +321,15 @@ public class Request implements HttpRequest {
     private ToDoList getTodoObject(JSONObject body) throws JSONException, ParseException {
         ToDoList oDoList = new ToDoList(body.getString("title"), body.getInt("ownerId"), body.getString("startDate"), body.getString("deadLine"), body.getString("color"));
         return oDoList;
+    }
+
+    private ArrayList<Notifications> getNotificatinArray(JSONArray notiJSONArray) throws JSONException {
+        ArrayList<Notifications> notifications = new ArrayList<>();
+        for (int i = 0; i < notiJSONArray.length(); i++) {
+            JSONObject json = notiJSONArray.getJSONObject(i);
+            notifications.add(new Notifications(json.getInt("fromUserId"), json.getInt("toUserId"), json.getInt("type"), json.getInt("listId")));
+        }
+        return notifications;
     }
 
     /*Ashraf*/
