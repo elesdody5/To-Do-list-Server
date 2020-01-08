@@ -14,14 +14,19 @@ import javafx.stage.Stage;
 public class ToDoListServer extends Application {
 
     @Override
+    public void init() throws Exception {
+        super.init();
+        new PortListener();
+
+    }
+
+    @Override
     public void start(Stage stage) throws Exception {
 
         Parent root = FXMLLoader.load(getClass().getResource("/server/serverView.fxml"));
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
-        //new PortListener();
-
     }
 
     /**
