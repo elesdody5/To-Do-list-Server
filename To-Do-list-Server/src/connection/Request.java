@@ -6,6 +6,7 @@
 package connection;
 
 import Enum.REQUEST;
+import Enum.RESPOND_CODE;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 import org.json.JSONArray;
 
 import org.json.JSONObject;
+import server.PortListener;
 import serverDatabase.Repository;
 
 import serverEntity.Items;
@@ -63,7 +65,13 @@ public class Request implements HttpRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-        } /*Elesdody*/ /*Aml*/ else if (paramter[1].equals("register")) {
+        }
+        else if(paramter[1].equals("notification"))
+        {
+            
+        }
+        
+        /*Elesdody*/ /*Aml*/ else if (paramter[1].equals("register")) {
             try {
                 String userName = body.getString("username");
                 String password = body.getString("password");
@@ -71,7 +79,7 @@ public class Request implements HttpRequest {
 
                 body = new JSONObject();
                 if (insertResult == 1) {
-                    body.put("result", "successfullyRegisteration");
+                    body.put("result", "1");
                 } else {
                     body.put("result", "User already exist in DB");
                 }
@@ -110,8 +118,21 @@ public class Request implements HttpRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
-            JSONObject respond = repository.getUser(paramter, body);
-            return respond;
+            try {
+                User user = getUserFromJson(body);
+                JSONObject respond = repository.getUser(user);
+                if (respond != null && respond.getInt("Code") == RESPOND_CODE.SUCCESS) {
+                    //add user to server clients
+                    int userId = respond.getInt("ID");
+                    String userName = respond.getString("User_name");
+                    PortListener.addClientToVector(userId, userName);
+                } else {
+                    System.out.println("login respond faild, not added to portListener any client");
+                }
+                return respond;
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         /*Ashraf*/
         return body;
@@ -122,14 +143,29 @@ public class Request implements HttpRequest {
         /*Elesdody*/
         if (paramter[1].equals("todo")) {
             try {
-                ArrayList<ToDoList> toDoList = repository.getUserToDo(Integer.parseInt(paramter[2]));
+                //  get user data
                 User user = repository.getUserData(Integer.parseInt(paramter[2]));
+
+                // get user todo list
+                ArrayList<ToDoList> toDoList = repository.getUserToDo(Integer.parseInt(paramter[2]));
+                // get user friends
+                ArrayList<User> friends = repository.getUserFriends(Integer.parseInt(paramter[2]));
                 Gson gson = new GsonBuilder().create();
+               // convert friendsList to json
+                String friendsArray = gson.toJson(friends);
+                
+                JSONArray friendsjsonArray = new JSONArray(friendsArray);
+                
+                // convert todoList to jsonArray
                 String TodoArray = gson.toJson(toDoList);
+                
                 JSONArray todojsonArray = new JSONArray(TodoArray);
+                // convert user to json
                 JSONObject userJosn = user.getUserAsJson();
+                // add friends to user
+                userJosn.put("friends",friendsjsonArray);
+                // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
-                System.out.println(userJosn);
                 return userJosn;
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -194,9 +230,8 @@ public class Request implements HttpRequest {
 
         if (paramter[1].equals("setNewName")) {
             try {
-                System.out.println(body.toString());
-                String id = body.getJSONArray("id").getString(0);
-                String name = body.getJSONArray("username").getString(0);
+                String id = body.getString("id");
+                String name = body.getString("username");
                 // 0 -> error to excute query 
                 // 1-> is updated
                 // 2-> name is already found
@@ -206,27 +241,56 @@ public class Request implements HttpRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-         if (paramter[1].equals("setPassword")) {
-               try {
+        if (paramter[1].equals("setPassword")) {
+            try {
                 String id = body.getJSONArray("id").getString(0);
                 String password = body.getJSONArray("password").getString(0);
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
-                return status; 
+                return status;
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         /*Ghader*/
+ /*Elesdody*/
+        if (paramter[1].equals("list")) {
+            try {
+
+                int result = repository.updateList(getTodoObject(body));
+                return result;
+            } catch (JSONException ex) {
+
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+
+            } catch (ParseException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
+        /*Elesdody*/
         return 0;
     }
 
     @Override
     public int delete(String[] paramter) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
         /*Elesdody*/
- /*Elesdody*/
+        if (paramter[1].equals("list")) {
+            try {
+                int result = repository.deleteList(Integer.parseInt(paramter[2]));
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
+        /*Elesdody*/
 
  /*Ashraf*/
  /*Ashraf*/
@@ -236,6 +300,7 @@ public class Request implements HttpRequest {
  /*Ghader*/
  /*Sara*/
  /*Sara*/
+        return -1;
     }
 
     private ToDoList getTodoObject(JSONObject body) throws JSONException, ParseException {
@@ -243,4 +308,19 @@ public class Request implements HttpRequest {
         return oDoList;
     }
 
+    /*Ashraf*/
+    private User getUserFromJson(JSONObject body) {
+        User user = new User();
+        try {
+            String userName = body.getString("USER_NAME");
+            String password = body.getString("PASSWORD");
+            user.setUserName(userName);
+            user.setPassword(password);
+        } catch (JSONException ex) {
+            Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return user;
+    }
+    /*Ashraf*/
 }

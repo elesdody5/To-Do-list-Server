@@ -25,4 +25,7 @@ public class REQUEST {
     public static final String LOGIN ="LOGIN";
     
     public static final String END ="-1";
+    
+    public static final String LOGOUT ="LOGOUT";
+    
 }

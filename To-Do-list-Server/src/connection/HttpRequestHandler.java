@@ -25,7 +25,6 @@ public class HttpRequestHandler extends Thread {
     BufferedReader in;
     PrintStream ps;
     Socket s;
-    
 
     public HttpRequestHandler(Socket s) {
         try {
@@ -42,47 +41,46 @@ public class HttpRequestHandler extends Thread {
     @Override
     public void run() {
         Request request = new Request();
-        try {
-            // first read http clientRequest type(GET , POST,PUT,DELETE);
-            String clientRequest = in.readLine();
-            String[] paramter = in.readLine().split("/");
+        boolean connected= true;
+        while (connected) {
+            try {
+                // first read http clientRequest type(GET , POST,PUT,DELETE);
+                String clientRequest = in.readLine();
+                String[] paramter = in.readLine().split("/");
 
-            switch (clientRequest) {
-                case REQUEST.POST:
-                    JSONObject requestJson = readJson();
+                switch (clientRequest) {
+                    case REQUEST.POST:
+                        JSONObject requestJson = readJson();
 
-                    JSONObject responseJson = request.post(paramter, requestJson);
-                    ps.println(responseJson.toString());
-                    // to notifay the client the response was ended 
-                    ps.println(REQUEST.END);
-                    close();
-                    break;
+                        JSONObject responseJson = request.post(paramter, requestJson);
+                        ps.println(responseJson.toString());
+                        // to notifay the client the response was ended 
+                        ps.println(REQUEST.END);
+                        break;
 
-                case REQUEST.GET:
-                    responseJson = request.get(paramter);
-                    ps.println(responseJson.toString());
-                    // to notifay the client the response was ended 
-                    ps.println(REQUEST.END);
-                    close();
-                    break;
-                case REQUEST.PUT:
-                    requestJson = readJson();
-                    int response = request.put(paramter, requestJson);
-                    ps.println(response);
-                    ps.println(REQUEST.END);
-                    close();
-                    break;
-                case REQUEST.DELETE:
-                    response = request.delete(paramter);
-                    ps.println(response);
-                    ps.println(REQUEST.END);
-                    close();
-                    break;
+                    case REQUEST.GET:
+                        responseJson = request.get(paramter);
+                        ps.println(responseJson.toString());
+                        // to notifay the client the response was ended 
+                        ps.println(REQUEST.END);
+                        break;
+                    case REQUEST.PUT:
+                        requestJson = readJson();
+                        int response = request.put(paramter, requestJson);
+                        ps.println(response);
+                        ps.println(REQUEST.END);
+                        break;
+                    case REQUEST.DELETE:
+                        response = request.delete(paramter);
+                        ps.println(response);
+                        ps.println(REQUEST.END);
+                        break;
 
+                }
+            } catch (IOException | JSONException ex) {
+                System.out.println("request handler exception");
+                connected=false;
             }
-        } catch (IOException | JSONException ex) {
-            System.out.println("request handler exception");
-            Logger.getLogger(HttpRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
