@@ -363,13 +363,54 @@ public class Repository {
  /*Sara*/
  /*Sara*/
     public void insertItemToDataBase(Items item) throws SQLException {
-        String sql = "INSERT INTO Item(title) VALUES(?)";
+
+        String sql = "INSERT INTO Item(title,TodoId,Descreption,DeadLine,StartDate,Comment) VALUES(? , ?,?,?,?,?)";
 
         PreparedStatement pstmt = db.prepareStatement(sql);
         pstmt.setString(1, item.getTitle());
+
+        pstmt.setInt(2, item.getListId());
+        pstmt.setString(3, item.getDescription());
+        pstmt.setString(4, item.getDeadLine());
+        pstmt.setString(5, item.getStartTime());
+        pstmt.setString(6, item.getComment());
+
         pstmt.executeUpdate();
 
     }
 
+    public ArrayList<Items> getTaskFromDataBase() throws SQLException {
+        String sqlstatment = "select * from Item where TodoId=1";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<Items> todoListItems = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            Items item = new Items(resultSet.getString("title"), resultSet.getInt("toDoId"));
+            todoListItems.add(item);
+
+        }
+        resultSet.close();
+
+        return todoListItems;
+    }
+
+    public ArrayList<User> getTeamMemberFromDataBase() throws SQLException {
+        String sqlstatment = "SELECT * FROM  User_table ,Collab where ID=UserId ";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<User> teamMemberList = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            User teamMember = new User();
+            teamMember.setUserName(resultSet.getString("User_name"));
+            teamMemberList.add(teamMember);
+
+        }
+        resultSet.close();
+
+        return teamMemberList;
+    }
     /*Sara*/
+
 }
