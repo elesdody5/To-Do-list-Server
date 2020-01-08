@@ -16,11 +16,11 @@ public class ToDoListServer extends Application {
     @Override
     public void start(Stage stage) throws Exception {
 
-//        Parent root = FXMLLoader.load(getClass().getResource("/server/serverView.fxml"));
-//        Scene scene = new Scene(root);
-//        stage.setScene(scene);
-//        stage.show();
-        new PortListener();
+        Parent root = FXMLLoader.load(getClass().getResource("/server/serverView.fxml"));
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
+        //new PortListener();
 
     }
 

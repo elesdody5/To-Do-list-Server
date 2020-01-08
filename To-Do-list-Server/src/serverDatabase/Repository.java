@@ -197,8 +197,10 @@ public class Repository {
                     System.out.println("no row with this email or passwords");
                 }
                 
-            } catch (SQLException | JSONException ex) {
+            } catch (SQLException ex) {
                 System.out.println("Repository class , getUser method exception");
+            } catch (JSONException ex) {
+                Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return respondJson;
@@ -246,8 +248,10 @@ public class Repository {
                     System.out.println("no row with this email or passwords");
                 }
                 
-            } catch (SQLException | JSONException ex) {
+            } catch (SQLException ex) {
                 System.out.println("Repository class , getUser method exception");
+            } catch (JSONException ex) {
+                Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return respondJson;
