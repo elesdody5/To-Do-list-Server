@@ -9,18 +9,19 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Circle;
+import statisticsManager.DataCenter;
 
 /**
  *
  * @author Ashraf Mohamed
  */
-public class ServerController implements Initializable {
+public class ServerController2 implements Initializable {
 
     @FXML
     private BorderPane borderPane_id;
@@ -35,18 +36,24 @@ public class ServerController implements Initializable {
     @FXML
     private Pane sign_in_pane_id;
     @FXML
-    private ListView<?> list_view_id;
+    private Label numOfUsers_id;
+    @FXML
+    private Label numberOfList_id;
     
-    
+    private DataCenter dataCenter ;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-         
+            dataCenter = new DataCenter();
+            int numberOfUsers = dataCenter.getNumberOfUsers();
+            System.out.println("Users:"+numberOfUsers);
+            numOfUsers_id.setText(numOfUsers_id.getText()+" "+numberOfUsers);
     
     }    
 
     @FXML
     private void handleMouseClicked(MouseEvent event) {
+        
     }
     
 }

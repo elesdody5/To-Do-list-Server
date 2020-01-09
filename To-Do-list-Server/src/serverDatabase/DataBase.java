@@ -20,6 +20,7 @@ public class DataBase {
      */
     //private static final String DATABASE_URL = "jdbc:sqlite:H:\\Projects\\ITI\\java\\project\\TODO.db";
     private static final String DATABASE_URL = "jdbc:sqlite:D:\\java work space\\other projects\\Java Project\\TODO.db";
+
     private static volatile Connection db;
 
     private DataBase() {

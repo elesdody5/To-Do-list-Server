@@ -97,8 +97,18 @@ public class Request implements HttpRequest {
         if (paramter[1].equals("Task")) {
             try {
                 String titleFromJson = (String) body.get("title");
-                Items item = new Items(titleFromJson);
-                System.out.print(titleFromJson);
+                int listIdFromJson = (int) body.get("listId");
+                String description =(String) body.get("description");
+                String deadline =(String) body.get("deadLine");
+                String starttime =(String) body.get("startTime");
+                String comment =(String) body.get("comment");
+                Items item = new Items(titleFromJson,listIdFromJson);
+                item.setDeadLine(deadline);
+                item.setDescription(description);
+                item.setStartTime(starttime);
+                item.setComment(comment);
+                
+                System.out.print(titleFromJson+"  "+listIdFromJson);
                 try {
                     repository.insertItemToDataBase(item);
                 } catch (SQLException ex) {
@@ -171,6 +181,45 @@ public class Request implements HttpRequest {
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
+ if(paramter[1].equals("getTasksOflist"))
+ {
+       ArrayList<Items> itemList = null;
+            try {
+                itemList = repository.getTaskFromDataBase();
+                 Gson gson = new GsonBuilder().create();
+                String TodoItemsArray = gson.toJson(itemList);
+                JSONArray todojsonArray = new JSONArray(TodoItemsArray);
+                JSONObject jsonObjectOfList=new JSONObject();
+                jsonObjectOfList.put("listOfTasks", todojsonArray);
+                return jsonObjectOfList;
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+ 
+ }
+ if(paramter[1].equals("getTeamMemberInToDo"))
+ {
+   ArrayList<User> teamMember = null;
+            try {
+                teamMember = repository.getTeamMemberFromDataBase();
+                 Gson gson = new GsonBuilder().create();
+                String TodoItemsArray = gson.toJson(teamMember);
+                JSONArray TeamMemberjsonArray = new JSONArray(TodoItemsArray);
+                JSONObject jsonObjectOfList=new JSONObject();
+                jsonObjectOfList.put("listOfTeamMember", TeamMemberjsonArray);
+                return jsonObjectOfList;
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }  
+ }
+     
  /*Sara*/
         return null;
     }

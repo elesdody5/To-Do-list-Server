@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderPane_id" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="496.0" prefWidth="773.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.ServerController">
+<BorderPane fx:id="borderPane_id" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="496.0" prefWidth="773.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.ServerController2">
    <left>
       <Pane prefHeight="496.0" prefWidth="432.0" styleClass="linear_grad" BorderPane.alignment="CENTER">
          <children>
@@ -36,7 +37,20 @@
          <children>
             <Pane fx:id="sign_in_pane_id" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #fff;">
                <children>
-                  <ListView fx:id="list_view_id" prefHeight="496.0" prefWidth="342.0" />
+                  <VBox layoutX="27.0" layoutY="134.0">
+                     <children>
+                        <Label fx:id="numOfUsers_id" text="number of Users :  ">
+                           <VBox.margin>
+                              <Insets top="16.0" />
+                           </VBox.margin>
+                        </Label>
+                        <Label fx:id="numberOfList_id" text="num Of List Of each user :  ">
+                           <VBox.margin>
+                              <Insets top="16.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
                </children>
             </Pane>
          </children>
