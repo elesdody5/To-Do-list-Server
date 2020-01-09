@@ -167,24 +167,36 @@ public class Request implements HttpRequest {
 
                 // get user todo list
                 ArrayList<ToDoList> toDoList = repository.getUserToDo(Integer.parseInt(paramter[2]));
+                //get shared todo 
+                ArrayList<ToDoList> shared = repository.getUserSharedToDo(Integer.parseInt(paramter[2]));                
                 // get user friends
                 ArrayList<User> friends = repository.getUserFriends(Integer.parseInt(paramter[2]));
+                // get notificaiton
+                ArrayList<Notifications>notificationses = repository.getUserNotification(Integer.parseInt(paramter[2]));
                 Gson gson = new GsonBuilder().create();
                 // convert friendsList to json
                 String friendsArray = gson.toJson(friends);
 
                 JSONArray friendsjsonArray = new JSONArray(friendsArray);
-
+                // convert shared List to json
+                String sharedArray = gson.toJson(shared);
+                JSONArray sharedJSONArray = new JSONArray(sharedArray);
                 // convert todoList to jsonArray
                 String TodoArray = gson.toJson(toDoList);
 
                 JSONArray todojsonArray = new JSONArray(TodoArray);
+                // convert notification to json 
+                String notificationArray = gson.toJson(notificationses);
+                JSONArray notificationJSONArray = new JSONArray(notificationArray);
                 // convert user to json
                 JSONObject userJosn = user.getUserAsJson();
                 // add friends to user
                 userJosn.put("friends", friendsjsonArray);
                 // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
+                // add shared List 
+                userJosn.put("shared_list", sharedJSONArray);
+                userJosn.put("notification", notificationJSONArray);
                 return userJosn;
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -259,8 +271,9 @@ public class Request implements HttpRequest {
         }
         if (paramter[1].equals("setPassword")) {
             try {
-                String id = body.getJSONArray("id").getString(0);
-                String password = body.getJSONArray("password").getString(0);
+                System.out.println(body);
+                String id = body.getString("id");
+                String password = body.getString("password");
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
