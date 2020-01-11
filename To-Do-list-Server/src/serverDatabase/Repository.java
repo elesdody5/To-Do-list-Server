@@ -20,6 +20,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import serverEntity.Items;
+import serverEntity.Notifications;
 import serverEntity.ToDoList;
 
 /**
@@ -76,6 +77,7 @@ public class Repository {
         pre.setString(6, list.getDescription());
         int result = pre.executeUpdate();
         pre.close();
+        System.out.println(result);
         if (result != 0) {
             return getListWithTitle(list.getTitle());
         } else {
@@ -153,6 +155,7 @@ public class Repository {
         pre.setString(6, list.getDescription());
         pre.setInt(7, list.getId());
         int result = pre.executeUpdate();
+        System.out.println(result);;
         pre.close();
         if (result != 0) {
 
@@ -180,6 +183,22 @@ public class Repository {
         }
         friends_set.close();
         return friends;
+
+    }
+
+    public int insertTodoNotification(ArrayList<Notifications> notifications) throws SQLException {
+        int x = 0;
+        for (Notifications notification : notifications) {
+            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,DataId) Values(?,?,?,?) ")) {
+                pre.setInt(1, notification.getFromUserId());
+                pre.setInt(2, notification.getToUserId());
+                pre.setInt(3, notification.getType());
+                pre.setInt(4, notification.getDataId());
+                x = pre.executeUpdate();
+                
+            }
+        }
+        return x;
 
     }
 

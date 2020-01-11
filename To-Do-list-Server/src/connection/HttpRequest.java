@@ -13,7 +13,7 @@ import org.json.JSONObject;
  */
 public interface HttpRequest {
 
-    public JSONObject post(String[] paramter, JSONObject body);
+   // public JSONObject post(String[] paramter, JSONObject body);
 
     public JSONObject get(String[] paramter);
 
