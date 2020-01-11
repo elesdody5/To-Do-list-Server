@@ -13,6 +13,8 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,35 +26,63 @@ public class PortListener {
     private static final int JSON_PORT = 5005;
     private static Vector<ClientHandler> clientVector;
     private static HttpRequestHandler httpHandlerRequest;
+    private static boolean isStart;
+
     public PortListener() {
+        isStart = false;
         clientVector = new Vector<>();
-        jsonPortListener();
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                jsonPortListener();
+            }
+        });
+        th.start();
     }
 
     private void jsonPortListener() {
         try {
+            System.out.println("portListener is up and running");
             jsoServerSocket = new ServerSocket(JSON_PORT);
-            //vector<client>
+
             while (true) {
+                System.out.println("inside portListener");
 
                 Socket s = jsoServerSocket.accept();
-                //add to vector
-                httpHandlerRequest = new HttpRequestHandler(s);                
-               
+                if (getIsStart()) {
+                    httpHandlerRequest = new HttpRequestHandler(s);
+                } else {
+                    s.close();
+                }
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-  
-    
-    
-    public static void addClientToVector(int userId , String userName){
-        ClientHandler clientHandler = new ClientHandler(userId,userName,httpHandlerRequest);
-        System.out.println("client userName :"+userName+"   user id:"+userId);
+    /*Ashraf  stop server operation*/
+    //stop server operation
+    public static void closeServer() {
+        isStart = false;
+
+    }
+
+    //start a server operation
+    public static void startServer() {
+        isStart = true;
+    }
+
+    //get isStart value
+    private boolean getIsStart() {
+        return isStart;
+    }
+
+    /*Ashraf*/
+    public static void addClientToVector(int userId, String userName) {
+        ClientHandler clientHandler = new ClientHandler(userId, userName, httpHandlerRequest);
+        System.out.println("client userName :" + userName + "   user id:" + userId);
         clientVector.add(clientHandler);
-        System.out.println("number of clients is :"+clientVector.size());
+        System.out.println("number of clients is :" + clientVector.size());
     }
 
 }
