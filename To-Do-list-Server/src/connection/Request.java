@@ -259,11 +259,23 @@ public class Request implements HttpRequest {
         }
         if (paramter[1].equals("setPassword")) {
             try {
-                String id = body.getJSONArray("id").getString(0);
-                String password = body.getJSONArray("password").getString(0);
+                String id = body.getString("id");
+                String password = body.getString("password");
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
+                return status;
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+          if (paramter[1].equals("updateRequestList")) {
+            try {
+                int id = body.getInt("notId");
+                int reqStatus = body.getInt("status");
+                // 0 -> error to execute query
+                // 1 -> is updated 
+                int status = repository.updateNotificationStatus(id, reqStatus);
                 return status;
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);

@@ -377,7 +377,24 @@ public class Repository {
 
         return 0;
     }
+    
+ public int updateNotificationStatus(int id, int status) {
 
+        String sql = "Update notification set status = ? where ID= ?";
+        PreparedStatement stmt;
+        try {
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, status);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+            stmt.close();
+            return 1;
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return 0;
+    }
     /*Ghader*/
  /*Sara*/
  /*Sara*/
