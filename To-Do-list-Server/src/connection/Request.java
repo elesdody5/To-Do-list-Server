@@ -108,7 +108,7 @@ public class Request implements HttpRequest {
                 item.setStartTime(starttime);
                 item.setComment(comment);
                 
-                System.out.print(titleFromJson+"  "+listIdFromJson);
+              //  System.out.print(titleFromJson+"  "+listIdFromJson);
                 try {
                     repository.insertItemToDataBase(item);
                 } catch (SQLException ex) {
@@ -185,7 +185,7 @@ public class Request implements HttpRequest {
  {
        ArrayList<Items> itemList = null;
             try {
-                itemList = repository.getTaskFromDataBase();
+                itemList = repository.getTaskFromDataBase(Integer.parseInt(paramter[2]));
                  Gson gson = new GsonBuilder().create();
                 String TodoItemsArray = gson.toJson(itemList);
                 JSONArray todojsonArray = new JSONArray(TodoItemsArray);
@@ -274,6 +274,34 @@ public class Request implements HttpRequest {
             }
         }
         /*Elesdody*/
+        /*sara*/
+        if (paramter[1].equals("task")) {
+            try {
+                String titleFromJson = (String) body.get("title");
+                int listIdFromJson = (int) body.get("listId");
+                int id = (int) body.get("id");
+                String description =(String) body.get("description");
+                String deadline =(String) body.get("deadLine");
+                String starttime =(String) body.get("startTime");
+                String comment =(String) body.get("comment");
+                Items item = new Items(titleFromJson,listIdFromJson);
+                item.setDeadLine(deadline);
+                item.setId(id);
+                item.setDescription(description);
+                item.setStartTime(starttime);
+                item.setComment(comment);
+                int result = repository.updateTask(item);
+                return result;
+            } catch (JSONException ex) {
+
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } 
+        }
+        /*sara*/
         return 0;
     }
 
@@ -299,6 +327,15 @@ public class Request implements HttpRequest {
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
+   if (paramter[1].equals("task")) {
+            try {
+                int result = repository.deleteTask(Integer.parseInt(paramter[2]));
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
  /*Sara*/
         return -1;
     }

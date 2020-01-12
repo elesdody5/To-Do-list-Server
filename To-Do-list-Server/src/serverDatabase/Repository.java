@@ -378,9 +378,10 @@ public class Repository {
         pstmt.executeUpdate();
 
     }
- public ArrayList<Items>  getTaskFromDataBase() throws SQLException {
-     String sqlstatment="select * from Item where TodoId=1";
+ public ArrayList<Items>  getTaskFromDataBase(int id) throws SQLException {
+     String sqlstatment="select * from Item where TodoId=?";
      PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+     pstmt.setInt(1, id);
      ResultSet resultSet =pstmt.executeQuery();
    ArrayList<Items> todoListItems = new ArrayList<>();
    while (resultSet.next()) {
@@ -396,6 +397,7 @@ public class Repository {
   public ArrayList<User> getTeamMemberFromDataBase() throws SQLException {
       String sqlstatment="SELECT * FROM  User_table ,Collab where ID=UserId ";
      PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+     
      ResultSet resultSet =pstmt.executeQuery();
    ArrayList<User> teamMemberList = new ArrayList<>();
    while (resultSet.next()) {
@@ -409,7 +411,49 @@ public class Repository {
            
    return teamMemberList;
     }
+   public int updateTask(Items item) throws SQLException {
+        PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption=? ,Comment=? where id = ?");
+        sqlstatment.setString(1, item.getTitle());
+        sqlstatment.setString(2,item.getStartTime() );
+        sqlstatment.setString(3, item.getDeadLine());
+        sqlstatment.setString(4,item.getDescription());
+        sqlstatment.setString(5, item.getComment());
+        sqlstatment.setInt(6, item.getId());
+        int result = sqlstatment.executeUpdate();
+        sqlstatment.close();
+        if (result != 0) {
+
+           return item.getId();
+        } else {
+            return -1;
+        }    }
+    private int getitemWithTitle(String title) throws SQLException {
+      PreparedStatement pre = db.prepareStatement("Select ID from Item where Title = ?");
+        pre.setString(1, title);
+        int id;
+        try (ResultSet set = pre.executeQuery()) {
+            set.next();
+            id = set.getInt(1);
+        }
+        pre.close();
+        return id;   
+    }
+     public int deleteTask(int id) throws SQLException {
+       PreparedStatement sqlstatment = db.prepareStatement("Delete from Item where ID=?");
+        sqlstatment.setInt(1, id);
+        int result = sqlstatment.executeUpdate();
+        sqlstatment.close();
+      /*  if(result==0)
+        {
+             PreparedStatement sqlstatment2 = db.prepareStatement("Delete from Task_Mem where ItemId=?");
+        sqlstatment2.setInt(1, id);
+        int result2 = sqlstatment.executeUpdate();
+        }*/
+        return result;   
+    }
     /*Sara*/
+
+   
 
    
 }
