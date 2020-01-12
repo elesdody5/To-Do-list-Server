@@ -5,6 +5,7 @@
  */
 package serverDatabase;
 
+import Enum.NotificationKeys;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,9 +17,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import serverEntity.User;
 import Enum.RESPOND_CODE;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import serverEntity.Items;
+import serverEntity.Notifications;
 import serverEntity.ToDoList;
 
 /**
@@ -75,6 +78,7 @@ public class Repository {
         pre.setString(6, list.getDescription());
         int result = pre.executeUpdate();
         pre.close();
+        System.out.println(result);
         if (result != 0) {
             return getListWithTitle(list.getTitle());
         } else {
@@ -117,6 +121,61 @@ public class Repository {
                 itemList.add(item);
 
             }
+            // get collab
+            PreparedStatement third_pre = db.prepareStatement("SELECT * FROM Collab , User_table WHERE userId = id and TODOiD = ?");
+            third_pre.setInt(1, toDoId);
+            ArrayList<User> collaborator = new ArrayList<>();
+
+            ResultSet collabset = third_pre.executeQuery();
+
+            while (collabset.next()) {
+                collaborator.add(new User(collabset.getInt("id"), collabset.getString("user_name")));
+            }
+            collabset.close();
+            item_set.close();
+            todo.setTaskes(itemList);
+            todoList.add(todo);
+
+        }
+
+        set.close();
+        return todoList;
+
+    }
+    // return todo that user shared in 
+
+    public ArrayList<ToDoList> getUserSharedToDo(int id) throws SQLException {
+        PreparedStatement pre = db.prepareStatement("SELECT * FROM Collab ,TODO_LIST where userId = ? and TodoId = id");
+        pre.setInt(1, id);
+        ResultSet set = pre.executeQuery();
+        ArrayList<ToDoList> todoList = new ArrayList<>();
+        while (set.next()) {
+            ToDoList todo = new ToDoList(set.getString("title"), set.getInt("ownerId"), set.getString("startDate"), set.getString("deadLine"), set.getString("color"));
+            int toDoId = set.getInt("ID");
+            todo.setId(toDoId);
+            PreparedStatement sencond_pre = db.prepareStatement("Select * from Item where TodoId = ?");
+            sencond_pre.setInt(1, toDoId);
+            ResultSet item_set = sencond_pre.executeQuery();
+            ArrayList<Items> itemList = new ArrayList<>();
+            while (item_set.next()) {
+                int taskId = item_set.getInt("ID");
+                Items item = new Items(taskId, toDoId, item_set.getString("title"), item_set.getString("startDate"), item_set.getString("deadLine"));
+                item.setComment(item_set.getString("comment") != null ? item_set.getString("comment") : "");
+                item.setDescription(item_set.getString("descreption") != null ? item_set.getString("descreption") : "");
+                itemList.add(item);
+
+            }
+            // get collab
+            PreparedStatement third_pre = db.prepareStatement("SELECT * FROM Collab , User_table WHERE userId = id and TODOiD = ?");
+            third_pre.setInt(1, toDoId);
+            ArrayList<User> collaborator = new ArrayList<>();
+
+            ResultSet collabset = third_pre.executeQuery();
+
+            while (collabset.next()) {
+                collaborator.add(new User(collabset.getInt("id"), collabset.getString("user_name")));
+            }
+            collabset.close();
             item_set.close();
             todo.setTaskes(itemList);
             todoList.add(todo);
@@ -142,6 +201,44 @@ public class Repository {
 
     }
 
+    public ArrayList<Notifications> getUserNotification(int id) throws SQLException {
+        PreparedStatement pre = db.prepareStatement("Select * from notification where touserId =?");
+        pre.setInt(1, id);
+        ArrayList<Notifications> notifications = new ArrayList<>();
+        ResultSet set = pre.executeQuery();
+        while (set.next()) {
+            PreparedStatement second_pre = db.prepareStatement("Select user_name from user_table where id =?");
+            second_pre.setInt(1, set.getInt("fromUserId"));
+            ResultSet second_set = second_pre.executeQuery();
+            // to get data name
+            String tableName=null;
+            if (set.getInt("type") == NotificationKeys.ADD_COLLABORATOR) {
+                tableName = "TODO_LIST";
+            } else if (set.getInt("type") == NotificationKeys.ASSIGIN_TASK_MEMBER) {
+                tableName = "Item";
+            }
+
+            Notifications notification = new Notifications(set.getInt("id"), set.getInt("fromUserId"), id, set.getInt("type"), set.getInt("status"), set.getInt("dataId"));
+            notification.setfromUserName(second_set.getString("user_name"));
+
+            if (set.getInt("type") != NotificationKeys.REQUEST_FRIEND) {
+                System.out.println(tableName);
+                PreparedStatement third_statment = db.prepareStatement("Select * from " + tableName + " where id = ?");
+                third_statment.setInt(1, set.getInt("dataId"));
+                ResultSet resultSet = third_statment.executeQuery();
+                if(resultSet.next())
+                notification.setDataName(resultSet.getString("title"));
+                resultSet.close();
+            }
+            notifications.add(notification);
+            
+            second_set.close();
+        }
+        set.close();
+        return notifications;
+
+    }
+
     public int updateList(ToDoList list) throws SQLException {
         PreparedStatement pre = db.prepareStatement("Update TODO_List set Title=?,OwnerId=?,StartDate= ?,deadLine=?,Color=?,Descreption=? where id = ?");
         pre.setString(1, list.getTitle());
@@ -152,6 +249,7 @@ public class Repository {
         pre.setString(6, list.getDescription());
         pre.setInt(7, list.getId());
         int result = pre.executeUpdate();
+        System.out.println(result);;
         pre.close();
         if (result != 0) {
 
@@ -182,10 +280,44 @@ public class Repository {
 
     }
 
+    public int insertTodoNotification(ArrayList<Notifications> notifications) throws SQLException {
+        int x = 0;
+        for (Notifications notification : notifications) {
+            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,DataId) Values(?,?,?,?) ")) {
+                pre.setInt(1, notification.getFromUserId());
+                pre.setInt(2, notification.getToUserId());
+                pre.setInt(3, notification.getType());
+                pre.setInt(4, notification.getDataId());
+                x = pre.executeUpdate();
+
+            }
+        }
+        return x;
+
+    }
+
     /*Elesdody*/
  /*Ghader*/
  /*Ghader*/
  /*Ashraf*/
+    
+    //get number of users
+    public int getNumberOfUsers(){
+        int numberOfUsers = 0;
+        
+        Statement st = null;
+        String query = "select count(id) as users  from user_Table ;";
+        
+        try{
+            st = db.createStatement();
+            ResultSet set = st.executeQuery(query);
+            numberOfUsers = set.getInt("users");
+        }catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        
+        return numberOfUsers;
+    }
     public void insertUser(User user) {
         if (user == null) {
             return;
@@ -200,7 +332,6 @@ public class Repository {
             System.out.println(ex.getCause());
         }
     }
-
     //get user with user object
     public JSONObject getUser(User user) {
         JSONObject respondJson = new JSONObject();
@@ -240,9 +371,10 @@ public class Repository {
                     System.out.println("no row with this email or passwords");
                 }
 
+
             } catch (SQLException | JSONException ex) {
                 System.out.println("Repository class , getUser method exception");
-            }
+            } 
         }
         return respondJson;
     }
@@ -286,10 +418,11 @@ public class Repository {
 
                     System.out.println("no row with this email or passwords");
                 }
+
                 result.close();
             } catch (SQLException | JSONException ex) {
                 System.out.println("Repository class , getUser method exception");
-            }
+            } 
         }
 
         return respondJson;
@@ -368,12 +501,12 @@ public class Repository {
 
         PreparedStatement pstmt = db.prepareStatement(sql);
         pstmt.setString(1, item.getTitle());
+
         pstmt.setInt(2, item.getListId());
         pstmt.setString(3, item.getDescription());
         pstmt.setString(4, item.getDeadLine());
         pstmt.setString(5, item.getStartTime());
         pstmt.setString(6, item.getComment());
-
 
         pstmt.executeUpdate();
 
@@ -410,7 +543,10 @@ public class Repository {
             resultSet.close();
            
    return teamMemberList;
-    }
+
+  }
+
+    
    public int updateTask(Items item) throws SQLException {
         PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption=? ,Comment=? where id = ?");
         sqlstatment.setString(1, item.getTitle());
@@ -455,5 +591,4 @@ public class Repository {
 
    
 
-   
 }

@@ -21,6 +21,7 @@ public class ToDoList implements Entity{
     private String color;
     private String description;
     private ArrayList<Items> taskes;
+    private ArrayList<User> collaborator;
 
     public void setTaskes(ArrayList<Items> taskes) {
         this.taskes = taskes;
@@ -30,7 +31,7 @@ public class ToDoList implements Entity{
         return taskes;
     }
 
-    public ToDoList(int id, String title, int ownerId, String deadLine, String startTime, String color, String description, ArrayList<Items> taskes) {
+    public ToDoList(int id, String title, int ownerId, String deadLine, String startTime, String color, String description, ArrayList<Items> taskes,ArrayList<User> collaborator) {
         this.id = id;
         this.title = title;
         this.ownerId = ownerId;
@@ -39,6 +40,7 @@ public class ToDoList implements Entity{
         this.color = color;
         this.description = description;
         this.taskes = taskes;
+        this.collaborator = collaborator;
     }
 
     public ToDoList(String title, int ownerId,  String startTime,String deadLine, String color) {

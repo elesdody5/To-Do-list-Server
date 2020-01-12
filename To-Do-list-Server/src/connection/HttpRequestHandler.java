@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.Vector;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,9 +22,21 @@ import org.json.JSONObject;
  */
 public class HttpRequestHandler extends Thread {
 
-    BufferedReader in;
-    PrintStream ps;
-    Socket s;
+    private BufferedReader in;
+    private PrintStream ps;
+   private Socket s;
+
+    public BufferedReader getBufferReader() {
+        return in;
+    }
+
+    public PrintStream getPrintStream() {
+        return ps;
+    }
+
+    public Socket getS() {
+        return s;
+    }
 
     public HttpRequestHandler(Socket s) {
         try {
@@ -52,7 +64,7 @@ public class HttpRequestHandler extends Thread {
                     case REQUEST.POST:
                         JSONObject requestJson = readJson();
 
-                        JSONObject responseJson = request.post(paramter, requestJson);
+                        JSONObject responseJson = request.post(paramter, requestJson,this);
                         ps.println(responseJson.toString());
                         // to notifay the client the response was ended 
                         ps.println(REQUEST.END);
@@ -68,17 +80,17 @@ public class HttpRequestHandler extends Thread {
                         requestJson = readJson();
                         int response = request.put(paramter, requestJson);
                         ps.println(response);
-                        ps.println(REQUEST.END);
+                       // ps.println(REQUEST.END);
                         break;
                     case REQUEST.DELETE:
                         response = request.delete(paramter);
                         ps.println(response);
-                        ps.println(REQUEST.END);
+                        //ps.println(REQUEST.END);
                         break;
 
                 }
             } catch (IOException | JSONException ex) {
-                System.out.println("request handler exception");
+                System.out.println(ex.getMessage());
                 connected=false;
             }
         }
