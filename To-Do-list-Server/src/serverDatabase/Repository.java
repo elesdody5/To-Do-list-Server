@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import serverEntity.User;
 import Enum.RESPOND_CODE;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import serverEntity.Items;
@@ -299,6 +300,24 @@ public class Repository {
  /*Ghader*/
  /*Ghader*/
  /*Ashraf*/
+    
+    //get number of users
+    public int getNumberOfUsers(){
+        int numberOfUsers = 0;
+        
+        Statement st = null;
+        String query = "select count(id) as users  from user_Table ;";
+        
+        try{
+            st = db.createStatement();
+            ResultSet set = st.executeQuery(query);
+            numberOfUsers = set.getInt("users");
+        }catch(SQLException ex){
+            ex.printStackTrace();
+        }
+        
+        return numberOfUsers;
+    }
     public void insertUser(User user) {
         if (user == null) {
             return;
@@ -313,7 +332,6 @@ public class Repository {
             System.out.println(ex.getCause());
         }
     }
-
     //get user with user object
     public JSONObject getUser(User user) {
         JSONObject respondJson = new JSONObject();
@@ -353,9 +371,10 @@ public class Repository {
                     System.out.println("no row with this email or passwords");
                 }
 
+
             } catch (SQLException | JSONException ex) {
                 System.out.println("Repository class , getUser method exception");
-            }
+            } 
         }
         return respondJson;
     }
@@ -399,10 +418,11 @@ public class Repository {
 
                     System.out.println("no row with this email or passwords");
                 }
+
                 result.close();
             } catch (SQLException | JSONException ex) {
                 System.out.println("Repository class , getUser method exception");
-            }
+            } 
         }
 
         return respondJson;
