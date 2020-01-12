@@ -5,7 +5,7 @@
  */
 package serverEntity;
 
-import connection.HttpRequestHandler;
+import connection.RequestHandler;
 
 /**
  *

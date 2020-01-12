@@ -33,7 +33,7 @@ import serverEntity.User;
  *
  * @author Elesdody
  */
-public class Request implements HttpRequest {
+public class Request implements ClientRequest {
 
     Repository repository;
 
@@ -41,7 +41,7 @@ public class Request implements HttpRequest {
         repository = new Repository();
     }
 
-    public JSONObject post(String[] paramter, JSONObject body, HttpRequestHandler handler) {
+    public JSONObject post(String[] paramter, JSONObject body, RequestHandler handler) {
 
         /*Elesdody*/
         if (paramter[1].equals("list")) {
@@ -73,7 +73,7 @@ public class Request implements HttpRequest {
                 int resullt = repository.insertTodoNotification(notifications);
                 // notify other friends
                 if (resullt > 0) {
-                    ClientHandler.notifyCollaborator(notifications);
+                    Client.notifyCollaborator(notifications);
 
                 }
                 return resullt != -1 ? new JSONObject("{id:" + resullt + "}") : new JSONObject("{Error:\"Error insert list \"}");
@@ -139,13 +139,13 @@ public class Request implements HttpRequest {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
-                    ClientHandler.getclientVector().add(new ClientHandler(userId, userName, handler));
+                    Client.getclientVector().add(new Client(userId, userName, handler));
                 } else {
                     System.out.println("login respond faild, not added to portListener any client");
                     // remove from vector
                 }
-                System.out.println(ClientHandler.getclientVector().size());
-                for (ClientHandler clientt : ClientHandler.getclientVector()) {
+                System.out.println(Client.getclientVector().size());
+                for (Client clientt : Client.getclientVector()) {
                     System.out.println(clientt.getClientName());
                 }
                 return respond;
