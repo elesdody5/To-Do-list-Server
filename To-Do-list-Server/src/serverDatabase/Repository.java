@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import serverEntity.Items;
 import serverEntity.Notifications;
 import serverEntity.ToDoList;
+import statisticsManager.Entity.UserData;
 
 /**
  *
@@ -334,6 +335,40 @@ public class Repository {
         return respondJson;
     }
 
+    public ArrayList getListOfUsers() throws SQLException{
+        ArrayList<User> users = new ArrayList<>();
+        Statement statement = db.createStatement();
+        ResultSet set = statement.executeQuery("SELECT User_name,ID FROM User_table;");
+        while(set.next()){
+            String userName = set.getString("User_name");
+            int userId = set.getInt("ID");
+            User u = new User(userId,userName);
+            users.add(u);        
+        }
+        return users;
+    }  
+    
+    public UserData getUserStatisticsData(int userId) throws SQLException{
+        PreparedStatement st = db.prepareStatement("select count(*) as friends from friends  where userId = ?;");
+        st.setInt(1,userId);
+        ResultSet set = st.executeQuery();
+        int numberOfFriends = (set.next())?set.getInt("friends"):0;
+        
+        PreparedStatement st2 = db.prepareStatement("SELECT count(*) as lists FROM TODO_LIST where ownerid =?");
+        st2.setInt(1,userId);
+        ResultSet set2 = st2.executeQuery();
+        int numberOfLists = (set2.next())?set2.getInt("lists"):0;
+        
+        PreparedStatement st3 = db.prepareStatement("select count(*) as tasks from task_mem where userid = ?;");
+        st3.setInt(1, userId);
+        ResultSet set3 = st3.executeQuery();
+        int numberOfTasks = (set3.next())?set3.getInt("tasks"):0;
+        
+        UserData userData = new UserData(numberOfFriends,numberOfLists,numberOfTasks);
+        
+        return userData;
+    }
+    
     /*Ashraf*/
  /*Ghader*/
     public int updateUserName(String id, String name) {
