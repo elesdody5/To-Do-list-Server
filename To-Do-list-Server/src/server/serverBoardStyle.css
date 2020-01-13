@@ -1,0 +1,41 @@
+/*
+    @author Ashraf Mohamed
+*/
+
+.left_pane{
+    -fx-background-color: #6F4CBB;
+}
+
+.text_color{
+    -fx-text-fill: #ffffff;
+}
+
+.left_pane_btn_hover:hover{
+    -fx-background-color: #5a29c4;
+}
+
+.dash_board_label{
+    -fx-text-fill: #ffffff;    
+    -fx-border-color: #ffffff;
+    -fx-border-width: 1px;
+}
+
+.start_Btn{
+    -fx-background-color: #52de97;
+    -fx-text-fill: #ffffff ;   
+}
+
+.stop_Btn{
+    -fx-background-color:  #db3e70;
+    -fx-text-fill: #ffffff;
+}
+
+.start_Btn:hover{
+    -fx-background-color: #52df10;
+    -fx-text-fill: #ffffff ;   
+}
+
+.stop_Btn:hover{
+    -fx-background-color: #db3056;
+    -fx-text-fill: #ffffff;
+}
