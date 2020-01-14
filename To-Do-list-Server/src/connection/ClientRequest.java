@@ -11,7 +11,7 @@ import org.json.JSONObject;
  *
  * @author Elesdody
  */
-public interface HttpRequest {
+public interface ClientRequest {
 
    // public JSONObject post(String[] paramter, JSONObject body);
 

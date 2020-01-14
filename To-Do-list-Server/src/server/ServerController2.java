@@ -6,12 +6,24 @@
 package server;
 
 import java.net.URL;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -21,6 +33,8 @@ import javafx.stage.Stage;
 import serverEntity.ToDoList;
 import serverEntity.User;
 import statisticsManager.DataCenter;
+import statisticsManager.Entity.UserData;
+import statisticsManager.UserCellFactory;
 
 /**
  *
@@ -42,8 +56,7 @@ public class ServerController2 implements Initializable {
     private boolean isFull;
     private boolean isStart;
     private double xOffset, yOffset;
-    
-    
+
     @FXML
     private Button start_id;
     @FXML
@@ -54,17 +67,24 @@ public class ServerController2 implements Initializable {
     private ListView<ToDoList> todoList_id;
     @FXML
     private Pane userPane_id;
-
+    @FXML
+    private HBox users_btn_id;
+    @FXML
+    private HBox lists_btn_id1;
+    @FXML
+    private Label friends_id;
+    @FXML
+    private Label lists_id;
+    @FXML
+    private Label tasks_id;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        userList_id = new ListView<>();
-        todoList_id = new ListView<>();
         
         dataCenter = new DataCenter();
         isStart = false;
         stop_id.setDisable(true);
-        
+
         borderPane_id.setOnMousePressed((MouseEvent event) -> {
             xOffset = stage.getX() - event.getScreenX();
             yOffset = stage.getY() - event.getScreenY();
@@ -77,6 +97,8 @@ public class ServerController2 implements Initializable {
             }
 
         });
+        
+        setUserList();
 
     }
 
@@ -120,18 +142,47 @@ public class ServerController2 implements Initializable {
 
     @FXML
     private void handleServerOperation(ActionEvent event) {
-        if(event.getSource().equals(start_id)){
-            if(!start_id.isDisable()){ // start  disable , server not working
+        if (event.getSource().equals(start_id)) {
+            if (!start_id.isDisable()) { // start  disable , server not working
                 PortListener.startServer(); // make server work
                 start_id.setDisable(true); // disable start button
                 stop_id.setDisable(false); // enable stop button
             }
-        }else if(event.getSource().equals(stop_id)){ 
-            if(!stop_id.isDisable()){ //stop not disable , server is working
+        } else if (event.getSource().equals(stop_id)) {
+            if (!stop_id.isDisable()) { //stop not disable , server is working
                 PortListener.closeServer(); // shut down server listener
                 stop_id.setDisable(true); // make stop button enabled
                 start_id.setDisable(false); // make start button disabled
             }
+        }
+    }
+
+    private void setUserList() {
+        try {
+            ArrayList<User> list = dataCenter.getListOfUsers();
+            System.out.println("users:" + list.size());
+            ObservableList<User> users = FXCollections.observableArrayList(list);
+            userList_id.setItems(users);
+            userList_id.setCellFactory(new UserCellFactory());
+            userList_id.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            userList_id.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<User>() {
+                @Override
+                public void changed(ObservableValue<? extends User> observable, User oldValue, User newValue) {
+                    try {
+                        UserData userData = dataCenter.getUserData(newValue.getId());
+                        friends_id.setText(userData.getNumberOfFriends()+"");
+                        lists_id.setText(userData.getNumberOfLists()+"");
+                        tasks_id.setText(userData.getNumberOfItemAssign()+"");
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ServerController2.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+            });
+        } catch (SQLException ex) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setContentText(" No Users in DataBase");
+            alert.show();
         }
     }
 

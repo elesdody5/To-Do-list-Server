@@ -10,7 +10,8 @@ package serverEntity;
  * @author ghadeerelmahdy
  */
 public class Notifications {
-    private int id ;
+
+    private int id;
     private int fromUserId;
     private int toUserId;
     private String fromUsername;
@@ -35,12 +36,20 @@ public class Notifications {
         this.dataId = dataId;
     }
 
-    public Notifications( int fromUserId, int toUserId, int type, int dataId) {
-     
+    public Notifications(int fromUserId, int toUserId, int type, int dataId) {
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.type = type;
         this.dataId = dataId;
+        
+    }
+
+    public Notifications(int fromUserId, int toUserId, int type) {
+
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
+        this.type = type;
+        this.status = status;
     }
 
     public int getId() {
@@ -81,4 +90,5 @@ public class Notifications {
     public void setDataName(String dataName) {
         this.dataName = dataName;
     }
+
 }

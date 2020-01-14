@@ -6,27 +6,30 @@
 package connection;
 
 import Enum.REQUEST;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
+import org.json.JSONObject;
 import serverEntity.Notifications;
 
 /**
  *
  * @author Ashraf Mohamed
  */
-public class ClientHandler {
+public class Client {
 
     private int id;
     private String clientName;
     private BufferedReader in;
     private PrintStream ps;
     private Socket s;
-    private static Vector<ClientHandler> clientVector = new Vector<>();
+    private static Vector<Client> clientVector = new Vector<>();
 
-    public ClientHandler(int id, String clientName, HttpRequestHandler httpRequestHandler) {
+    public Client(int id, String clientName, RequestHandler httpRequestHandler) {
         this.id = id;
         this.clientName = clientName;
         this.s = httpRequestHandler.getS();
@@ -50,26 +53,31 @@ public class ClientHandler {
         this.clientName = clientName;
     }
 
-    public static Vector<ClientHandler> getclientVector() {
+    public static Vector<Client> getclientVector() {
         return clientVector;
     }
-
+/*Elesdody*/
     public static void notifyCollaborator(ArrayList<Notifications> notifications) {
         
         for (Notifications notification : notifications) {
-         for(ClientHandler client : clientVector)
+         for(Client client : clientVector)
          {
              if(client.getId()==notification.getToUserId())
              {
                  client.ps.println(REQUEST.NOTIFICATION);
-                 client.ps.println(notification.getFromUserId());
-                 // notification to add collaborator
-                 client.ps.println(notification.getType());
-                 // send todo id
-                 client.ps.println(notification.getDataId());
-                 System.out.println(client.getId());
+                 client.ps.println(toNotifcationJson(notification));
+                 // to notifiy user end of data
+                 client.ps.println(REQUEST.END);
              }
          }
         }
     }
+
+private static  String toNotifcationJson(Notifications notification)
+{
+    Gson gson = new GsonBuilder().create();
+    return gson.toJson(notification);
+
 }
+/*Elesdody*/
+        }

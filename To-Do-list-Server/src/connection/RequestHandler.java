@@ -20,7 +20,7 @@ import org.json.JSONObject;
  *
  * @author Elesdody
  */
-public class HttpRequestHandler extends Thread {
+public class RequestHandler extends Thread {
 
     private BufferedReader in;
     private PrintStream ps;
@@ -38,7 +38,7 @@ public class HttpRequestHandler extends Thread {
         return s;
     }
 
-    public HttpRequestHandler(Socket s) {
+    public RequestHandler(Socket s) {
         try {
             this.s = s;
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -85,6 +85,7 @@ public class HttpRequestHandler extends Thread {
                     case REQUEST.DELETE:
                         response = request.delete(paramter);
                         ps.println(response);
+                        
                         //ps.println(REQUEST.END);
                         break;
 

@@ -6,6 +6,8 @@
 package serverDatabase;
 
 import Enum.NotificationKeys;
+import static Enum.NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST;
+import static Enum.NotificationKeys.REQUEST_FRIEND;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,24 +20,26 @@ import org.json.JSONObject;
 import serverEntity.User;
 import Enum.RESPOND_CODE;
 import java.sql.Statement;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import serverEntity.Items;
 import serverEntity.Notifications;
 import serverEntity.ToDoList;
+import statisticsManager.Entity.UserData;
 
 /**
  *
  * @author Elesdody
  */
 public class Repository {
-
-    private Connection db;
-
+    
+private Connection db;
+    
     public Repository() {
         try {
             db = DataBase.getDatabase();
-
+            
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -55,7 +59,7 @@ public class Repository {
             //       x = statment.executeUpdate(queryString);
             PreparedStatement pst = db.prepareStatement(insertString);
             x = pst.executeUpdate();
-
+            
             pst.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -63,6 +67,117 @@ public class Repository {
         return x;
 
         // TODO write query methods (select ,update ,insert ,delete )
+    }
+    
+    public boolean checkUserInFriendList(String name, int userID) {
+        int IDFromUserTable = getUserID(name);
+        int IDFromFriendsTable = 0;
+        String sql = " select * from friends where userId = ?";
+        PreparedStatement stmt;
+        
+        try {
+            ResultSet rs;
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, userID);
+            rs = stmt.executeQuery();
+            //name is found so cannot change the name
+            if (rs.next()) {
+                IDFromFriendsTable = rs.getInt("friendId");
+                rs.close();
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return IDFromUserTable == IDFromFriendsTable;
+    }
+    
+    public int getUserID(String userName) {
+        String sql = " select ID from User_table where User_name = ?";
+        PreparedStatement stmt;
+        int ID;
+        try {
+            ResultSet rs;
+            stmt = db.prepareStatement(sql);
+            stmt.setString(1, userName);
+            rs = stmt.executeQuery();
+            //name is found so cannot change the name
+            if (rs.next()) {
+                ID = rs.getInt("ID");
+                rs.close();
+                return ID;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return -1;
+    }
+    
+     public boolean checkUser(String userName) {
+        String sql = " select * from User_table where User_name = ?";
+        PreparedStatement stmt;
+     
+        try {
+            ResultSet rs;
+            stmt = db.prepareStatement(sql);
+            stmt.setString(1, userName);
+            rs = stmt.executeQuery();
+            //name is found so cannot change the name
+            if (rs.next()) {
+                System.out.println(rs.getString("User_name"));
+                rs.close();
+                return true;
+            }
+        } catch (SQLException ex) {
+         ex.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    public int insertIntoNotificationTables(int fromUserId, int toUserId) {
+     boolean result = checkInNotificationTable(fromUserId, toUserId);
+        System.out.println("result"+result);
+        if (!result) {
+            try {
+                int x = 0;
+               
+                PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,Status) Values(?,?,?,?) ");
+                pre.setInt(1, fromUserId);
+                pre.setInt(2, toUserId);
+                pre.setInt(3, REQUEST_FRIEND);
+                pre.setInt(4, NORESPONSE_COLLABORATOR_REQUEST);
+                
+                x = pre.executeUpdate();
+                System.out.println("="+x);
+                return x;
+            } catch (SQLException ex) {
+                Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+            }
+       }
+        return 0;
+        
+    }
+    
+    public boolean checkInNotificationTable(int fromUserId, int toUserId) {
+        
+        try {
+            PreparedStatement statement = db.prepareStatement("SELECT * FROM notification WHERE fromUserId =? AND toUserId =?");
+            statement.setInt(1, fromUserId);
+            statement.setInt(2, toUserId);
+            ResultSet result = statement.executeQuery();
+              System.out.println("FriendID" + toUserId);
+                        System.out.println("fromUserID" + fromUserId);
+            if (result.next()) {
+                result.close();
+                return true;
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
     /*Aml*/
@@ -84,9 +199,9 @@ public class Repository {
         } else {
             return -1;
         }
-
+        
     }
-
+    
     public int getListWithTitle(String title) throws SQLException {
         PreparedStatement pre = db.prepareStatement("Select id from TODO_LIST where title = ?");
         pre.setString(1, title);
@@ -119,7 +234,7 @@ public class Repository {
                 item.setComment(item_set.getString("comment") != null ? item_set.getString("comment") : "");
                 item.setDescription(item_set.getString("descreption") != null ? item_set.getString("descreption") : "");
                 itemList.add(item);
-
+                
             }
             // get collab
             PreparedStatement third_pre = db.prepareStatement("SELECT * FROM Collab , User_table WHERE userId = id and TODOiD = ?");
@@ -179,14 +294,14 @@ public class Repository {
             item_set.close();
             todo.setTaskes(itemList);
             todoList.add(todo);
-
+            
         }
-
+        
         set.close();
         return todoList;
-
+        
     }
-
+    
     public User getUserData(int id) throws SQLException {
         PreparedStatement pre = db.prepareStatement("Select * from User_table where id = ?");
         pre.setInt(1, id);
@@ -196,9 +311,9 @@ public class Repository {
             user = new User(id, set.getString("user_name"), set.getString("password"));
         }
         pre.close();
-
+        
         return user;
-
+        
     }
 
     public ArrayList<Notifications> getUserNotification(int id) throws SQLException {
@@ -252,13 +367,13 @@ public class Repository {
         System.out.println(result);;
         pre.close();
         if (result != 0) {
-
+            
             return getListWithTitle(list.getTitle());
         } else {
             return -1;
         }
     }
-
+    
     public int deleteList(int id) throws SQLException {
         PreparedStatement pre = db.prepareStatement("Delete from TODO_List where id=?");
         pre.setInt(1, id);
@@ -266,7 +381,7 @@ public class Repository {
         pre.close();
         return result;
     }
-
+    
     public ArrayList<User> getUserFriends(int id) throws SQLException {
         PreparedStatement pre = db.prepareStatement("select * from User_table where ID IN ( SELECT friendId FROM friends where userId = ?)");
         pre.setInt(1, id);
@@ -277,9 +392,9 @@ public class Repository {
         }
         friends_set.close();
         return friends;
-
+        
     }
-
+    
     public int insertTodoNotification(ArrayList<Notifications> notifications) throws SQLException {
         int x = 0;
         for (Notifications notification : notifications) {
@@ -293,7 +408,7 @@ public class Repository {
             }
         }
         return x;
-
+        
     }
 
     /*Elesdody*/
@@ -326,7 +441,7 @@ public class Repository {
             PreparedStatement statement = db.prepareStatement("INSERT INTO UserTable (USER_NAME , PASSWORD) VALUES(?,?)");
             statement.setString(1, user.getUserName());
             statement.setString(2, user.getPassword());
-
+            
         } catch (SQLException ex) {
             System.out.println("insert exception");
             System.out.println(ex.getCause());
@@ -343,14 +458,14 @@ public class Repository {
                 System.out.println("get user exception");
                 Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
         } else {
-
+            
             try {
-
+                
                 String userName = user.getUserName();
                 String password = user.getPassword();
-
+                
                 PreparedStatement statement = db.prepareStatement("SELECT * FROM User_table WHERE User_name =? AND Password =?");
                 statement.setString(1, userName);
                 statement.setString(2, password);
@@ -364,10 +479,10 @@ public class Repository {
                     respondJson.put("ID", userId);
                     respondJson.put("User_name", resultUserName);
                     respondJson.put("password", resultPassword);
-
+                    
                 } else {
                     respondJson.put("Code", RESPOND_CODE.FAILD);
-
+                    
                     System.out.println("no row with this email or passwords");
                 }
 
@@ -378,9 +493,9 @@ public class Repository {
         }
         return respondJson;
     }
-
+    
     public JSONObject getUser(String[] userDataParam, JSONObject body) {
-
+        
         JSONObject respondJson = new JSONObject();
         if (userDataParam == null && body == null) {
             try {
@@ -388,17 +503,17 @@ public class Repository {
                 return respondJson;
             } catch (JSONException ex) {
                 System.out.println("get user exception");
-
+                
                 Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
         } else {
-
+            
             try {
-
+                
                 String userName = body.getString("USER_NAME");
                 String password = body.getString("PASSWORD");
-
+                
                 PreparedStatement statement = db.prepareStatement("SELECT * FROM User_table WHERE User_name =? AND Password =?");
                 statement.setString(1, userName);
                 statement.setString(2, password);
@@ -412,10 +527,10 @@ public class Repository {
                     respondJson.put("ID", userId);
                     respondJson.put("User_name", resultUserName);
                     respondJson.put("password", resultPassword);
-
+                    
                 } else {
                     respondJson.put("Code", RESPOND_CODE.FAILD);
-
+                    
                     System.out.println("no row with this email or passwords");
                 }
 
@@ -424,10 +539,44 @@ public class Repository {
                 System.out.println("Repository class , getUser method exception");
             } 
         }
-
+        
         return respondJson;
     }
 
+    public ArrayList getListOfUsers() throws SQLException{
+        ArrayList<User> users = new ArrayList<>();
+        Statement statement = db.createStatement();
+        ResultSet set = statement.executeQuery("SELECT User_name,ID FROM User_table;");
+        while(set.next()){
+            String userName = set.getString("User_name");
+            int userId = set.getInt("ID");
+            User u = new User(userId,userName);
+            users.add(u);        
+        }
+        return users;
+    }  
+    
+    public UserData getUserStatisticsData(int userId) throws SQLException{
+        PreparedStatement st = db.prepareStatement("select count(*) as friends from friends  where userId = ?;");
+        st.setInt(1,userId);
+        ResultSet set = st.executeQuery();
+        int numberOfFriends = (set.next())?set.getInt("friends"):0;
+        
+        PreparedStatement st2 = db.prepareStatement("SELECT count(*) as lists FROM TODO_LIST where ownerid =?");
+        st2.setInt(1,userId);
+        ResultSet set2 = st2.executeQuery();
+        int numberOfLists = (set2.next())?set2.getInt("lists"):0;
+        
+        PreparedStatement st3 = db.prepareStatement("select count(*) as tasks from task_mem where userid = ?;");
+        st3.setInt(1, userId);
+        ResultSet set3 = st3.executeQuery();
+        int numberOfTasks = (set3.next())?set3.getInt("tasks"):0;
+        
+        UserData userData = new UserData(numberOfFriends,numberOfLists,numberOfTasks);
+        
+        return userData;
+    }
+    
     /*Ashraf*/
  /*Ghader*/
     public int updateUserName(String id, String name) {
@@ -443,17 +592,17 @@ public class Repository {
                 stmt.close();
                 return 1;
             } catch (SQLException ex) {
-
+                
                 Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (isNameNotFound(name) == 0) {
             return 2;
         }
-
+        
         return 0;
     }
-
-    private int isNameNotFound(String name) {
+    
+    public int isNameNotFound(String name) {
         String sql = " select User_name from User_table where User_name = ?";
         PreparedStatement stmt;
         try {
@@ -469,12 +618,12 @@ public class Repository {
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         return 1;
     }
-
+    
     public int updatePassword(String id, String password) {
-
+        
         String sql = "Update User_table set password = ? where ID= ?";
         PreparedStatement stmt;
         try {
@@ -488,10 +637,10 @@ public class Repository {
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         return 0;
     }
-    
+
  public int updateNotificationStatus(int id, int status) {
 
         String sql = "Update notification set status = ? where ID= ?";
@@ -533,20 +682,20 @@ public class Repository {
  /*Sara*/
  /*Sara*/
     public void insertItemToDataBase(Items item) throws SQLException {
-
+        
         String sql = "INSERT INTO Item(title,TodoId,Descreption,DeadLine,StartDate,Comment) VALUES(? , ?,?,?,?,?)";
-
+        
         PreparedStatement pstmt = db.prepareStatement(sql);
         pstmt.setString(1, item.getTitle());
-
+        
         pstmt.setInt(2, item.getListId());
         pstmt.setString(3, item.getDescription());
         pstmt.setString(4, item.getDeadLine());
         pstmt.setString(5, item.getStartTime());
         pstmt.setString(6, item.getComment());
-
+        
         pstmt.executeUpdate();
-
+        
     }
  public ArrayList<Items>  getTaskFromDataBase(int id) throws SQLException {
      String sqlstatment="select * from Item where TodoId=?";

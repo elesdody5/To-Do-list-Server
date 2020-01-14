@@ -17,6 +17,7 @@ public class DataBase {
 
     /*
     Elesdody
+<<<<<<< HEAD
     //private static final String DATABASE_URL = "jdbc:sqlite:H:\\Projects\\ITI\\java\\project\\TODO.db";
     //private static final String DATABASE_URL ="jdbc:sqlite:D:\\ITI\\javaProject\\dataBase\\TODO.db";
     //private static final String DATABASE_URL = "jdbc:sqlite:D:\\java work space\\other projects\\Java Project\\TODO.db";

@@ -5,8 +5,8 @@
  */
 package server;
 
-import connection.ClientHandler;
-import connection.HttpRequestHandler;
+import connection.Client;
+import connection.RequestHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -45,7 +45,7 @@ public class PortListener {
 
                 Socket s = jsoServerSocket.accept();
                 if (getIsStart()) {
-                    new HttpRequestHandler(s);
+                    new RequestHandler(s);
                 } else {
                     s.close();
                 }
