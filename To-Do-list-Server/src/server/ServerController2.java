@@ -5,7 +5,7 @@
  */
 package server;
 
-import connection.ClientHandler;
+import connection.Client;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ public class ServerController2 implements Initializable {
     private Label numberOfList_id;
 
     private int users;
-    private ClientHandler clientHandler;
+    private Client clientHandler;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -207,7 +207,7 @@ public class ServerController2 implements Initializable {
         try {
             int numberOfLists = dataCenter.getNumberOfLists();
             int numberOfUsers = dataCenter.getNumberOfUsers();
-            int numberOfOnlineUsers = ClientHandler.getVectorSize();
+            int numberOfOnlineUsers = Client.getclientVector().size();
 
             numberOfList_id.setText(String.valueOf(numberOfLists));
             numberOfUsers_id.setText(String.valueOf(numberOfUsers));
