@@ -497,12 +497,32 @@ public class Repository {
         String sql = "Update notification set status = ? where ID= ?";
         PreparedStatement stmt;
         try {
+           
             stmt = db.prepareStatement(sql);
             stmt.setInt(1, status);
             stmt.setInt(2, id);
-            stmt.executeUpdate();
+            int res = stmt.executeUpdate();
             stmt.close();
-            return 1;
+            return res;
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return 0;
+    }
+  public int addNewCollaboratorToList(int userId, int listId) {
+
+        String sql = "Insert into Collab values (?,?)";
+        PreparedStatement stmt;
+        try {
+           
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, listId);
+            int res = stmt.executeUpdate();
+            System.out.println("res: "+ res);
+            stmt.close();
+            return res;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }

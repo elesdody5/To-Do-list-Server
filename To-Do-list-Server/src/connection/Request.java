@@ -105,6 +105,24 @@ public class Request implements HttpRequest {
  /*Aml*/
  /*Aml*/
  /*Ghader*/
+        if(paramter[1].equals("collAcceptListRequest")){
+                try {
+                 System.out.println(body);
+                int userId = body.getInt("userId");
+                int listId = body.getInt("todoId");
+                // 0 -> error to execute query
+                // 1 -> is updated 
+                int status = repository.addNewCollaboratorToList(userId, listId);
+                if (status > 0) {
+                   // ClientHandler.notifyCollaborator(notifications);
+
+                }
+                return status != -1 ? new JSONObject("{id:" + status + "}") : new JSONObject("{Error:\"Error insert Collaborator \"}");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        }
  /*Ghader*/
  /*Sara*/
         if (paramter[1].equals("Task")) {
@@ -166,24 +184,36 @@ public class Request implements HttpRequest {
 
                 // get user todo list
                 ArrayList<ToDoList> toDoList = repository.getUserToDo(Integer.parseInt(paramter[2]));
+                //get shared todo 
+                ArrayList<ToDoList> shared = repository.getUserSharedToDo(Integer.parseInt(paramter[2]));                
                 // get user friends
                 ArrayList<User> friends = repository.getUserFriends(Integer.parseInt(paramter[2]));
+                // get notificaiton
+                ArrayList<Notifications>notificationses = repository.getUserNotification(Integer.parseInt(paramter[2]));
                 Gson gson = new GsonBuilder().create();
                 // convert friendsList to json
                 String friendsArray = gson.toJson(friends);
 
                 JSONArray friendsjsonArray = new JSONArray(friendsArray);
-
+                // convert shared List to json
+                String sharedArray = gson.toJson(shared);
+                JSONArray sharedJSONArray = new JSONArray(sharedArray);
                 // convert todoList to jsonArray
                 String TodoArray = gson.toJson(toDoList);
 
                 JSONArray todojsonArray = new JSONArray(TodoArray);
+                // convert notification to json 
+                String notificationArray = gson.toJson(notificationses);
+                JSONArray notificationJSONArray = new JSONArray(notificationArray);
                 // convert user to json
                 JSONObject userJosn = user.getUserAsJson();
                 // add friends to user
                 userJosn.put("friends", friendsjsonArray);
                 // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
+                // add shared List 
+                userJosn.put("shared_list", sharedJSONArray);
+                userJosn.put("notification", notificationJSONArray);
                 return userJosn;
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -260,6 +290,7 @@ public class Request implements HttpRequest {
         }
         if (paramter[1].equals("setPassword")) {
             try {
+                System.out.println(body);
                 String id = body.getString("id");
                 String password = body.getString("password");
                 // 0 -> error to execute query
@@ -272,6 +303,7 @@ public class Request implements HttpRequest {
         }
           if (paramter[1].equals("updateRequestList")) {
             try {
+                 System.out.println(body);
                 int id = body.getInt("notId");
                 int reqStatus = body.getInt("status");
                 // 0 -> error to execute query
