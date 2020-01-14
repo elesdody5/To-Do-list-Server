@@ -8,4 +8,5 @@ public class NotificationKeys {
     public static int ACCEPET_COLLABORATOR_REQUEST = 1;
     public static int REJECT_COLLABORATOR_REQUEST = 0;
     public static int NORESPONSE_COLLABORATOR_REQUEST = 2;
+
 }

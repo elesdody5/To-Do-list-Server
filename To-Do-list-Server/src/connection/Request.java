@@ -153,7 +153,6 @@ public class Request implements HttpRequest {
                 item.setStartTime(starttime);
                 item.setComment(comment);
 
-                System.out.print(titleFromJson + "  " + listIdFromJson);
                 try {
                     repository.insertItemToDataBase(item);
                 } catch (SQLException ex) {
@@ -199,24 +198,36 @@ public class Request implements HttpRequest {
 
                 // get user todo list
                 ArrayList<ToDoList> toDoList = repository.getUserToDo(Integer.parseInt(paramter[2]));
+                //get shared todo 
+                ArrayList<ToDoList> shared = repository.getUserSharedToDo(Integer.parseInt(paramter[2]));                
                 // get user friends
                 ArrayList<User> friends = repository.getUserFriends(Integer.parseInt(paramter[2]));
+                // get notificaiton
+                ArrayList<Notifications>notificationses = repository.getUserNotification(Integer.parseInt(paramter[2]));
                 Gson gson = new GsonBuilder().create();
                 // convert friendsList to json
                 String friendsArray = gson.toJson(friends);
 
                 JSONArray friendsjsonArray = new JSONArray(friendsArray);
-
+                // convert shared List to json
+                String sharedArray = gson.toJson(shared);
+                JSONArray sharedJSONArray = new JSONArray(sharedArray);
                 // convert todoList to jsonArray
                 String TodoArray = gson.toJson(toDoList);
 
                 JSONArray todojsonArray = new JSONArray(TodoArray);
+                // convert notification to json 
+                String notificationArray = gson.toJson(notificationses);
+                JSONArray notificationJSONArray = new JSONArray(notificationArray);
                 // convert user to json
                 JSONObject userJosn = user.getUserAsJson();
                 // add friends to user
                 userJosn.put("friends", friendsjsonArray);
                 // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
+                // add shared List 
+                userJosn.put("shared_list", sharedJSONArray);
+                userJosn.put("notification", notificationJSONArray);
                 return userJosn;
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -235,8 +246,10 @@ public class Request implements HttpRequest {
         if (paramter[1].equals("getTasksOflist")) {
             ArrayList<Items> itemList = null;
             try {
-                itemList = repository.getTaskFromDataBase();
-                Gson gson = new GsonBuilder().create();
+
+                itemList = repository.getTaskFromDataBase(Integer.parseInt(paramter[2]));
+                 Gson gson = new GsonBuilder().create();
+
                 String TodoItemsArray = gson.toJson(itemList);
                 JSONArray todojsonArray = new JSONArray(TodoItemsArray);
                 JSONObject jsonObjectOfList = new JSONObject();
@@ -291,8 +304,9 @@ public class Request implements HttpRequest {
         }
         if (paramter[1].equals("setPassword")) {
             try {
-                String id = body.getJSONArray("id").getString(0);
-                String password = body.getJSONArray("password").getString(0);
+                System.out.println(body);
+                String id = body.getString("id");
+                String password = body.getString("password");
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
@@ -321,6 +335,34 @@ public class Request implements HttpRequest {
             }
         }
         /*Elesdody*/
+        /*sara*/
+        if (paramter[1].equals("task")) {
+            try {
+                String titleFromJson = (String) body.get("title");
+                int listIdFromJson = (int) body.get("listId");
+                int id = (int) body.get("id");
+                String description =(String) body.get("description");
+                String deadline =(String) body.get("deadLine");
+                String starttime =(String) body.get("startTime");
+                String comment =(String) body.get("comment");
+                Items item = new Items(titleFromJson,listIdFromJson);
+                item.setDeadLine(deadline);
+                item.setId(id);
+                item.setDescription(description);
+                item.setStartTime(starttime);
+                item.setComment(comment);
+                int result = repository.updateTask(item);
+                return result;
+            } catch (JSONException ex) {
+
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } 
+        }
+        /*sara*/
         return 0;
     }
 
@@ -346,6 +388,15 @@ public class Request implements HttpRequest {
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
+   if (paramter[1].equals("task")) {
+            try {
+                int result = repository.deleteTask(Integer.parseInt(paramter[2]));
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
  /*Sara*/
         return -1;
     }

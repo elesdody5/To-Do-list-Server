@@ -14,11 +14,18 @@ public class Notifications {
     private int id;
     private int fromUserId;
     private int toUserId;
+    private String fromUsername;
+
+  
     //type -> list or task
     private int type;
     //status -> accept or reject
     private int status;
     private int dataId;
+    private String dataName;
+
+   
+    
 
     public Notifications(int id, int fromUserId, int toUserId, int type, int status, int dataId) {
         this.id = id;
@@ -67,6 +74,21 @@ public class Notifications {
 
     public int getDataId() {
         return dataId;
+    }
+     
+     public void setfromUserName(String fromUsername) {
+        this.fromUsername = fromUsername;
+    }
+
+    public String getToUserName() {
+        return fromUsername;
+    }
+     public String getDataName() {
+        return dataName;
+    }
+
+    public void setDataName(String dataName) {
+        this.dataName = dataName;
     }
 
 }

@@ -1,44 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="borderPane_id" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="496.0" prefWidth="773.0" stylesheets="@CSS/LoginStyle.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="authontication.LoginController">
+<BorderPane fx:id="borderPane_id" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="496.0" prefWidth="773.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="server.ServerController2">
    <left>
-      <Pane prefHeight="496.0" prefWidth="432.0" styleClass="linear_grad" BorderPane.alignment="CENTER">
+      <Pane prefHeight="464.0" prefWidth="258.0" styleClass="left_pane" stylesheets="@serverBoardStyle.css" BorderPane.alignment="CENTER">
          <children>
-            <HBox layoutX="8.0" layoutY="13.0" spacing="10.0">
+            <VBox prefHeight="464.0" prefWidth="258.0" spacing="10.0">
+               <children>
+                  <HBox fx:id="users_btn_id" prefHeight="26.0" prefWidth="242.0" spacing="10.0" styleClass="left_pane_btn_hover" stylesheets="@serverBoardStyle.css">
+                     <VBox.margin>
+                        <Insets left="8.0" right="8.0" top="8.0" />
+                     </VBox.margin>
+                     <children>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/users.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Users" textAlignment="CENTER" textFill="WHITE">
+                           <font>
+                              <Font name="Calibri" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="8.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <VBox prefHeight="162.0" prefWidth="258.0">
+                     <children>
+                        <ListView fx:id="userList_id">
+                           <VBox.margin>
+                              <Insets left="8.0" right="8.0" />
+                           </VBox.margin>
+                        </ListView>
+                     </children>
+                  </VBox>
+                  <HBox fx:id="lists_btn_id1" layoutX="18.0" layoutY="18.0" prefWidth="256.0" spacing="10.0" styleClass="left_pane_btn_hover" stylesheets="@serverBoardStyle.css">
+                     <children>
+                        <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@icons/lists.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="TODO Lists" textAlignment="CENTER" textFill="WHITE">
+                           <font>
+                              <Font name="Calibri" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets top="8.0" />
+                           </HBox.margin>
+                        </Label>
+                     </children>
+                     <padding>
+                        <Insets left="8.0" />
+                     </padding>
+                  </HBox>
+                  <VBox layoutX="10.0" layoutY="74.0" prefHeight="162.0" prefWidth="258.0">
+                     <children>
+                        <ListView fx:id="todoList_id" prefWidth="242.0">
+                           <VBox.margin>
+                              <Insets left="8.0" right="8.0" />
+                           </VBox.margin>
+                        </ListView>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="8.0" />
+                     </VBox.margin>
+                  </VBox>
+               </children>
+            </VBox>
+         </children>
+      </Pane>
+   </left>
+   <top>
+      <AnchorPane stylesheets="@serverBoardStyle.css" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="TOP_RIGHT" layoutX="566.0" spacing="15.0" AnchorPane.bottomAnchor="4.0" AnchorPane.rightAnchor="8.0" AnchorPane.topAnchor="4.0">
+               <children>
+                  <Button fx:id="start_id" mnemonicParsing="false" onAction="#handleServerOperation" styleClass="start_Btn" stylesheets="@serverBoardStyle.css" text="Start" textAlignment="CENTER">
+                     <padding>
+                        <Insets bottom="8.0" left="32.0" right="32.0" top="8.0" />
+                     </padding>
+                  </Button>
+                  <Button fx:id="stop_id" mnemonicParsing="false" onAction="#handleServerOperation" stylesheets="@serverBoardStyle.css" text="Stop" textAlignment="CENTER">
+                     <styleClass>
+                        <String fx:value="start_Btn" />
+                        <String fx:value="stop_Btn" />
+                     </styleClass>
+                     <padding>
+                        <Insets bottom="8.0" left="32.0" right="32.0" top="8.0" />
+                     </padding>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets bottom="4.0" top="4.0" />
+               </padding>
+            </HBox>
+            <HBox layoutX="21.0" layoutY="2.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="8.0" AnchorPane.topAnchor="4.0">
                <children>
                   <Circle fx:id="close_id" fill="#ff556f" onMouseClicked="#handleMouseClicked" radius="8.0" stroke="#ffffff00" strokeType="INSIDE" strokeWidth="0.0" />
                   <Circle fx:id="restor_down_id" fill="#ffe96d" layoutX="18.0" layoutY="18.0" onMouseClicked="#handleMouseClicked" radius="8.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
                   <Circle fx:id="min_id" fill="#32d372" layoutX="18.0" layoutY="18.0" onMouseClicked="#handleMouseClicked" radius="8.0" stroke="#ffffff00" strokeType="INSIDE" strokeWidth="0.0" />
                </children>
+               <padding>
+                  <Insets top="8.0" />
+               </padding>
             </HBox>
-            <Button layoutX="76.0" layoutY="206.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="109.0" text="Button" />
-            <Button layoutX="207.0" layoutY="206.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="109.0" text="Button" />
-            <Label layoutX="30.0" layoutY="86.0" text="Server Manager Board" textFill="#fcfcfc">
-               <font>
-                  <Font size="36.0" />
-               </font>
-            </Label>
          </children>
-      </Pane>
-   </left>
+      </AnchorPane>
+   </top>
    <center>
-      <StackPane fx:id="stack_pane_id" prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <StackPane BorderPane.alignment="CENTER">
          <children>
-            <Pane fx:id="sign_in_pane_id" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #fff;">
+            <Pane fx:id="userPane_id" prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <ListView fx:id="list_view_id" prefHeight="496.0" prefWidth="342.0" />
-               </children>
-            </Pane>
+                  <AnchorPane prefHeight="444.0" prefWidth="515.0">
+                     <children>
+                        <Label layoutX="74.0" layoutY="43.0" text="Friends">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="friends_id" contentDisplay="CENTER" layoutX="98.0" layoutY="81.0" text="5" AnchorPane.bottomAnchor="320.0" AnchorPane.leftAnchor="98.0" AnchorPane.rightAnchor="401.0" AnchorPane.topAnchor="81.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="294.0" layoutY="42.0" text="Lists">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lists_id" contentDisplay="CENTER" layoutX="309.0" layoutY="76.0" text="5">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="189.0" layoutY="43.0" text="Tasks">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="tasks_id" contentDisplay="CENTER" layoutX="213.0" layoutY="81.0" text="5">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+               </children></Pane>
          </children>
       </StackPane>
    </center>
