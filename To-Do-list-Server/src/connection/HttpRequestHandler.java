@@ -24,7 +24,8 @@ public class HttpRequestHandler extends Thread {
 
     private BufferedReader in;
     private PrintStream ps;
-   private Socket s;
+    private Socket s;
+    private ClientHandler clientHandler;
 
     public BufferedReader getBufferReader() {
         return in;
@@ -87,6 +88,13 @@ public class HttpRequestHandler extends Thread {
                         ps.println(response);
                         //ps.println(REQUEST.END);
                         break;
+                    case REQUEST.LOGOUT:
+                         // remove client from vector of client
+                         // to disconnect the client 
+                         System.out.println(paramter[1]);
+                         removeClientFromVector(paramter[1]);
+                         break;
+                        
 
                 }
             } catch (IOException | JSONException ex) {
@@ -96,6 +104,16 @@ public class HttpRequestHandler extends Thread {
         }
     }
 
+    private boolean removeClientFromVector(String id){
+        //conver id from string to int
+        int userId = Integer.parseInt(id);
+        //delegate to clientHandler remove operation
+        boolean isRemoved = clientHandler.removeClientFromVector(userId);
+        // if true then user with @id is exist in vector and removed succesfully.
+        // if false then user with @id is NOT exist in the vector.
+        return isRemoved;
+        
+    }
     JSONObject readJson() throws IOException, JSONException {
         StringBuilder body = new StringBuilder();
         String data = in.readLine();

@@ -43,5 +43,11 @@ public class DataCenter {
         return userData;
     }
     
+    //get number of lists
+    public int getNumberOfLists() throws SQLException{
+        int numberOfLists = repository.getNumberOfLists();
+        return numberOfLists;
+    }
+    
     
 }

@@ -132,32 +132,62 @@
                <children>
                   <AnchorPane prefHeight="444.0" prefWidth="515.0">
                      <children>
-                        <Label layoutX="74.0" layoutY="43.0" text="Friends">
+                        <Label layoutX="109.0" layoutY="165.0" text="Friends">
                            <font>
                               <Font name="NSimSun" size="18.0" />
                            </font>
                         </Label>
-                        <Label fx:id="friends_id" contentDisplay="CENTER" layoutX="98.0" layoutY="81.0" text="5" AnchorPane.bottomAnchor="320.0" AnchorPane.leftAnchor="98.0" AnchorPane.rightAnchor="401.0" AnchorPane.topAnchor="81.0">
+                        <Label fx:id="friends_id" contentDisplay="CENTER" layoutX="159.0" layoutY="205.0" AnchorPane.bottomAnchor="196.0" AnchorPane.leftAnchor="159.0" AnchorPane.rightAnchor="340.0" AnchorPane.topAnchor="205.0">
                            <font>
                               <Font size="29.0" />
                            </font>
                         </Label>
-                        <Label layoutX="294.0" layoutY="42.0" text="Lists">
+                        <Label layoutX="367.0" layoutY="164.0" text="Lists">
                            <font>
                               <Font name="NSimSun" size="18.0" />
                            </font>
                         </Label>
-                        <Label fx:id="lists_id" contentDisplay="CENTER" layoutX="309.0" layoutY="76.0" text="5">
+                        <Label fx:id="lists_id" contentDisplay="CENTER" layoutX="360.0" layoutY="198.0">
                            <font>
                               <Font size="29.0" />
                            </font>
                         </Label>
-                        <Label layoutX="189.0" layoutY="43.0" text="Tasks">
+                        <Label layoutX="233.0" layoutY="166.0" text="Tasks">
                            <font>
                               <Font name="NSimSun" size="18.0" />
                            </font>
                         </Label>
-                        <Label fx:id="tasks_id" contentDisplay="CENTER" layoutX="213.0" layoutY="81.0" text="5">
+                        <Label fx:id="tasks_id" contentDisplay="CENTER" layoutX="264.0" layoutY="203.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="120.0" layoutY="15.0" text="Users">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="numberOfUsers_id" contentDisplay="CENTER" layoutX="141.0" layoutY="44.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="340.0" layoutY="14.0" text="Online Users">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="onlineUsers_id" contentDisplay="CENTER" layoutX="385.0" layoutY="48.0" prefHeight="43.0" prefWidth="0.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="235.0" layoutY="15.0" text="Lists">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="numberOfList_id" contentDisplay="CENTER" layoutX="250.0" layoutY="46.0">
                            <font>
                               <Font size="29.0" />
                            </font>

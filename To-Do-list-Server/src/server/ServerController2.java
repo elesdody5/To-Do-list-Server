@@ -5,6 +5,7 @@
  */
 package server;
 
+import connection.ClientHandler;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import serverEntity.ToDoList;
 import serverEntity.User;
 import statisticsManager.DataCenter;
 import statisticsManager.Entity.UserData;
-import statisticsManager.UserCellFactory;
+import statisticsManager.UserList.UserCellFactory;
 
 /**
  *
@@ -77,11 +78,21 @@ public class ServerController2 implements Initializable {
     private Label lists_id;
     @FXML
     private Label tasks_id;
+    @FXML
+    private Label numberOfUsers_id;
+    @FXML
+    private Label onlineUsers_id;
+    @FXML
+    private Label numberOfList_id;
+
+    private int users;
+    private ClientHandler clientHandler;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
         dataCenter = new DataCenter();
+
         isStart = false;
         stop_id.setDisable(true);
 
@@ -97,7 +108,7 @@ public class ServerController2 implements Initializable {
             }
 
         });
-        
+        setGeneralData();
         setUserList();
 
     }
@@ -160,6 +171,8 @@ public class ServerController2 implements Initializable {
     private void setUserList() {
         try {
             ArrayList<User> list = dataCenter.getListOfUsers();
+            users = (list != null) ? list.size() : 0;
+
             System.out.println("users:" + list.size());
             ObservableList<User> users = FXCollections.observableArrayList(list);
             userList_id.setItems(users);
@@ -170,9 +183,9 @@ public class ServerController2 implements Initializable {
                 public void changed(ObservableValue<? extends User> observable, User oldValue, User newValue) {
                     try {
                         UserData userData = dataCenter.getUserData(newValue.getId());
-                        friends_id.setText(userData.getNumberOfFriends()+"");
-                        lists_id.setText(userData.getNumberOfLists()+"");
-                        tasks_id.setText(userData.getNumberOfItemAssign()+"");
+                        friends_id.setText(userData.getNumberOfFriends() + "");
+                        lists_id.setText(userData.getNumberOfLists() + "");
+                        tasks_id.setText(userData.getNumberOfItemAssign() + "");
                     } catch (SQLException ex) {
                         Logger.getLogger(ServerController2.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -186,4 +199,25 @@ public class ServerController2 implements Initializable {
         }
     }
 
+    public void setNumberOfOnlineUsers(int numberOfOnlineUsers) {
+        onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
+    }
+
+    private void setGeneralData() {
+        try {
+            int numberOfLists = dataCenter.getNumberOfLists();
+            int numberOfUsers = dataCenter.getNumberOfUsers();
+            int numberOfOnlineUsers = ClientHandler.getVectorSize();
+
+            numberOfList_id.setText(String.valueOf(numberOfLists));
+            numberOfUsers_id.setText(String.valueOf(numberOfUsers));
+            onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
+
+        } catch (SQLException ex) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setContentText("no List Exist in dataBase");
+            alert.show();
+        }
+
+    }
 }

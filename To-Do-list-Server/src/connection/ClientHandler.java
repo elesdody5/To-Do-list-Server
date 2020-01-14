@@ -55,21 +55,33 @@ public class ClientHandler {
     }
 
     public static void notifyCollaborator(ArrayList<Notifications> notifications) {
-        
+
         for (Notifications notification : notifications) {
-         for(ClientHandler client : clientVector)
-         {
-             if(client.getId()==notification.getToUserId())
-             {
-                 client.ps.println(REQUEST.NOTIFICATION);
-                 client.ps.println(notification.getFromUserId());
-                 // notification to add collaborator
-                 client.ps.println(notification.getType());
-                 // send todo id
-                 client.ps.println(notification.getDataId());
-                 System.out.println(client.getId());
-             }
-         }
+            for (ClientHandler client : clientVector) {
+                if (client.getId() == notification.getToUserId()) {
+                    client.ps.println(REQUEST.NOTIFICATION);
+                    client.ps.println(notification.getFromUserId());
+                    // notification to add collaborator
+                    client.ps.println(notification.getType());
+                    // send todo id
+                    client.ps.println(notification.getDataId());
+                    System.out.println(client.getId());
+                }
+            }
         }
+    }
+
+    public boolean removeClientFromVector(int id) {
+        for (int i = 0; i < clientVector.size(); i++) {
+            if (clientVector.get(i).getId() == id) {
+                clientVector.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static int getVectorSize() {
+        return (clientVector != null) ? clientVector.size() : 0;
     }
 }
