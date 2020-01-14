@@ -5,7 +5,11 @@
  */
 package statisticsManager;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import serverDatabase.Repository;
+import serverEntity.User;
+import statisticsManager.Entity.UserData;
 
 /**
  *
@@ -27,25 +31,16 @@ public class DataCenter {
         return numberOfUsers;
     }
     
-    
-    //get number of lists
-    public int getNumberOfLists(){
-        return 0 ;
+    //get list of users
+    public ArrayList<User> getListOfUsers() throws SQLException{
+        ArrayList<User> users = repository.getListOfUsers();
+        return users;
     }
     
-    //get number of item for each list
-    public int getNumberOfItems(int listId){
-        return  0 ;
-    }
-    
-    //get number of friend for each user
-    public int getNumberOfFriends(int userId){
-        return 0 ;
-    }
-    
-    //get number of tasks for each user/team member
-    public int getNumberOfTasks(int userId){
-        return 0 ;
+    //get user statisctics data 
+    public UserData getUserData(int userId) throws SQLException{
+        UserData userData = repository.getUserStatisticsData(userId);
+        return userData;
     }
     
     

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchor_id" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="userName_id" maxWidth="190.0" text="Ashraf mohamed ibrahmi hassan" textAlignment="CENTER" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="8.0">
+         <font>
+            <Font name="Verdana" size="14.0" />
+         </font>
+      </Label>
+      <Label fx:id="userId_id" maxWidth="80.0" text="12" AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="8.0">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

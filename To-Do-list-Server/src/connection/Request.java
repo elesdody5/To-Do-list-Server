@@ -9,6 +9,7 @@ import Enum.REQUEST;
 import Enum.RESPOND_CODE;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.sql.PreparedStatement;
 
 import org.json.JSONException;
 
@@ -99,7 +100,38 @@ public class Request implements ClientRequest {
             } catch (JSONException ex) {
                 ex.printStackTrace();
             }
+        } else if (paramter[1].equals("sendFriendRequest")) {
+            try {
+                int fromUserID = Integer.parseInt(body.getString("currentUserID"));
+                String fromUserName = body.getString("currentUserName");
+                String friendName = body.getString("friendName");
+                boolean a1 = repository.checkUser(friendName);
+                if (a1) {
+
+                    if (repository.checkUserInFriendList(friendName, fromUserID)) {
+                        body.put("result", "This user is already in your friend list");
+                    } else {
+                        int toUserID = repository.getUserID(friendName);
+                        System.out.println("FriendID" + toUserID);
+                        System.out.println("fromUserID" + fromUserID);
+                        int resultInsertNotification = repository.insertIntoNotificationTables(fromUserID, toUserID);
+                        if (resultInsertNotification == 1) {
+                            body.put("result", "Friend Request  sent now");
+                        } else {
+                            body.put("result", "Friend Request is sent before");
+                        }
+                    }
+                } else {
+                    System.out.println("checkFriendNameInUserTable" + repository.isNameNotFound("abc"));
+                    body.put("result", "This name is not in our users. Please check correct spelling ");
+                }
+
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
+
         /*Aml*/
 
  /*Aml*/
@@ -121,7 +153,6 @@ public class Request implements ClientRequest {
                 item.setStartTime(starttime);
                 item.setComment(comment);
 
-                System.out.print(titleFromJson + "  " + listIdFromJson);
                 try {
                     repository.insertItemToDataBase(item);
                 } catch (SQLException ex) {
@@ -215,8 +246,10 @@ public class Request implements ClientRequest {
         if (paramter[1].equals("getTasksOflist")) {
             ArrayList<Items> itemList = null;
             try {
-                itemList = repository.getTaskFromDataBase();
-                Gson gson = new GsonBuilder().create();
+
+                itemList = repository.getTaskFromDataBase(Integer.parseInt(paramter[2]));
+                 Gson gson = new GsonBuilder().create();
+
                 String TodoItemsArray = gson.toJson(itemList);
                 JSONArray todojsonArray = new JSONArray(TodoItemsArray);
                 JSONObject jsonObjectOfList = new JSONObject();
@@ -302,6 +335,34 @@ public class Request implements ClientRequest {
             }
         }
         /*Elesdody*/
+        /*sara*/
+        if (paramter[1].equals("task")) {
+            try {
+                String titleFromJson = (String) body.get("title");
+                int listIdFromJson = (int) body.get("listId");
+                int id = (int) body.get("id");
+                String description =(String) body.get("description");
+                String deadline =(String) body.get("deadLine");
+                String starttime =(String) body.get("startTime");
+                String comment =(String) body.get("comment");
+                Items item = new Items(titleFromJson,listIdFromJson);
+                item.setDeadLine(deadline);
+                item.setId(id);
+                item.setDescription(description);
+                item.setStartTime(starttime);
+                item.setComment(comment);
+                int result = repository.updateTask(item);
+                return result;
+            } catch (JSONException ex) {
+
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } 
+        }
+        /*sara*/
         return 0;
     }
 
@@ -327,6 +388,15 @@ public class Request implements ClientRequest {
  /*Ghader*/
  /*Ghader*/
  /*Sara*/
+   if (paramter[1].equals("task")) {
+            try {
+                int result = repository.deleteTask(Integer.parseInt(paramter[2]));
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
  /*Sara*/
         return -1;
     }
@@ -359,5 +429,9 @@ public class Request implements ClientRequest {
 
         return user;
     }
+
     /*Ashraf*/
+
+ /*Aml*/
+ /*Aml*/
 }
