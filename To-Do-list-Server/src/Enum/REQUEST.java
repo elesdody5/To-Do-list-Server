@@ -27,6 +27,6 @@ public class REQUEST {
     public static final String TODO = "todo";
     public static final String LOGOUT = "LOGOUT";
     public static final String FRIEND_OFFLINE = "OFFLINE";
+    public static final String FRIEND_ONLINE = "ONLINE";
     
-
 }

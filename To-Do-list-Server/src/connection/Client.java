@@ -77,13 +77,31 @@ public class Client {
         return gson.toJson(notification);
 
     }
+
     /*Elesdody*/
-    
-    
-    public static void removeClient(int userId , ArrayList<User> friends){
-        for(int i = 0 ;i<clientVector.size();i++){
-            if(clientVector.get(i).getId() == userId){
+
+    public static void removeClient(int userId) {
+        for (int i = 0; i < clientVector.size(); i++) {
+            if (clientVector.get(i).getId() == userId) {
                 clientVector.remove(i);
+            }
+        }
+    }
+
+    public static void addClient(Client client) {
+        if (client != null) {
+            clientVector.add(client);
+        }
+    }
+
+    public static void notifiyFriends(ArrayList<User> friends, String friendStatus) {
+        //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
+        for (User user : friends) {
+            for (int i = 0; i < clientVector.size(); i++) {
+                Client client = clientVector.get(i);
+                if (client.getId() == user.getId()) {
+                    client.ps.println(friendStatus);
+                }
             }
         }
     }

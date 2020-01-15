@@ -182,15 +182,15 @@ public class Request implements ClientRequest {
             try {
                 User user = getUserFromJson(body);
                 JSONObject respond = repository.getUser(user);
-                //TODO: get friends and send ONLINE request
                 // get last one been add to victor
                 if (respond != null && respond.getInt("Code") == RESPOND_CODE.SUCCESS) {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
-                    //create method that take client object 
-                    //in this method add to vector and notifiy all friend by ONLINE
-                    Client.getclientVector().add(new Client(userId, userName, handler));
+                    Client client = new Client(userId, userName, handler);
+                    ArrayList<User>friends = repository.getUserFriends(userId);
+                    Client.notifiyFriends(friends,REQUEST.FRIEND_ONLINE);
+                    Client.addClient(client);
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
                 } else {
                     System.out.println("login respond faild, not added to portListener any client");
@@ -202,6 +202,8 @@ public class Request implements ClientRequest {
                 }
                 return respond;
             } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

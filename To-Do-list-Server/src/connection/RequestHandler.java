@@ -96,9 +96,8 @@ public class RequestHandler extends Thread {
                     case REQUEST.LOGOUT:
                         int id = Integer.parseInt(paramter[1]);
                         ArrayList<User> friends = repository.getUserFriends(id);
-                        Client.removeClient(id,friends);
-                        
-                        
+                        Client.notifiyFriends(friends,REQUEST.FRIEND_OFFLINE);
+                        Client.removeClient(id);  
                 }
             } catch (IOException | JSONException ex) {
                 System.out.println(ex.getMessage());
