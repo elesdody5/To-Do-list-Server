@@ -71,17 +71,14 @@
                         <Insets left="8.0" />
                      </padding>
                   </HBox>
-                  <VBox layoutX="10.0" layoutY="74.0" prefHeight="162.0" prefWidth="258.0">
+                  <VBox prefHeight="162.0" prefWidth="258.0">
                      <children>
-                        <ListView fx:id="todoList_id" prefWidth="242.0">
+                        <ListView fx:id="todoList_id" prefHeight="211.0" prefWidth="248.0">
                            <VBox.margin>
                               <Insets left="8.0" right="8.0" />
                            </VBox.margin>
                         </ListView>
                      </children>
-                     <VBox.margin>
-                        <Insets bottom="8.0" />
-                     </VBox.margin>
                   </VBox>
                </children>
             </VBox>
@@ -192,6 +189,7 @@
                               <Font size="29.0" />
                            </font>
                         </Label>
+                        <VBox layoutX="35.0" layoutY="220.0" />
                      </children>
                   </AnchorPane>
                </children></Pane>

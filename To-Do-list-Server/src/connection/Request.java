@@ -9,7 +9,6 @@ import Enum.REQUEST;
 import Enum.RESPOND_CODE;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.sql.PreparedStatement;
 
 import org.json.JSONException;
 
@@ -18,17 +17,16 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.Notification;
 import org.json.JSONArray;
 
 import org.json.JSONObject;
-import server.PortListener;
 import serverDatabase.Repository;
 
 import serverEntity.Items;
 import serverEntity.Notifications;
 import serverEntity.ToDoList;
 import serverEntity.User;
+import statisticsManager.DataCenter;
 
 /**
  *
@@ -37,9 +35,10 @@ import serverEntity.User;
 public class Request implements ClientRequest {
 
     Repository repository;
-
+    DataCenter dataCenter;
     public Request() {
         repository = new Repository();
+        dataCenter = new DataCenter();
     }
 
     public JSONObject post(String[] paramter, JSONObject body, RequestHandler handler) {
@@ -189,6 +188,7 @@ public class Request implements ClientRequest {
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
                     Client.getclientVector().add(new Client(userId, userName, handler));
+                    //dataCenter.updateOnlineUsers(Client.getclientVector().size());
                 } else {
                     System.out.println("login respond faild, not added to portListener any client");
                     // remove from vector

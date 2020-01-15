@@ -56,28 +56,36 @@ public class Client {
     public static Vector<Client> getclientVector() {
         return clientVector;
     }
-/*Elesdody*/
+
+    /*Elesdody*/
     public static void notifyCollaborator(ArrayList<Notifications> notifications) {
-        
+
         for (Notifications notification : notifications) {
-         for(Client client : clientVector)
-         {
-             if(client.getId()==notification.getToUserId())
-             {
-                 client.ps.println(REQUEST.NOTIFICATION);
-                 client.ps.println(toNotifcationJson(notification));
-                 // to notifiy user end of data
-                 client.ps.println(REQUEST.END);
-             }
-         }
+            for (Client client : clientVector) {
+                if (client.getId() == notification.getToUserId()) {
+                    client.ps.println(REQUEST.NOTIFICATION);
+                    client.ps.println(toNotifcationJson(notification));
+                    // to notifiy user end of data
+                    client.ps.println(REQUEST.END);
+                }
+            }
         }
     }
 
-private static  String toNotifcationJson(Notifications notification)
-{
-    Gson gson = new GsonBuilder().create();
-    return gson.toJson(notification);
+    private static String toNotifcationJson(Notifications notification) {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(notification);
 
-}
-/*Elesdody*/
+    }
+    /*Elesdody*/
+    
+    
+    public void removeClient(int userId){
+        for(int i = 0 ;i<clientVector.size();i++){
+            if(clientVector.get(i).getId() == userId){
+                clientVector.remove(i);
+                
+            }
         }
+    }
+}

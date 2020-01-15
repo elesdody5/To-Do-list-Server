@@ -88,7 +88,8 @@ public class RequestHandler extends Thread {
                         
                         //ps.println(REQUEST.END);
                         break;
-
+                    case REQUEST.LOGOUT:
+                        
                 }
             } catch (IOException | JSONException ex) {
                 System.out.println(ex.getMessage());

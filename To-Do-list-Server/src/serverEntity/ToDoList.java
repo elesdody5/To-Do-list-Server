@@ -22,6 +22,7 @@ public class ToDoList implements Entity{
     private String description;
     private ArrayList<Items> taskes;
     private ArrayList<User> collaborator;
+    private String status;
 
     public void setTaskes(ArrayList<Items> taskes) {
         this.taskes = taskes;
@@ -49,6 +50,16 @@ public class ToDoList implements Entity{
         this.deadLine = deadLine;
         this.startTime = startTime;
         this.color = color;
+    }
+    
+    public ToDoList(int id , String title, int ownerId,String desc,  String startTime,String deadLine, String status) {
+        this.id = id;
+        this.title = title;
+        this.ownerId = ownerId;
+        this.deadLine = deadLine;
+        this.startTime = startTime;
+        this.status = status;
+        description = desc;
     }
 
     public String getColor() {

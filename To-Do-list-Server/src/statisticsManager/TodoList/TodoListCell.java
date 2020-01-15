@@ -3,61 +3,56 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package statisticsManager.UserList;
-
-
+package statisticsManager.TodoList;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URL;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.AnchorPane;
-import serverEntity.User;
+import serverEntity.ToDoList;
 
-
-public class UserCell extends ListCell<User> {
+public class TodoListCell extends ListCell<ToDoList> {
 
     @FXML
-    private Label userName_id;
+    private Label listTitle_id;
     @FXML
-    private Label userId_id;
+    private Label listId_id;
 
     @FXML
     private AnchorPane anchor_id;
 
     private FXMLLoader loader;
 
-    public UserCell() {
+    public TodoListCell() {
         if (loader == null) {
-            
-            loader = new FXMLLoader(getClass().getResource("/statisticsManager/userItemFXML.fxml"));
+            loader = new FXMLLoader(getClass().getResource("/statisticsManager/TodoList/listItemDesign.fxml"));
             loader.setController(this);
         }
-        
+
         try {
-                loader.load();
-            } catch (IOException ex) {
-                Logger.getLogger(UserCell.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            loader.load();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
-    protected void updateItem(User item, boolean empty) {
+    protected void updateItem(ToDoList item, boolean empty) {
         super.updateItem(item, empty);
         if (empty || item == null) {
             setText(null);
             setGraphic(null);
         } else {
-            userName_id.setText(item.getUserName());
-            userId_id.setText(String.valueOf(item.getId()));
+            listTitle_id.setText(item.getTitle());
+            listId_id.setText(String.valueOf(item.getId()));
 
             setText(null);
             setGraphic(anchor_id);
+
         }
+
     }
-
 }
-
