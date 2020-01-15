@@ -20,6 +20,8 @@ import serverEntity.User;
  *
  * @author Ashraf Mohamed
  */
+
+
 public class Client {
 
     private int id;
@@ -79,7 +81,22 @@ public class Client {
     }
 
     /*Elesdody*/
+    /*ghadeer*/
+    public static void notify(Notifications notification) {
 
+        for (Client client : clientVector) {
+            if (client.getId() == notification.getToUserId()) {
+                client.ps.println(REQUEST.NOTIFICATION);
+                client.ps.println(toNotifcationJson(notification));
+                // to notifiy user end of data
+                client.ps.println(REQUEST.END);
+            }
+        }
+    }
+
+
+    /*ghadeer*/
+    
     public static void removeClient(int userId) {
         for (int i = 0; i < clientVector.size(); i++) {
             if (clientVector.get(i).getId() == userId) {
@@ -106,3 +123,4 @@ public class Client {
         }
     }
 }
+
