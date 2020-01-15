@@ -13,8 +13,8 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
-import org.json.JSONObject;
 import serverEntity.Notifications;
+import serverEntity.User;
 
 /**
  *
@@ -80,11 +80,10 @@ public class Client {
     /*Elesdody*/
     
     
-    public void removeClient(int userId){
+    public static void removeClient(int userId , ArrayList<User> friends){
         for(int i = 0 ;i<clientVector.size();i++){
             if(clientVector.get(i).getId() == userId){
                 clientVector.remove(i);
-                
             }
         }
     }
