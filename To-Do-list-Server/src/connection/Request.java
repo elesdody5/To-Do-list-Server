@@ -9,7 +9,6 @@ import Enum.REQUEST;
 import Enum.RESPOND_CODE;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.sql.PreparedStatement;
 
 import org.json.JSONException;
 
@@ -18,11 +17,9 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.management.Notification;
 import org.json.JSONArray;
 
 import org.json.JSONObject;
-import server.PortListener;
 import serverDatabase.Repository;
 
 import serverEntity.Items;
@@ -50,7 +47,7 @@ public class Request implements ClientRequest {
                 ToDoList list;
 
                 list = getTodoObject(body);
-
+                
                 int resullt = repository.insertList(list);
 
                 return resullt != -1 ? new JSONObject("{id:" + resullt + "}") : new JSONObject("{Error:\"Error insert list \"}");
@@ -62,7 +59,7 @@ public class Request implements ClientRequest {
                     Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex1);
                 }
             } catch (JSONException ex) {
-                System.out.println(ex.getMessage());
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ParseException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -72,6 +69,8 @@ public class Request implements ClientRequest {
                 ArrayList<Notifications> notifications = getNotificatinArray(body.getJSONArray("notification_List"));
                 // first insert in database
                 int resullt = repository.insertTodoNotification(notifications);
+                // remove friend from todo
+                int result = repository.removeCollab(getFriendsList(body.getJSONArray("removed_friends")));
                 // notify other friends
                 if (resullt > 0) {
                     Client.notifyCollaborator(notifications);
@@ -403,6 +402,8 @@ public class Request implements ClientRequest {
 
     private ToDoList getTodoObject(JSONObject body) throws JSONException, ParseException {
         ToDoList oDoList = new ToDoList(body.getString("title"), body.getInt("ownerId"), body.getString("startDate"), body.getString("deadLine"), body.getString("color"));
+        if(body.has("id"))
+            oDoList.setId(body.getInt("id"));
         return oDoList;
     }
 
@@ -410,9 +411,19 @@ public class Request implements ClientRequest {
         ArrayList<Notifications> notifications = new ArrayList<>();
         for (int i = 0; i < notiJSONArray.length(); i++) {
             JSONObject json = notiJSONArray.getJSONObject(i);
-            notifications.add(new Notifications(json.getInt("fromUserId"), json.getInt("toUserId"), json.getInt("type"), json.getInt("listId")));
+            notifications.add(new Notifications(json.getInt("fromUserId"),json.getString("fromUserName") ,json.getInt("toUserId"), json.getInt("type"), json.getInt("status"),json.getInt("listId")));
         }
         return notifications;
+    }
+    private ArrayList<User> getFriendsList(JSONArray friendsJson) throws JSONException
+    {
+        ArrayList<User> friends = new ArrayList<>();
+        for(int i =0;i<friendsJson.length();i++)
+        {
+            JSONObject json = friendsJson.getJSONObject(i);
+            friends.add(new User(json.getInt("ID"),json.getString("USER_NAME")));
+        }
+        return friends;
     }
 
     /*Ashraf*/
