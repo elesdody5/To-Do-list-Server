@@ -403,11 +403,12 @@ public class Repository {
     public int insertTodoNotification(ArrayList<Notifications> notifications) throws SQLException {
         int result = 0;
         for (Notifications notification : notifications) {
-            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,DataId) Values(?,?,?,?) ")) {
+            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,Status,DataId) Values(?,?,?,?,?) ")) {
                 pre.setInt(1, notification.getFromUserId());
                 pre.setInt(2, notification.getToUserId());
                 pre.setInt(3, notification.getType());
-                pre.setInt(4, notification.getDataId());
+                pre.setInt(4, notification.getStatus());
+                pre.setInt(5, notification.getDataId());
                 result = pre.executeUpdate();
 
             }

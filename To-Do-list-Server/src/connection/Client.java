@@ -29,12 +29,12 @@ public class Client {
     private Socket s;
     private static Vector<Client> clientVector = new Vector<>();
 
-    public Client(int id, String clientName, RequestHandler httpRequestHandler) {
+    public Client(int id, String clientName, RequestHandler requestHandler) {
         this.id = id;
         this.clientName = clientName;
-        this.s = httpRequestHandler.getS();
-        this.in = httpRequestHandler.getBufferReader();
-        this.ps = httpRequestHandler.getPrintStream();
+        this.s = requestHandler.getS();
+        this.in = requestHandler.getBufferReader();
+        this.ps = requestHandler.getPrintStream();
     }
 
     public int getId() {
@@ -80,4 +80,22 @@ private static  String toNotifcationJson(Notifications notification)
 
 }
 /*Elesdody*/
+
+/*ghadeer*/
+        public static void notify(Notifications notification) {
+
+         for(Client client : clientVector)
+         {
+             if(client.getId()==notification.getToUserId())
+             {
+                 client.ps.println(REQUEST.NOTIFICATION);
+                 client.ps.println(toNotifcationJson(notification));
+                 // to notifiy user end of data
+                 client.ps.println(REQUEST.END);
+             }
+         }
+    }
+
+
+/*ghadeer*/
         }
