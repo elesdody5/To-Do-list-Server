@@ -36,11 +36,11 @@ public class Notifications {
         this.dataId = dataId;
     }
 
-    public Notifications(int fromUserId, int toUserId, int type, int dataId) {
+    public Notifications(int fromUserId, int toUserId, int type, int status) {
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.type = type;
-        this.dataId = dataId;
+        this.status = status;
         
     }
 

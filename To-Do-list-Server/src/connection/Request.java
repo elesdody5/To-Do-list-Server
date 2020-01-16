@@ -5,6 +5,8 @@
  */
 package connection;
 
+import static Enum.NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST;
+import static Enum.NotificationKeys.REQUEST_FRIEND;
 import Enum.REQUEST;
 import Enum.RESPOND_CODE;
 import com.google.gson.Gson;
@@ -34,7 +36,7 @@ import serverEntity.User;
  *
  * @author Elesdody
  */
-public class Request implements HttpRequest {
+public class Request implements ClientRequest {
 
     Repository repository;
 
@@ -42,7 +44,7 @@ public class Request implements HttpRequest {
         repository = new Repository();
     }
 
-    public JSONObject post(String[] paramter, JSONObject body, HttpRequestHandler handler) {
+    public JSONObject post(String[] paramter, JSONObject body, RequestHandler handler) {
 
         /*Elesdody*/
         if (paramter[1].equals("list")) {
@@ -74,7 +76,7 @@ public class Request implements HttpRequest {
                 int resullt = repository.insertTodoNotification(notifications);
                 // notify other friends
                 if (resullt > 0) {
-                    ClientHandler.notifyCollaborator(notifications);
+                    Client.notifyCollaborator(notifications);
 
                 }
                 return resullt != -1 ? new JSONObject("{id:" + resullt + "}") : new JSONObject("{Error:\"Error insert list \"}");
@@ -112,11 +114,12 @@ public class Request implements HttpRequest {
                         body.put("result", "This user is already in your friend list");
                     } else {
                         int toUserID = repository.getUserID(friendName);
-                        System.out.println("FriendID" + toUserID);
-                        System.out.println("fromUserID" + fromUserID);
                         int resultInsertNotification = repository.insertIntoNotificationTables(fromUserID, toUserID);
                         if (resultInsertNotification == 1) {
                             body.put("result", "Friend Request  sent now");
+                            Notifications notification = new Notifications(fromUserID,
+                                    toUserID, REQUEST_FRIEND, NORESPONSE_COLLABORATOR_REQUEST);
+                            Client.notifyUsetWithFriendRequest(notification);
                         } else {
                             body.put("result", "Friend Request is sent before");
                         }
@@ -137,6 +140,24 @@ public class Request implements HttpRequest {
  /*Aml*/
  /*Aml*/
  /*Ghader*/
+        if(paramter[1].equals("collAcceptListRequest")){
+                try {
+                 System.out.println(body);
+                int userId = body.getInt("userId");
+                int listId = body.getInt("todoId");
+                // 0 -> error to execute query
+                // 1 -> is updated 
+                int status = repository.addNewCollaboratorToList(userId, listId);
+                if (status > 0) {
+                   // ClientHandler.notifyCollaborator(notifications);
+
+                }
+                return status != -1 ? new JSONObject("{id:" + status + "}") : new JSONObject("{Error:\"Error insert Collaborator \"}");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        }
  /*Ghader*/
  /*Sara*/
         if (paramter[1].equals("Task")) {
@@ -170,13 +191,13 @@ public class Request implements HttpRequest {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
-                    ClientHandler.getclientVector().add(new ClientHandler(userId, userName, handler));
+                    Client.getclientVector().add(new Client(userId, userName, handler));
                 } else {
                     System.out.println("login respond faild, not added to portListener any client");
                     // remove from vector
                 }
-                System.out.println(ClientHandler.getclientVector().size());
-                for (ClientHandler clientt : ClientHandler.getclientVector()) {
+                System.out.println(Client.getclientVector().size());
+                for (Client clientt : Client.getclientVector()) {
                     System.out.println(clientt.getClientName());
                 }
                 return respond;
@@ -310,6 +331,19 @@ public class Request implements HttpRequest {
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updatePassword(id, password);
+                return status;
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+          if (paramter[1].equals("updateRequestList")) {
+            try {
+                 System.out.println(body);
+                int id = body.getInt("notId");
+                int reqStatus = body.getInt("status");
+                // 0 -> error to execute query
+                // 1 -> is updated 
+                int status = repository.updateNotificationStatus(id, reqStatus);
                 return status;
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);

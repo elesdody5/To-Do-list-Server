@@ -143,7 +143,7 @@ private Connection db;
         if (!result) {
             try {
                 int x = 0;
-               
+              
                 PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,Status) Values(?,?,?,?) ");
                 pre.setInt(1, fromUserId);
                 pre.setInt(2, toUserId);
@@ -641,6 +641,43 @@ private Connection db;
         return 0;
     }
 
+ public int updateNotificationStatus(int id, int status) {
+
+        String sql = "Update notification set status = ? where ID= ?";
+        PreparedStatement stmt;
+        try {
+           
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, status);
+            stmt.setInt(2, id);
+            int res = stmt.executeUpdate();
+            stmt.close();
+            return res;
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return 0;
+    }
+  public int addNewCollaboratorToList(int userId, int listId) {
+
+        String sql = "Insert into Collab values (?,?)";
+        PreparedStatement stmt;
+        try {
+           
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, listId);
+            int res = stmt.executeUpdate();
+            System.out.println("res: "+ res);
+            stmt.close();
+            return res;
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return 0;
+    }
     /*Ghader*/
  /*Sara*/
  /*Sara*/
