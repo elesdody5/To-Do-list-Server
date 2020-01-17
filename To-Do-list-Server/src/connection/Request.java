@@ -16,6 +16,7 @@ import org.json.JSONException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONArray;
@@ -268,6 +269,65 @@ public class Request implements ClientRequest {
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+        if (paramter[1].equals("Assignnotification")) {
+            /*   int fromUserId = 0 ;
+              int toUserId = 0;
+              int type = 0;
+              int status=0;
+              int dataId=0;
+            try {
+                fromUserId =  (int) body.get("fromUserId");
+                toUserId =  (int) body.get("toUserId");
+                type = (int) body.get("type");
+                status=(int) body.get("status");
+                dataId=(int) body.get("dataId");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                Notifications notificationData=new Notifications();
+                notificationData.setFromUserId(fromUserId);
+                notificationData.setToUserId(toUserId);
+                notificationData.setType(type);
+                
+   try {
+                    repository.insertNotificationToDataBase(notificationData);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                }*/
+            JSONArray notificationArray = null;
+            try {
+                notificationArray = body.getJSONArray("listOfNotifications");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            List<Notifications> notificationList = new ArrayList<Notifications>();
+            for (int i = 0; i < notificationArray.length(); i++) {
+                JSONObject notification = null;
+                try {
+                    notification = notificationArray.getJSONObject(i);
+                } catch (JSONException ex) {
+                    Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                Notifications notificationData = new Notifications();
+                try {
+                    notificationData.setFromUserId(notification.getInt("fromUserId"));
+                    notificationData.setToUserId(notification.getInt("toUserId"));
+                    notificationData.setType(notification.getInt("type"));
+                    notificationData.setDataId(notification.getInt("dataId"));
+                    notificationData.setStatus(notification.getInt("status"));
+                    notificationList.add(notificationData);
+                } catch (JSONException ex) {
+                    Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+            }
+            try {
+                repository.insertNotificationToDataBase(notificationList);
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
             try {
                 User user = getUserFromJson(body);
@@ -287,10 +347,6 @@ public class Request implements ClientRequest {
                 } else {
                     System.out.println("login respond faild, not added to portListener any client");
                     // remove from vector
-                }
-                System.out.println(Client.getclientVector().size());
-                for (Client clientt : Client.getclientVector()) {
-                    System.out.println(clientt.getClientName());
                 }
                 return respond;
             } catch (JSONException ex) {
@@ -317,13 +373,19 @@ public class Request implements ClientRequest {
                 ArrayList<ToDoList> shared = repository.getUserSharedToDo(Integer.parseInt(paramter[2]));
                 // get user friends
                 ArrayList<User> friends = repository.getUserFriends(Integer.parseInt(paramter[2]));
+                // get online friends
+                ArrayList<User> onlineFriends = Client.getOnlineUser(friends);
                 // get notificaiton
                 ArrayList<Notifications> notificationses = repository.getUserNotification(Integer.parseInt(paramter[2]));
+
                 Gson gson = new GsonBuilder().create();
                 // convert friendsList to json
                 String friendsArray = gson.toJson(friends);
 
                 JSONArray friendsjsonArray = new JSONArray(friendsArray);
+                // convert onlineFrined list to json
+                String onlineList = gson.toJson(onlineFriends);
+                JSONArray onlineJsonArray = new JSONArray(onlineList);
                 // convert shared List to json
                 String sharedArray = gson.toJson(shared);
                 JSONArray sharedJSONArray = new JSONArray(sharedArray);
@@ -338,6 +400,7 @@ public class Request implements ClientRequest {
                 JSONObject userJosn = user.getUserAsJson();
                 // add friends to user
                 userJosn.put("friends", friendsjsonArray);
+                userJosn.put("online_friends",onlineJsonArray);
                 // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
                 // add shared List 
@@ -381,7 +444,7 @@ public class Request implements ClientRequest {
         if (paramter[1].equals("getTeamMemberInToDo")) {
             ArrayList<User> teamMember = null;
             try {
-                teamMember = repository.getTeamMemberFromDataBase();
+                teamMember = repository.getTeamMemberFromDataBase(Integer.parseInt(paramter[2]));
                 Gson gson = new GsonBuilder().create();
                 String TodoItemsArray = gson.toJson(teamMember);
                 JSONArray TeamMemberjsonArray = new JSONArray(TodoItemsArray);
@@ -395,7 +458,55 @@ public class Request implements ClientRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        /**/
+        if (paramter[1].equals("getTaskMemberInToDo")) {
+            ArrayList<User> taskMember = null;
+            try {
+                taskMember = repository.getTaskMemberFromDataBase(Integer.parseInt(paramter[2]));
+                Gson gson = new GsonBuilder().create();
+                String taskMemberArray = gson.toJson(taskMember);
+                JSONArray TeamMemberjsonArray = new JSONArray(taskMemberArray);
+                JSONObject jsonObjectOfTaskMember = new JSONObject();
+                jsonObjectOfTaskMember.put("listOfTaskMember", TeamMemberjsonArray);
+                return jsonObjectOfTaskMember;
 
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        /**/
+        if (paramter[1].equals("getnotificationInTask")) {
+            ArrayList<Notifications> listOfNotifications = null;
+            try {
+                listOfNotifications = repository.getNotificationsFromDataBase(Integer.parseInt(paramter[2]));
+                Gson gson = new GsonBuilder().create();
+                String NotificationsArray = gson.toJson(listOfNotifications);
+                JSONArray TeamMemberjsonArray = new JSONArray(NotificationsArray);
+                JSONObject jsonObjectOfNotifications = new JSONObject();
+                jsonObjectOfNotifications.put("listOfNotifications", TeamMemberjsonArray);
+                return jsonObjectOfNotifications;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (paramter[1].equals("getUser")) {
+            try {
+                User user = repository.getUserData(Integer.parseInt(paramter[2]));
+                JSONObject jsonBbjOfUser = user.getUserAsJson();
+                return jsonBbjOfUser;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+        }
         /*Sara*/
         return null;
     }
@@ -541,7 +652,18 @@ public class Request implements ClientRequest {
                 return -1;
             }
         }
+
+        if (paramter[1].equals("teammember")) {
+            try {
+                int result = repository.deleteTeamMember(Integer.parseInt(paramter[2]));
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
         /*Sara*/
+
         return -1;
     }
 

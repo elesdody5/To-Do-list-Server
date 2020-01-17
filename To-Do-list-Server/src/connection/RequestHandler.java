@@ -1,9 +1,4 @@
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package connection;
 
 import Enum.REQUEST;
@@ -99,6 +94,7 @@ public class RequestHandler extends Thread {
                         int id = Integer.parseInt(paramter[1]);
                         ArrayList<User> friends = repository.getUserFriends(id);
                         User user = repository.getUserData(id);
+                        
                         Client.notifiyFriends(user,friends,REQUEST.FRIEND_OFFLINE);
                         Client.removeClient(id);  
                 }

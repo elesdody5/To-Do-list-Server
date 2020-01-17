@@ -23,8 +23,6 @@ import serverEntity.User;
  *
  * @author Ashraf Mohamed
  */
-
-
 public class Client {
 
     private int id;
@@ -77,6 +75,20 @@ public class Client {
         }
     }
 
+    public static ArrayList<User> getOnlineUser(ArrayList<User> friends) {
+        ArrayList<User> online = new ArrayList<>();
+        clientVector.forEach((client) -> {
+            friends.forEach((frined) -> {
+                if (frined.getId() == client.id) {
+                    online.add(new User(client.id, client.clientName));
+                }
+
+            });
+        });
+        return online;
+
+    }
+
     private static String toNotifcationJson(Notifications notification) {
         Gson gson = new GsonBuilder().create();
         return gson.toJson(notification);
@@ -84,7 +96,7 @@ public class Client {
     }
 
     /*Elesdody*/
-    /*ghadeer*/
+ /*ghadeer*/
     public static void notify(Notifications notification) {
 
         for (Client client : clientVector) {
@@ -99,7 +111,6 @@ public class Client {
 
 
     /*ghadeer*/
-    
     public static void removeClient(int userId) {
         for (int i = 0; i < clientVector.size(); i++) {
             if (clientVector.get(i).getId() == userId) {
@@ -114,19 +125,19 @@ public class Client {
         }
     }
 
-    public static void notifiyFriends(User user,ArrayList<User> friends, String friendStatus) throws JSONException {
+    public static void notifiyFriends(User user, ArrayList<User> friends, String friendStatus) throws JSONException {
         //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
         JSONObject userAsJson = user.getUserAsJson();
-        
+        System.out.println(userAsJson.getInt("ID"));
         for (User u : friends) {
             for (int i = 0; i < clientVector.size(); i++) {
                 Client client = clientVector.get(i);
                 if (client.getId() == u.getId()) {
                     client.ps.println(friendStatus);
                     client.ps.println(userAsJson);
+                    client.ps.println(REQUEST.END);
                 }
             }
         }
     }
 }
-
