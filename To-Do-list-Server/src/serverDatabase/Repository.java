@@ -127,7 +127,6 @@ public class Repository {
             rs = stmt.executeQuery();
             //name is found so cannot change the name
             if (rs.next()) {
-                System.out.println(rs.getString("User_name"));
                 rs.close();
                 return true;
             }
@@ -140,7 +139,6 @@ public class Repository {
 
     public int insertIntoNotificationTables(int fromUserId, int toUserId) {
         boolean result = checkInNotificationTable(fromUserId, toUserId);
-        System.out.println("result" + result);
         if (!result) {
             try {
                 int x = 0;
@@ -152,7 +150,6 @@ public class Repository {
                 pre.setInt(4, NORESPONSE_COLLABORATOR_REQUEST);
 
                 x = pre.executeUpdate();
-                System.out.println("=" + x);
                 return x;
             } catch (SQLException ex) {
                 Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
@@ -169,8 +166,7 @@ public class Repository {
             statement.setInt(1, fromUserId);
             statement.setInt(2, toUserId);
             ResultSet result = statement.executeQuery();
-            System.out.println("FriendID" + toUserId);
-            System.out.println("fromUserID" + fromUserId);
+            
             if (result.next()) {
                 result.close();
                 return true;
@@ -242,12 +238,12 @@ public class Repository {
             ArrayList<User> collaborator = new ArrayList<>();
 
             ResultSet collabset = third_pre.executeQuery();
-
             while (collabset.next()) {
                 collaborator.add(new User(collabset.getInt("id"), collabset.getString("user_name")));
             }
             collabset.close();
             item_set.close();
+            todo.setCollab(collaborator);
             todo.setTaskes(itemList);
             todoList.add(todo);
 
@@ -337,7 +333,6 @@ public class Repository {
             notification.setfromUserName(second_set.getString("user_name"));
 
             if (set.getInt("type") != NotificationKeys.REQUEST_FRIEND) {
-                System.out.println(tableName);
                 PreparedStatement third_statment = db.prepareStatement("Select * from " + tableName + " where id = ?");
                 third_statment.setInt(1, set.getInt("dataId"));
                 ResultSet resultSet = third_statment.executeQuery();
@@ -365,7 +360,6 @@ public class Repository {
         pre.setString(6, list.getDescription());
         pre.setInt(7, list.getId());
         int result = pre.executeUpdate();
-        System.out.println(result);;
         pre.close();
         if (result != 0) {
 
@@ -399,11 +393,12 @@ public class Repository {
     public int insertTodoNotification(ArrayList<Notifications> notifications) throws SQLException {
         int x = 0;
         for (Notifications notification : notifications) {
-            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,DataId) Values(?,?,?,?) ")) {
+            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,status,DataId) Values(?,?,?,?,?) ")) {
                 pre.setInt(1, notification.getFromUserId());
                 pre.setInt(2, notification.getToUserId());
                 pre.setInt(3, notification.getType());
-                pre.setInt(4, notification.getDataId());
+                pre.setInt(4, NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST);
+                pre.setInt(5, notification.getDataId());
                 x = pre.executeUpdate();
 
             }
@@ -411,11 +406,12 @@ public class Repository {
         return x;
 
     }
-public int removeCollab(ArrayList<User> users) throws SQLException {
+public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
         int result = 0;
         for (User user : users) {
-            try (PreparedStatement pre = db.prepareStatement("DELETE FROM Collab WHERE UserId = ?")) {
+            try (PreparedStatement pre = db.prepareStatement("DELETE FROM Collab WHERE UserId = ? And todoId=?")) {
                 pre.setInt(1, user.getId());
+                pre.setInt(2, todoId);
                 result = pre.executeUpdate();
             }
         }
@@ -723,7 +719,6 @@ public int removeCollab(ArrayList<User> users) throws SQLException {
             stmt.setInt(1, userId);
             stmt.setInt(2, itemId);
             int res = stmt.executeUpdate();
-            System.out.println("res: " + res);
             stmt.close();
             return res;
         } catch (SQLException ex) {

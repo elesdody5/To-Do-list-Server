@@ -40,11 +40,9 @@ public class PortListener {
 
     private void jsonPortListener() {
         try {
-            System.out.println("portListener is up and running");
             jsoServerSocket = new ServerSocket(JSON_PORT);
 
             while (true) {
-                System.out.println("inside portListener");
 
                 Socket s = jsoServerSocket.accept();
                 if (getIsStart()) {
@@ -61,17 +59,13 @@ public class PortListener {
                 public void run() {
                     Alert alert = new Alert(AlertType.ERROR);
                     alert.setContentText("This Posrt Number is In Use Now, Please Close any application using this Posrt Number " + JSON_PORT + " any try again");
-                    alert.show();
-                    try {
-                        Thread.sleep(4000);
-                    } catch (InterruptedException ex1) {
-                        Logger.getLogger(PortListener.class.getName()).log(Level.SEVERE, null, ex1);
-                    }
+                    alert.showAndWait();
+                    Platform.exit();
 
                 }
 
             });
-            Platform.exit();
+            
 
         }
     }

@@ -37,6 +37,7 @@ public class Request implements ClientRequest {
 
     Repository repository;
     DataCenter dataCenter;
+
     public Request() {
         repository = new Repository();
         dataCenter = new DataCenter();
@@ -50,7 +51,7 @@ public class Request implements ClientRequest {
                 ToDoList list;
 
                 list = getTodoObject(body);
-                
+
                 int resullt = repository.insertList(list);
 
                 return resullt != -1 ? new JSONObject("{id:" + resullt + "}") : new JSONObject("{Error:\"Error insert list \"}");
@@ -73,7 +74,7 @@ public class Request implements ClientRequest {
                 // first insert in database
                 int resullt = repository.insertTodoNotification(notifications);
                 // remove friend from todo
-                int result = repository.removeCollab(getFriendsList(body.getJSONArray("removed_friends")));
+                int result = repository.removeCollab(getFriendsList(body.getJSONArray("removed_friends")), body.getInt("todoId"));
                 // notify other friends
                 if (resullt > 0) {
                     Client.notifyCollaborator(notifications);
@@ -136,9 +137,9 @@ public class Request implements ClientRequest {
 
         /*Aml*/
 
-        /*Aml*/
-        /*Aml*/
-        /*Ghader*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
         if (paramter[1].equals("addNewColl")) {
             try {
                 System.out.println("add new coll" + body);
@@ -194,7 +195,7 @@ public class Request implements ClientRequest {
                 int dataId = body.getInt("dataId");
 
                 int notId = repository.addNewNotToSenderRequest(fromUserId, toUserId, NotificationKeys.ADD_COLLABORATOR, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
-                System.out.println("new id not to sender /list  "+notId);
+                System.out.println("new id not to sender /list  " + notId);
                 if (notId > 0) {
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.ADD_COLLABORATOR, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
                     Client.notify(not);
@@ -212,7 +213,7 @@ public class Request implements ClientRequest {
                 int toUserId = body.getInt("toUserId");
                 int dataId = body.getInt("dataId");
                 int notId = repository.addNewNotToSenderRequest(fromUserId, toUserId, NotificationKeys.ASSIGIN_TASK_MEMBER, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
-                 System.out.println("new id not to sender /  "+notId);
+                System.out.println("new id not to sender /  " + notId);
                 if (notId > 0) {
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.ASSIGIN_TASK_MEMBER, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
                     Client.notify(not);
@@ -231,7 +232,7 @@ public class Request implements ClientRequest {
                 int toUserId = body.getInt("toUserId");
                 int dataId = body.getInt("dataId");
                 int notId = repository.addNewNotToSenderRequest(fromUserId, toUserId, NotificationKeys.REQUEST_FRIEND, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
-                 System.out.println("new id not to sender /friend  "+notId);
+                System.out.println("new id not to sender /friend  " + notId);
                 if (notId > 0) {
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.REQUEST_FRIEND, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
                     Client.notify(not);
@@ -244,7 +245,7 @@ public class Request implements ClientRequest {
 
         }
         /*Ghader*/
-        /*Sara*/
+ /*Sara*/
         if (paramter[1].equals("Task")) {
             try {
                 String titleFromJson = (String) body.get("title");
@@ -279,8 +280,8 @@ public class Request implements ClientRequest {
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
 
                     Client client = new Client(userId, userName, handler);
-                    ArrayList<User>friends = repository.getUserFriends(userId);
-                    Client.notifiyFriends(user,friends,REQUEST.FRIEND_ONLINE);
+                    ArrayList<User> friends = repository.getUserFriends(userId);
+                    Client.notifiyFriends(user, friends, REQUEST.FRIEND_ONLINE);
                     Client.addClient(client);
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
                 } else {
@@ -350,13 +351,13 @@ public class Request implements ClientRequest {
             }
         }
         /*Elesdody*/
-        /*Ashraf*/
-        /*Ashraf*/
-        /*Aml*/
-        /*Aml*/
-        /*Ghader*/
-        /*Ghader*/
-        /*Sara*/
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
         if (paramter[1].equals("getTasksOflist")) {
             ArrayList<Items> itemList = null;
             try {
@@ -443,7 +444,7 @@ public class Request implements ClientRequest {
             }
         }
         /*Ghader*/
-        /*Elesdody*/
+ /*Elesdody*/
         if (paramter[1].equals("list")) {
             try {
                 int result = repository.updateList(getTodoObject(body));
@@ -462,7 +463,7 @@ public class Request implements ClientRequest {
             }
         }
         /*Elesdody*/
-        /*sara*/
+ /*sara*/
         if (paramter[1].equals("task")) {
             try {
                 String titleFromJson = (String) body.get("title");
@@ -506,15 +507,31 @@ public class Request implements ClientRequest {
                 return -1;
             }
         }
+        if (paramter[1].equals("collab")) {
+
+            try {
+                User user = new User();
+                int todoId = Integer.parseInt(paramter[2]);
+                user.setId(Integer.parseInt(paramter[3]));
+                ArrayList users = new ArrayList();
+                users.add(user);
+                int result = repository.removeCollab(users, todoId);
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+
+        }
         /*Elesdody*/
 
-        /*Ashraf*/
-        /*Ashraf*/
-        /*Aml*/
-        /*Aml*/
-        /*Ghader*/
-        /*Ghader*/
-        /*Sara*/
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
         if (paramter[1].equals("task")) {
             try {
                 int result = repository.deleteTask(Integer.parseInt(paramter[2]));
@@ -530,8 +547,9 @@ public class Request implements ClientRequest {
 
     private ToDoList getTodoObject(JSONObject body) throws JSONException, ParseException {
         ToDoList oDoList = new ToDoList(body.getString("title"), body.getInt("ownerId"), body.getString("startDate"), body.getString("deadLine"), body.getString("color"));
-        if(body.has("id"))
+        if (body.has("id")) {
             oDoList.setId(body.getInt("id"));
+        }
         return oDoList;
     }
 
@@ -539,17 +557,17 @@ public class Request implements ClientRequest {
         ArrayList<Notifications> notifications = new ArrayList<>();
         for (int i = 0; i < notiJSONArray.length(); i++) {
             JSONObject json = notiJSONArray.getJSONObject(i);
-            notifications.add(new Notifications(json.getInt("fromUserId"),json.getString("fromUserName") ,json.getInt("toUserId"), json.getInt("type"), json.getInt("status"),json.getInt("listId")));
+            System.out.println(json);
+            notifications.add(new Notifications(json.getInt("fromUserId"), json.getString("fromUserName"), json.getInt("toUserId"), json.getInt("type"), json.getInt("status"), json.getInt("listId")));
         }
         return notifications;
     }
-    private ArrayList<User> getFriendsList(JSONArray friendsJson) throws JSONException
-    {
+
+    private ArrayList<User> getFriendsList(JSONArray friendsJson) throws JSONException {
         ArrayList<User> friends = new ArrayList<>();
-        for(int i =0;i<friendsJson.length();i++)
-        {
+        for (int i = 0; i < friendsJson.length(); i++) {
             JSONObject json = friendsJson.getJSONObject(i);
-            friends.add(new User(json.getInt("ID"),json.getString("USER_NAME")));
+            friends.add(new User(json.getInt("ID"), json.getString("USER_NAME")));
         }
         return friends;
     }
@@ -569,9 +587,8 @@ public class Request implements ClientRequest {
         return user;
     }
 
-    
     /*Ashraf*/
 
-    /*Aml*/
-    /*Aml*/
+ /*Aml*/
+ /*Aml*/
 }

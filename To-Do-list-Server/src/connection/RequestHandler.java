@@ -49,6 +49,7 @@ public class RequestHandler extends Thread {
             this.s = s;
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             ps = new PrintStream(s.getOutputStream());
+            repository=new Repository();
             start();
         } catch (IOException ex) {
             ex.printStackTrace();
