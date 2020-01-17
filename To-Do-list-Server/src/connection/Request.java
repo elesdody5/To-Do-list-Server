@@ -276,9 +276,11 @@ public class Request implements ClientRequest {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
+                    //dataCenter.updateOnlineUsers(Client.getclientVector().size());
+
                     Client client = new Client(userId, userName, handler);
                     ArrayList<User>friends = repository.getUserFriends(userId);
-                    Client.notifiyFriends(friends,REQUEST.FRIEND_ONLINE);
+                    Client.notifiyFriends(user,friends,REQUEST.FRIEND_ONLINE);
                     Client.addClient(client);
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
                 } else {

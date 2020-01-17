@@ -14,6 +14,8 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
+import org.json.JSONException;
+import org.json.JSONObject;
 import serverEntity.Notifications;
 import serverEntity.User;
 
@@ -112,16 +114,19 @@ public class Client {
         }
     }
 
-    public static void notifiyFriends(ArrayList<User> friends, String friendStatus) {
-//        //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
-//        for (User user : friends) {
-//            for (int i = 0; i < clientVector.size(); i++) {
-//                Client client = clientVector.get(i);
-//                if (client.getId() == user.getId()) {
-//                    client.ps.println(friendStatus);
-//                }
-//            }
-//        }
+    public static void notifiyFriends(User user,ArrayList<User> friends, String friendStatus) throws JSONException {
+        //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
+        JSONObject userAsJson = user.getUserAsJson();
+        
+        for (User u : friends) {
+            for (int i = 0; i < clientVector.size(); i++) {
+                Client client = clientVector.get(i);
+                if (client.getId() == u.getId()) {
+                    client.ps.println(friendStatus);
+                    client.ps.println(userAsJson);
+                }
+            }
+        }
     }
 }
 

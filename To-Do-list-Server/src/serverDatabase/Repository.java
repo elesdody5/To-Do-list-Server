@@ -1,4 +1,9 @@
 
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package serverDatabase;
 
 import Enum.NotificationKeys;
@@ -387,7 +392,6 @@ public class Repository {
             friends.add(new User(friends_set.getInt("ID"), friends_set.getString("User_name")));
         }
         friends_set.close();
-        System.out.println(friends);
         return friends;
 
     }

@@ -55,14 +55,24 @@ public class PortListener {
 
             }
         } catch (IOException ex) {
-            Platform.runLater(new Runnable(){
+
+            Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     Alert alert = new Alert(AlertType.ERROR);
+                    alert.setContentText("This Posrt Number is In Use Now, Please Close any application using this Posrt Number " + JSON_PORT + " any try again");
+                    alert.show();
+                    try {
+                        Thread.sleep(4000);
+                    } catch (InterruptedException ex1) {
+                        Logger.getLogger(PortListener.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+
                 }
-                
+
             });
-            
+            Platform.exit();
+
         }
     }
 

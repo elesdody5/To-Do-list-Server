@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -48,7 +49,6 @@ public class RequestHandler extends Thread {
             this.s = s;
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             ps = new PrintStream(s.getOutputStream());
-            repository = new Repository();
             start();
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -96,9 +96,9 @@ public class RequestHandler extends Thread {
                         break;
                     case REQUEST.LOGOUT:
                         int id = Integer.parseInt(paramter[1]);
-                        System.out.println(id);
                         ArrayList<User> friends = repository.getUserFriends(id);
-                        Client.notifiyFriends(friends,REQUEST.FRIEND_OFFLINE);
+                        User user = repository.getUserData(id);
+                        Client.notifiyFriends(user,friends,REQUEST.FRIEND_OFFLINE);
                         Client.removeClient(id);  
                 }
             } catch (IOException | JSONException ex) {
