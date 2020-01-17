@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -5,48 +6,61 @@
  */
 package statisticsManager;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import server.ServerController2;
 import serverDatabase.Repository;
+import serverEntity.ToDoList;
+import serverEntity.User;
+import statisticsManager.Entity.UserData;
 
 /**
  *
  * @author Ashraf mohamed
- * 
+ *
  * this class is for collecting data from database
  */
 public class DataCenter {
+
     private Repository repository;
-    
-    
-    public DataCenter (){
+    private ServerController2 serverController2;
+
+    public DataCenter() {
         repository = new Repository();
+        serverController2 = new ServerController2();
     }
-    
+
     //get number of users
-    public int getNumberOfUsers(){
+    public int getNumberOfUsers() {
         int numberOfUsers = repository.getNumberOfUsers();
         return numberOfUsers;
     }
-    
-    
+
+    //get list of users
+    public ArrayList<User> getListOfUsers() throws SQLException {
+        ArrayList<User> users = repository.getListOfUsers();
+        return users;
+    }
+
+    //get user statisctics data 
+    public UserData getUserData(int userId) throws SQLException {
+        return repository.getUserStatisticsData(userId);
+    }
+
     //get number of lists
-    public int getNumberOfLists(){
-        return 0 ;
+    public int getNumberOfLists() throws SQLException {
+        int numberOfLists = repository.getNumberOfLists();
+        return numberOfLists;
     }
+
+    //update online users
+   /* public void updateOnlineUsers(int onlineUsers) {
+        serverController2.setOnlineUsersNumber(onlineUsers);
+    }*/
     
-    //get number of item for each list
-    public int getNumberOfItems(int listId){
-        return  0 ;
+    //get list of ToDoList
+    public ArrayList<ToDoList> getToDoList() throws SQLException{
+        return repository.getListofToDoList();
     }
-    
-    //get number of friend for each user
-    public int getNumberOfFriends(int userId){
-        return 0 ;
-    }
-    
-    //get number of tasks for each user/team member
-    public int getNumberOfTasks(int userId){
-        return 0 ;
-    }
-    
-    
+
 }

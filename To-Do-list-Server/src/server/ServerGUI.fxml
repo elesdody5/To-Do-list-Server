@@ -24,7 +24,7 @@
                <children>
                   <HBox fx:id="users_btn_id" prefHeight="26.0" prefWidth="242.0" spacing="10.0" styleClass="left_pane_btn_hover" stylesheets="@serverBoardStyle.css">
                      <VBox.margin>
-                        <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+                        <Insets left="8.0" right="8.0" top="8.0" />
                      </VBox.margin>
                      <children>
                         <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true">
@@ -34,7 +34,7 @@
                         </ImageView>
                         <Label text="Users" textAlignment="CENTER" textFill="WHITE">
                            <font>
-                              <Font name="Calibri" size="18.0" />
+                              <Font name="Calibri" size="14.0" />
                            </font>
                            <HBox.margin>
                               <Insets top="8.0" />
@@ -44,7 +44,7 @@
                   </HBox>
                   <VBox prefHeight="162.0" prefWidth="258.0">
                      <children>
-                        <ListView fx:id="userList_id" prefHeight="200.0" prefWidth="200.0">
+                        <ListView fx:id="userList_id">
                            <VBox.margin>
                               <Insets left="8.0" right="8.0" />
                            </VBox.margin>
@@ -60,7 +60,7 @@
                         </ImageView>
                         <Label text="TODO Lists" textAlignment="CENTER" textFill="WHITE">
                            <font>
-                              <Font name="Calibri" size="18.0" />
+                              <Font name="Calibri" size="14.0" />
                            </font>
                            <HBox.margin>
                               <Insets top="8.0" />
@@ -71,17 +71,14 @@
                         <Insets left="8.0" />
                      </padding>
                   </HBox>
-                  <VBox layoutX="10.0" layoutY="74.0" prefHeight="162.0" prefWidth="258.0">
+                  <VBox prefHeight="162.0" prefWidth="258.0">
                      <children>
-                        <ListView fx:id="todoList_id" prefWidth="242.0">
+                        <ListView fx:id="todoList_id" prefHeight="211.0" prefWidth="248.0">
                            <VBox.margin>
                               <Insets left="8.0" right="8.0" />
                            </VBox.margin>
                         </ListView>
                      </children>
-                     <VBox.margin>
-                        <Insets bottom="8.0" />
-                     </VBox.margin>
                   </VBox>
                </children>
             </VBox>
@@ -128,7 +125,74 @@
    <center>
       <StackPane BorderPane.alignment="CENTER">
          <children>
-            <Pane fx:id="userPane_id" prefHeight="200.0" prefWidth="200.0" />
+            <Pane fx:id="userPane_id" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                  <AnchorPane prefHeight="444.0" prefWidth="515.0">
+                     <children>
+                        <Label layoutX="109.0" layoutY="165.0" text="Friends">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="friends_id" contentDisplay="CENTER" layoutX="159.0" layoutY="205.0" AnchorPane.bottomAnchor="196.0" AnchorPane.leftAnchor="159.0" AnchorPane.rightAnchor="340.0" AnchorPane.topAnchor="205.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="367.0" layoutY="164.0" text="Lists">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lists_id" contentDisplay="CENTER" layoutX="360.0" layoutY="198.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="233.0" layoutY="166.0" text="Tasks">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="tasks_id" contentDisplay="CENTER" layoutX="264.0" layoutY="203.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="120.0" layoutY="15.0" text="Users">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="numberOfUsers_id" contentDisplay="CENTER" layoutX="141.0" layoutY="44.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="340.0" layoutY="14.0" text="Online Users">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="onlineUsers_id" contentDisplay="CENTER" layoutX="385.0" layoutY="48.0" prefHeight="43.0" prefWidth="0.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="235.0" layoutY="15.0" text="Lists">
+                           <font>
+                              <Font name="NSimSun" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="numberOfList_id" contentDisplay="CENTER" layoutX="250.0" layoutY="46.0">
+                           <font>
+                              <Font size="29.0" />
+                           </font>
+                        </Label>
+                        <VBox layoutX="35.0" layoutY="220.0" />
+                     </children>
+                  </AnchorPane>
+               </children></Pane>
          </children>
       </StackPane>
    </center>

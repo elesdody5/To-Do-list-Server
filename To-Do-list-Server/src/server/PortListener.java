@@ -5,14 +5,17 @@
  */
 package server;
 
-import connection.ClientHandler;
-import connection.HttpRequestHandler;
+import connection.Client;
+import connection.RequestHandler;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  *
@@ -45,14 +48,31 @@ public class PortListener {
 
                 Socket s = jsoServerSocket.accept();
                 if (getIsStart()) {
-                    new HttpRequestHandler(s);
+                    new RequestHandler(s);
                 } else {
                     s.close();
                 }
 
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Alert alert = new Alert(AlertType.ERROR);
+                    alert.setContentText("This Posrt Number is In Use Now, Please Close any application using this Posrt Number " + JSON_PORT + " any try again");
+                    alert.show();
+                    try {
+                        Thread.sleep(4000);
+                    } catch (InterruptedException ex1) {
+                        Logger.getLogger(PortListener.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+
+                }
+
+            });
+            Platform.exit();
+
         }
     }
 
