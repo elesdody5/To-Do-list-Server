@@ -20,12 +20,12 @@ import org.json.JSONObject;
 import serverEntity.User;
 import Enum.RESPOND_CODE;
 import java.sql.Statement;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import serverEntity.Items;
 import serverEntity.Notifications;
 import serverEntity.ToDoList;
+import statisticsManager.Entity.TodoListData;
 import statisticsManager.Entity.UserData;
 
 /**
@@ -576,6 +576,40 @@ public class Repository {
         return userData;
     }
 
+    public TodoListData getTodoListStatisticsData(int listId) throws SQLException{
+        String title = "No_Title";
+        String ownerName = "No_Name";
+        int items =0;
+        int collabs = 0;
+        
+        PreparedStatement statement = db.prepareStatement("select user_Table.user_name as owner_name , todo_list.title as list_title from user_table join todo_list \n" +
+                                "on user_Table.ID = todo_list.OwnerId AND todo_list.ID=?;");
+        statement.setInt(1,listId);
+        ResultSet resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            title = resultSet.getString("list_title");
+            ownerName = resultSet.getString("owner_name");
+        }
+        statement = db.prepareStatement("select count(item.ID)as items from item join todo_list on item.TodoId = todo_list.ID AND todo_list.ID = ?;");
+        statement.setInt(1,listId);
+        resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            items = resultSet.getInt("items");
+        }
+        statement = db.prepareStatement("select count(*) as collabs from collab join todo_list where collab.TodoId = todo_list.ID AND todo_list.ID=?;");
+        statement.setInt(1,listId);
+        resultSet = statement.executeQuery();
+        if(resultSet.next()){
+            collabs = resultSet.getInt("collabs");
+        }
+         TodoListData todoListData=new TodoListData();
+         todoListData.setTitle(title);
+         todoListData.setOwnerName(ownerName);
+         todoListData.setNumberOfCollaborator(collabs);
+         todoListData.setNumberOfItems(items);
+         
+        return todoListData;
+    }
     public ArrayList<ToDoList> getListofToDoList() throws SQLException {
         Statement st = db.createStatement();
         ResultSet resultSet = st.executeQuery("SELECT * FROM TODO_LIST");

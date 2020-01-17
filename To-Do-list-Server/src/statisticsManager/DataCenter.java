@@ -11,6 +11,7 @@ import server.ServerController2;
 import serverDatabase.Repository;
 import serverEntity.ToDoList;
 import serverEntity.User;
+import statisticsManager.Entity.TodoListData;
 import statisticsManager.Entity.UserData;
 
 /**
@@ -44,6 +45,11 @@ public class DataCenter {
     //get user statisctics data 
     public UserData getUserData(int userId) throws SQLException {
         return repository.getUserStatisticsData(userId);
+    }
+    
+    // get TodoList statistics data
+    public TodoListData getTodoListData(int listId) throws SQLException{
+        return repository.getTodoListStatisticsData(listId);
     }
 
     //get number of lists

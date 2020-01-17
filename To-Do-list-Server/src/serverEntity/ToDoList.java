@@ -15,11 +15,15 @@ import java.util.Date;
 public class ToDoList implements Entity{
     private int id ;
     private String title;
+    private String ownerName;
     private int ownerId;
     private String deadLine;
     private String startTime;
     private String color;
     private String description;
+    private int numberOfTaskes;
+    private int numberOfCollaborators;
+    
     private ArrayList<Items> taskes;
     private ArrayList<User> collaborator;
     private String status;
