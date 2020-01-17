@@ -15,6 +15,7 @@ import org.json.JSONException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.Notification;
@@ -41,7 +42,7 @@ public class Request implements HttpRequest {
         repository = new Repository();
     }
 
-    public JSONObject post(String[] paramter, JSONObject body, HttpRequestHandler handler) {
+    public JSONObject post(String[] paramter, JSONObject body, HttpRequestHandler handler) throws JSONException, SQLException {
 
         /*Elesdody*/
         if (paramter[1].equals("list")) {
@@ -129,7 +130,53 @@ public class Request implements HttpRequest {
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
+        }
+        if(paramter[1].equals("Assignnotification"))
+        {
+           /*   int fromUserId = 0 ;
+              int toUserId = 0;
+              int type = 0;
+              int status=0;
+              int dataId=0;
+            try {
+                fromUserId =  (int) body.get("fromUserId");
+                toUserId =  (int) body.get("toUserId");
+                type = (int) body.get("type");
+                status=(int) body.get("status");
+                dataId=(int) body.get("dataId");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                Notifications notificationData=new Notifications();
+                notificationData.setFromUserId(fromUserId);
+                notificationData.setToUserId(toUserId);
+                notificationData.setType(type);
+                
+   try {
+                    repository.insertNotificationToDataBase(notificationData);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                }*/
+            JSONArray notificationArray=body.getJSONArray("listOfNotifications");
+            List<Notifications>notificationList=new ArrayList<Notifications>();
+            for(int i=0;i<notificationArray.length();i++){
+            JSONObject notification = notificationArray.getJSONObject(i);
+             Notifications notificationData=new Notifications();
+                notificationData.setFromUserId(notification.getInt("fromUserId"));
+                notificationData.setToUserId(notification.getInt("toUserId"));
+                notificationData.setType(notification.getInt("type"));
+                notificationData.setDataId(notification.getInt("dataId"));
+                notificationData.setStatus(notification.getInt("status"));
+                notificationList.add(notificationData);
+                
+            }
+            repository.insertNotificationToDataBase(notificationList);
+
+            } 
+                
+               
+       
+        /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
             try {
                 User user = getUserFromJson(body);
                 JSONObject respond = repository.getUser(user);
@@ -234,7 +281,7 @@ public class Request implements HttpRequest {
         if (paramter[1].equals("getTeamMemberInToDo")) {
             ArrayList<User> teamMember = null;
             try {
-                teamMember = repository.getTeamMemberFromDataBase();
+                teamMember = repository.getTeamMemberFromDataBase(Integer.parseInt(paramter[2]));
                 Gson gson = new GsonBuilder().create();
                 String TodoItemsArray = gson.toJson(teamMember);
                 JSONArray TeamMemberjsonArray = new JSONArray(TodoItemsArray);
@@ -248,7 +295,56 @@ public class Request implements HttpRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        /**/
+          if (paramter[1].equals("getTaskMemberInToDo")) {
+            ArrayList<User> taskMember = null;
+            try {
+                taskMember = repository.getTaskMemberFromDataBase(Integer.parseInt(paramter[2]));
+                Gson gson = new GsonBuilder().create();
+                String taskMemberArray = gson.toJson(taskMember);
+                JSONArray TeamMemberjsonArray = new JSONArray(taskMemberArray);
+                JSONObject jsonObjectOfTaskMember = new JSONObject();
+                jsonObjectOfTaskMember.put("listOfTaskMember", TeamMemberjsonArray);
+                return jsonObjectOfTaskMember;
 
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        /**/
+  if (paramter[1].equals("getnotificationInTask")) {
+            ArrayList<Notifications> listOfNotifications = null;
+            try {
+                listOfNotifications = repository.getNotificationsFromDataBase(Integer.parseInt(paramter[2]));
+                Gson gson = new GsonBuilder().create();
+                String NotificationsArray = gson.toJson(listOfNotifications);
+                JSONArray TeamMemberjsonArray = new JSONArray(NotificationsArray);
+                JSONObject jsonObjectOfNotifications = new JSONObject();
+                jsonObjectOfNotifications.put("listOfNotifications", TeamMemberjsonArray);
+                return jsonObjectOfNotifications;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    if (paramter[1].equals("getUser")) 
+    {
+            try {
+                User user=repository.getUserData(Integer.parseInt(paramter[2]));
+           JSONObject jsonBbjOfUser=user.getUserAsJson();
+           return jsonBbjOfUser;
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+    }
         /*Sara*/
         return null;
     }
@@ -359,6 +455,15 @@ public class Request implements HttpRequest {
    if (paramter[1].equals("task")) {
             try {
                 int result = repository.deleteTask(Integer.parseInt(paramter[2]));
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+        }
+    if (paramter[1].equals("teammember")) {
+            try {
+                int result = repository.deleteTeamMember(Integer.parseInt(paramter[2]));
                 return result;
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);

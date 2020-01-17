@@ -65,9 +65,10 @@ public class User implements Entity{
         
         return user;
     }
-    
-    
-    
-    
+
+    public void setId(int id) {
+        this.id = id;
+    }
+   
     
 }

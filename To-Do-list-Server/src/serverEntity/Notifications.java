@@ -43,6 +43,21 @@ public class Notifications {
         this.dataId = dataId;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setDataId(int dataId) {
+        this.dataId = dataId;
+    }
+
+    public Notifications() {
+    }
+
     public int getId() {
         return id;
     }
@@ -81,4 +96,17 @@ public class Notifications {
     public void setDataName(String dataName) {
         this.dataName = dataName;
     }
+
+    public void setFromUserId(int fromUserId) {
+        this.fromUserId = fromUserId;
+    }
+
+    public void setToUserId(int toUserId) {
+        this.toUserId = toUserId;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+    
 }

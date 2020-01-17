@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -92,6 +94,8 @@ public class HttpRequestHandler extends Thread {
             } catch (IOException | JSONException ex) {
                 System.out.println(ex.getMessage());
                 connected=false;
+            } catch (SQLException ex) {
+                Logger.getLogger(HttpRequestHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
