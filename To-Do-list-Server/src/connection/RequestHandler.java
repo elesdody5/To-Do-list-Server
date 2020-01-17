@@ -11,10 +11,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.Vector;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import serverDatabase.Repository;
+import serverEntity.User;
 
 /**
  *
@@ -24,7 +28,8 @@ public class RequestHandler extends Thread {
 
     private BufferedReader in;
     private PrintStream ps;
-   private Socket s;
+    private Socket s;
+    private Repository repository;
 
     public BufferedReader getBufferReader() {
         return in;
@@ -43,6 +48,7 @@ public class RequestHandler extends Thread {
             this.s = s;
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             ps = new PrintStream(s.getOutputStream());
+            repository = new Repository();
             start();
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -88,11 +94,18 @@ public class RequestHandler extends Thread {
                         
                         //ps.println(REQUEST.END);
                         break;
-
+                    case REQUEST.LOGOUT:
+                        int id = Integer.parseInt(paramter[1]);
+                        System.out.println(id);
+                        ArrayList<User> friends = repository.getUserFriends(id);
+                        Client.notifiyFriends(friends,REQUEST.FRIEND_OFFLINE);
+                        Client.removeClient(id);  
                 }
             } catch (IOException | JSONException ex) {
                 System.out.println(ex.getMessage());
                 connected=false;
+            } catch (SQLException ex) {
+                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

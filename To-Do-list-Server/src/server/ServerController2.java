@@ -5,6 +5,7 @@
  */
 package server;
 
+import connection.Client;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -34,7 +35,8 @@ import serverEntity.ToDoList;
 import serverEntity.User;
 import statisticsManager.DataCenter;
 import statisticsManager.Entity.UserData;
-import statisticsManager.UserCellFactory;
+import statisticsManager.TodoList.ListCellFactory;
+import statisticsManager.UserList.UserCellFactory;
 
 /**
  *
@@ -64,8 +66,6 @@ public class ServerController2 implements Initializable {
     @FXML
     private ListView<User> userList_id;
     @FXML
-    private ListView<ToDoList> todoList_id;
-    @FXML
     private Pane userPane_id;
     @FXML
     private HBox users_btn_id;
@@ -77,13 +77,30 @@ public class ServerController2 implements Initializable {
     private Label lists_id;
     @FXML
     private Label tasks_id;
+    @FXML
+    private Label numberOfUsers_id;
+    @FXML
+    private Label onlineUsers_id;
+    @FXML
+    private Label numberOfList_id;
+
+    private int users;
+    private Client clientHandler;
+    @FXML
+    private ListView<ToDoList> todoList_id;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+        System.out.println("initializing method");
+
         dataCenter = new DataCenter();
+
         isStart = false;
         stop_id.setDisable(true);
+
+        setGeneralData();
+        setUserList();
+        setToDoList();
 
         borderPane_id.setOnMousePressed((MouseEvent event) -> {
             xOffset = stage.getX() - event.getScreenX();
@@ -97,8 +114,6 @@ public class ServerController2 implements Initializable {
             }
 
         });
-        
-        setUserList();
 
     }
 
@@ -160,6 +175,8 @@ public class ServerController2 implements Initializable {
     private void setUserList() {
         try {
             ArrayList<User> list = dataCenter.getListOfUsers();
+            users = (list != null) ? list.size() : 0;
+
             System.out.println("users:" + list.size());
             ObservableList<User> users = FXCollections.observableArrayList(list);
             userList_id.setItems(users);
@@ -170,9 +187,9 @@ public class ServerController2 implements Initializable {
                 public void changed(ObservableValue<? extends User> observable, User oldValue, User newValue) {
                     try {
                         UserData userData = dataCenter.getUserData(newValue.getId());
-                        friends_id.setText(userData.getNumberOfFriends()+"");
-                        lists_id.setText(userData.getNumberOfLists()+"");
-                        tasks_id.setText(userData.getNumberOfItemAssign()+"");
+                        friends_id.setText(userData.getNumberOfFriends() + "");
+                        lists_id.setText(userData.getNumberOfLists() + "");
+                        tasks_id.setText(userData.getNumberOfItemAssign() + "");
                     } catch (SQLException ex) {
                         Logger.getLogger(ServerController2.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -186,4 +203,67 @@ public class ServerController2 implements Initializable {
         }
     }
 
+    private void setToDoList() {
+        try {
+            todoList_id.refresh();
+            ArrayList<ToDoList> list = dataCenter.getToDoList();
+            System.out.println("lists:" + list.size());
+            ObservableList<ToDoList> observableToDoList = FXCollections.observableArrayList(list);
+            todoList_id.setCellFactory(new ListCellFactory());
+            todoList_id.setItems(observableToDoList);
+            todoList_id.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+            todoList_id.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ToDoList>() {
+                @Override
+                public void changed(ObservableValue<? extends ToDoList> observable, ToDoList oldValue, ToDoList newValue) {
+                    System.out.println("title: " + newValue.getTitle() + "\n" + "ID:" + newValue.getId());
+                }
+
+            });
+        } catch (SQLException ex) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setContentText(" No Users in DataBase");
+            alert.show();
+        }
+    }
+
+    public void setNumberOfOnlineUsers(int numberOfOnlineUsers) {
+        onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
+    }
+
+    private void setGeneralData() {
+        try {
+
+            int numberOfLists = dataCenter.getNumberOfLists();
+            int numberOfUsers = dataCenter.getNumberOfUsers();
+            int numberOfOnlineUsers = Client.getclientVector().size();
+
+            numberOfList_id.setText(String.valueOf(numberOfLists));
+            numberOfUsers_id.setText(String.valueOf(numberOfUsers));
+            onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
+
+        } catch (SQLException ex) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setContentText("no List Exist in dataBase");
+            alert.show();
+        }
+
+    }
+
+    /*public void setOnlineUsersNumber(int numberOfOnlineUsers){
+       onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
+   }*/
+    //test 
+    public void setListOfTodoList() throws SQLException {
+        ArrayList<ToDoList> lists = dataCenter.getToDoList();
+        ObservableList<ToDoList> observableListOfToDoList = FXCollections.observableArrayList(lists);
+        todoList_id.getItems().addAll(observableListOfToDoList);
+        todoList_id.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        todoList_id.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ToDoList>() {
+            @Override
+            public void changed(ObservableValue<? extends ToDoList> observable, ToDoList oldValue, ToDoList newValue) {
+                System.out.println("title: " + newValue.getTitle() + "\n" + "ID:" + newValue.getId());
+            }
+
+        });
+    }
 }

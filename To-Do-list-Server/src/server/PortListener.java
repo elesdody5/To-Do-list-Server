@@ -13,6 +13,9 @@ import java.net.Socket;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
  *
@@ -52,7 +55,14 @@ public class PortListener {
 
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            Platform.runLater(new Runnable(){
+                @Override
+                public void run() {
+                    Alert alert = new Alert(AlertType.ERROR);
+                }
+                
+            });
+            
         }
     }
 
