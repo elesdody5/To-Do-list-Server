@@ -13,8 +13,10 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
+import org.json.JSONException;
 import org.json.JSONObject;
 import serverEntity.Notifications;
+import serverEntity.User;
 
 /**
  *
@@ -22,7 +24,7 @@ import serverEntity.Notifications;
  */
 public class Client {
 
-    private int id;
+   private int id;
     private String clientName;
     private BufferedReader in;
     private PrintStream ps;
@@ -56,31 +58,87 @@ public class Client {
     public static Vector<Client> getclientVector() {
         return clientVector;
     }
-/*Elesdody*/
+
+    /*Elesdody*/
     public static void notifyCollaborator(ArrayList<Notifications> notifications) {
-        
+
         for (Notifications notification : notifications) {
-         for(Client client : clientVector)
-         {
-             if(client.getId()==notification.getToUserId())
-             {
-                 client.ps.println(REQUEST.NOTIFICATION);
-                 client.ps.println(toNotifcationJson(notification));
-                 // to notifiy user end of data
-                 client.ps.println(REQUEST.END);
-             }
-         }
+            for (Client client : clientVector) {
+                if (client.getId() == notification.getToUserId()) {
+                    client.ps.println(REQUEST.NOTIFICATION);
+                    client.ps.println(toNotifcationJson(notification));
+                    // to notifiy user end of data
+                    client.ps.println(REQUEST.END);
+                }
+            }
         }
     }
 
-private static  String toNotifcationJson(Notifications notification)
-{
-    Gson gson = new GsonBuilder().create();
-    return gson.toJson(notification);
+    public static ArrayList<User> getOnlineUser(ArrayList<User> friends) {
+        ArrayList<User> online = new ArrayList<>();
+        clientVector.forEach((client) -> {
+            friends.forEach((frined) -> {
+                if (frined.getId() == client.id) {
+                    online.add(new User(client.id, client.clientName));
+                }
 
-}
-/*Elesdody*/
+            });
+        });
+        return online;
 
+    }
+
+    private static String toNotifcationJson(Notifications notification) {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(notification);
+
+    }
+
+    /*Elesdody*/
+ /*ghadeer*/
+    public static void notify(Notifications notification) {
+
+        for (Client client : clientVector) {
+            if (client.getId() == notification.getToUserId()) {
+                client.ps.println(REQUEST.NOTIFICATION);
+                client.ps.println(toNotifcationJson(notification));
+                // to notifiy user end of data
+                client.ps.println(REQUEST.END);
+            }
+        }
+    }
+
+
+    /*ghadeer*/
+    public static void removeClient(int userId) {
+        for (int i = 0; i < clientVector.size(); i++) {
+            if (clientVector.get(i).getId() == userId) {
+                clientVector.remove(i);
+            }
+        }
+    }
+
+    public static void addClient(Client client) {
+        if (client != null) {
+            clientVector.add(client);
+        }
+    }
+
+    public static void notifiyFriends(User user, ArrayList<User> friends, String friendStatus) throws JSONException {
+        //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
+        JSONObject userAsJson = user.getUserAsJson();
+        System.out.println(userAsJson.getInt("ID"));
+        for (User u : friends) {
+            for (int i = 0; i < clientVector.size(); i++) {
+                Client client = clientVector.get(i);
+                if (client.getId() == u.getId()) {
+                    client.ps.println(friendStatus);
+                    client.ps.println(userAsJson);
+                    client.ps.println(REQUEST.END);
+                }
+            }
+        }
+    }
 /*Aml */
 public static void notifyUsetWithFriendRequest (Notifications notification){
     for(Client client :clientVector){
@@ -92,4 +150,5 @@ public static void notifyUsetWithFriendRequest (Notifications notification){
         }
     }
 }
+/*Aml */
         }

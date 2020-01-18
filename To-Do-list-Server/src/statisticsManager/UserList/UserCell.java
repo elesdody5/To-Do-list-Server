@@ -1,9 +1,10 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package statisticsManager;
+package statisticsManager.UserList;
 
 
 
@@ -33,14 +34,14 @@ public class UserCell extends ListCell<User> {
     public UserCell() {
         if (loader == null) {
             
-            loader = new FXMLLoader(getClass().getResource("/statisticsManager/userItemFXML.fxml"));
+            loader = new FXMLLoader(getClass().getResource("/statisticsManager/UserList/userItemFXML.fxml"));
             loader.setController(this);
         }
         
         try {
                 loader.load();
             } catch (IOException ex) {
-                Logger.getLogger(UserCell.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
     }
 
