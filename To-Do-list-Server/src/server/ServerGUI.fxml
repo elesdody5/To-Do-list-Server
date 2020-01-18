@@ -141,7 +141,7 @@
                               <Font name="NSimSun" size="18.0" />
                            </font>
                         </Label>
-                        <Label fx:id="onlineUsers_id" contentDisplay="CENTER" layoutX="385.0" layoutY="48.0" prefHeight="43.0" prefWidth="0.0">
+                        <Label fx:id="onlineUsers_id" contentDisplay="CENTER" layoutX="385.0" layoutY="48.0" prefHeight="43.0" prefWidth="0.0" text="0">
                            <font>
                               <Font size="29.0" />
                            </font>

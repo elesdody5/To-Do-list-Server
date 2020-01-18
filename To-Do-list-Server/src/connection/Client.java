@@ -13,9 +13,10 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
+import javafx.application.Platform;
 import org.json.JSONException;
 import org.json.JSONObject;
-import server.ServerController2;
+import server.ToDoListServer;
 import serverEntity.Notifications;
 import serverEntity.User;
 
@@ -30,6 +31,7 @@ public class Client {
     private BufferedReader in;
     private PrintStream ps;
     private Socket s;
+
     private static Vector<Client> clientVector = new Vector<>();
 
     public Client(int id, String clientName, RequestHandler httpRequestHandler) {
@@ -118,8 +120,20 @@ public class Client {
                 break;
             }
         }
-        ServerController2.updateOlineUser(clientVector.size());
+        Platform.runLater(() -> {
+            ToDoListServer.controller.onlineUsers_id.setText(clientVector.size() + "");
+        });
         System.out.println("client size:" + clientVector.size());
+
+    }
+
+    public static boolean isInVector(int id) {
+        for (Client client : clientVector) {
+            if (client.getId() == id) {
+                return true;
+            }
+        }
+        return false;
 
     }
 
@@ -129,7 +143,9 @@ public class Client {
             System.out.println("vector: " + clientVector.size());
             //updateUIforServer(clientVector.size());
         }
-        ServerController2.updateOlineUser(clientVector.size());
+        Platform.runLater(() -> {
+            ToDoListServer.controller.onlineUsers_id.setText(clientVector.size() + "");
+        });
     }
 
     public static void notifiyFriends(User user, ArrayList<User> friends, String friendStatus) throws JSONException {
@@ -162,4 +178,3 @@ public class Client {
     }
     /*Aml */
 }
-
