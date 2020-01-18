@@ -149,9 +149,10 @@ public class Repository {
                 pre.setInt(2, toUserId);
                 pre.setInt(3, REQUEST_FRIEND);
                 pre.setInt(4, NORESPONSE_COLLABORATOR_REQUEST);
-
                 x = pre.executeUpdate();
-                System.out.println("=" + x);
+                if(x >0) {
+                 getGeneratedId(pre);        
+                }
                 return x;
             } catch (SQLException ex) {
                 Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
@@ -404,7 +405,9 @@ public class Repository {
                 pre.setInt(3, notification.getType());
                 pre.setInt(4, notification.getDataId());
                 x = pre.executeUpdate();
-
+                 if (x > 0) {
+               getGeneratedId(pre);
+            }
             }
         }
         return x;
@@ -615,6 +618,10 @@ public int removeCollab(ArrayList<User> users) throws SQLException {
     
     
     /*Ghader*/
+       int generatedId = -1;
+    public int sendGeneratedId (){
+         return generatedId ;       
+     }
     public int updateUserName(String id, String name) {
         if (isNameNotFound(name) == 1) {
             String sql = "Update User_table set User_name = ? where ID= ?";
@@ -704,6 +711,9 @@ public int removeCollab(ArrayList<User> users) throws SQLException {
             stmt.setInt(1, userId);
             stmt.setInt(2, listId);
             int res = stmt.executeUpdate();
+             if (res > 0) {
+               getGeneratedId(stmt);
+            }
             stmt.close();
             return res;
         } catch (SQLException ex) {
@@ -722,7 +732,9 @@ public int removeCollab(ArrayList<User> users) throws SQLException {
             stmt.setInt(1, userId);
             stmt.setInt(2, itemId);
             int res = stmt.executeUpdate();
-            System.out.println("res: " + res);
+             if (res > 0) {
+               getGeneratedId(stmt);
+            }
             stmt.close();
             return res;
         } catch (SQLException ex) {
@@ -742,6 +754,9 @@ public int removeCollab(ArrayList<User> users) throws SQLException {
             stmt.setInt(2, friendId);
             int res = stmt.executeUpdate();
             stmt.close();
+             if (res > 0) {
+               getGeneratedId(stmt);
+            }
             return res;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
@@ -752,7 +767,6 @@ public int removeCollab(ArrayList<User> users) throws SQLException {
 
     //after receiver accepts list request we notify sender of this request
     public int addNewNotToSenderRequest(int fromUserId, int toUserId, int type, int status, int dataId) {
-        int generatedId = -1;
         String sql = "Insert into notification(fromUserId,toUserId,Type,Status,DATAId) Values(?,?,?,?,?)";
         PreparedStatement stmt;
         try {
@@ -765,24 +779,29 @@ public int removeCollab(ArrayList<User> users) throws SQLException {
             stmt.setInt(5, dataId);
             int res = stmt.executeUpdate();
             if (res > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        generatedId = generatedKeys.getInt(1);
-                    } else {
-                        throw new SQLException("Creating user failed, no ID obtained.");
-                    }
-                }
-
+               getGeneratedId(stmt);
             }
             stmt.close();
-
+            return 1;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        return generatedId;
+        return 0;
     }
-
+    
+   public void getGeneratedId (PreparedStatement stmt){
+       
+        try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        generatedId = generatedKeys.getInt(1);
+                    } else {
+                        throw new SQLException("Creating no row failed ");
+                    }
+         } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+   }
     /*Ghader*/
  
  /*Sara*/
