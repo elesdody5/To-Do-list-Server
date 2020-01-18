@@ -36,11 +36,22 @@ public class Notifications {
         this.dataId = dataId;
     }
 
-    public Notifications(int fromUserId, int toUserId, int type, int dataId) {
+
+    public Notifications(int fromUserId, int toUserId, int type, int status) {
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
+        this.type = type;
+        this.status = status;
+    }
+
+    public Notifications(int fromUserId,String fromUserName ,int toUserId, int type, int status, int dataId) {
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.type = type;
         this.dataId = dataId;
+        this.status = status;
+        this.fromUsername = fromUserName;
+
         
     }
 
@@ -50,6 +61,21 @@ public class Notifications {
         this.toUserId = toUserId;
         this.type = type;
         this.status = status;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void setDataId(int dataId) {
+        this.dataId = dataId;
+    }
+
+    public Notifications() {
     }
 
     public int getId() {
@@ -90,5 +116,18 @@ public class Notifications {
     public void setDataName(String dataName) {
         this.dataName = dataName;
     }
+
+    public void setFromUserId(int fromUserId) {
+        this.fromUserId = fromUserId;
+    }
+
+    public void setToUserId(int toUserId) {
+        this.toUserId = toUserId;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+    
 
 }

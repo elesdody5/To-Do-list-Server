@@ -36,6 +36,15 @@ public class ToDoList implements Entity{
         return taskes;
     }
 
+    public void setCollab(ArrayList<User> collaborator)
+    {
+        this.collaborator= collaborator;
+    }
+
+    public ArrayList<User> getCollaborator() {
+        return collaborator;
+    }
+   
     public ToDoList(int id, String title, int ownerId, String deadLine, String startTime, String color, String description, ArrayList<Items> taskes,ArrayList<User> collaborator) {
         this.id = id;
         this.title = title;

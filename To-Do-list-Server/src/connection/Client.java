@@ -75,6 +75,20 @@ public class Client {
         }
     }
 
+    public static ArrayList<User> getOnlineUser(ArrayList<User> friends) {
+        ArrayList<User> online = new ArrayList<>();
+        clientVector.forEach((client) -> {
+            friends.forEach((frined) -> {
+                if (frined.getId() == client.id) {
+                    online.add(new User(client.id, client.clientName));
+                }
+
+            });
+        });
+        return online;
+
+    }
+
     private static String toNotifcationJson(Notifications notification) {
         Gson gson = new GsonBuilder().create();
         return gson.toJson(notification);
@@ -112,7 +126,7 @@ public class Client {
     public static void addClient(Client client) {
         if (client != null) {
             clientVector.add(client);
-            System.out.println("vector: "+clientVector.size());
+            System.out.println("vector: " + clientVector.size());
             //updateUIforServer(clientVector.size());
         }
         ServerController2.updateOlineUser(clientVector.size());
@@ -122,15 +136,30 @@ public class Client {
         //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
         JSONObject userAsJson = user.getUserAsJson();
 
+        System.out.println(userAsJson.getInt("ID"));
         for (User u : friends) {
             for (int i = 0; i < clientVector.size(); i++) {
                 Client client = clientVector.get(i);
                 if (client.getId() == u.getId()) {
                     client.ps.println(friendStatus);
                     client.ps.println(userAsJson);
+                    client.ps.println(REQUEST.END);
                 }
             }
         }
     }
 
+
+    /*Aml */
+    public static void notifyUsetWithFriendRequest(Notifications notification) {
+        for (Client client : clientVector) {
+            if (client.getId() == notification.getToUserId()) {
+                client.ps.println(REQUEST.NOTIFICATION);
+                client.ps.println(toNotifcationJson(notification));
+                client.ps.println(REQUEST.END);
+            }
+        }
+    }
+    /*Aml */
 }
+
