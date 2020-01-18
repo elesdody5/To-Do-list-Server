@@ -101,10 +101,10 @@ public class RequestHandler extends Thread {
                         Client.removeClient(id);  
                 }
             } catch (IOException | JSONException ex) {
-                System.out.println(ex.getMessage());
+
                 connected=false;
             } catch (SQLException ex) {
-                Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);
+
             }
         }
     }

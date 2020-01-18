@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 import org.json.JSONException;
 import org.json.JSONObject;
+import server.ServerController2;
 import serverEntity.Notifications;
 import serverEntity.User;
 
@@ -22,8 +23,6 @@ import serverEntity.User;
  *
  * @author Ashraf Mohamed
  */
-
-
 public class Client {
 
     private int id;
@@ -83,7 +82,7 @@ public class Client {
     }
 
     /*Elesdody*/
-    /*ghadeer*/
+ /*ghadeer*/
     public static void notify(Notifications notification) {
 
         for (Client client : clientVector) {
@@ -98,25 +97,31 @@ public class Client {
 
 
     /*ghadeer*/
-    
     public static void removeClient(int userId) {
         for (int i = 0; i < clientVector.size(); i++) {
             if (clientVector.get(i).getId() == userId) {
                 clientVector.remove(i);
+                break;
             }
         }
+        ServerController2.updateOlineUser(clientVector.size());
+        System.out.println("client size:" + clientVector.size());
+
     }
 
     public static void addClient(Client client) {
         if (client != null) {
             clientVector.add(client);
+            System.out.println("vector: "+clientVector.size());
+            //updateUIforServer(clientVector.size());
         }
+        ServerController2.updateOlineUser(clientVector.size());
     }
 
-    public static void notifiyFriends(User user,ArrayList<User> friends, String friendStatus) throws JSONException {
+    public static void notifiyFriends(User user, ArrayList<User> friends, String friendStatus) throws JSONException {
         //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
         JSONObject userAsJson = user.getUserAsJson();
-        
+
         for (User u : friends) {
             for (int i = 0; i < clientVector.size(); i++) {
                 Client client = clientVector.get(i);
@@ -127,5 +132,5 @@ public class Client {
             }
         }
     }
-}
 
+}

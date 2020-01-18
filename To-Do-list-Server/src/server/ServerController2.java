@@ -10,8 +10,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -71,8 +70,9 @@ public class ServerController2 implements Initializable {
 
     @FXML
     private Label numberOfUsers_id;
+    
     @FXML
-    private Label onlineUsers_id;
+    private static Label onlineUsers_id = new Label();
     @FXML
     private Label numberOfList_id;
 
@@ -81,6 +81,12 @@ public class ServerController2 implements Initializable {
     private ListView<ToDoList> todoList_id;
     @FXML
     private BarChart bar_chart_id;
+    @FXML
+    private HBox users_btn_id;
+    @FXML
+    private HBox lists_btn_id1;
+    @FXML
+    private Pane userPane_id;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -90,24 +96,22 @@ public class ServerController2 implements Initializable {
         bar_chart_id.autosize();
         isStart = false;
         stop_id.setDisable(true);
-
+        
         setGeneralData();
         setUserList();
         setToDoList();
-
+        
         borderPane_id.setOnMousePressed((MouseEvent event) -> {
             xOffset = stage.getX() - event.getScreenX();
             yOffset = stage.getY() - event.getScreenY();
         });
-
         borderPane_id.setOnMouseDragged((MouseEvent event) -> {
             if (!stage.isFullScreen()) {
                 stage.setX(event.getScreenX() + xOffset);
                 stage.setY(event.getScreenY() + yOffset);
             }
-
         });
-
+        
     }
 
     @FXML
@@ -243,7 +247,6 @@ public class ServerController2 implements Initializable {
 
             numberOfList_id.setText(String.valueOf(numberOfLists));
             numberOfUsers_id.setText(String.valueOf(numberOfUsers));
-            onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
 
         } catch (SQLException ex) {
             Alert alert = new Alert(AlertType.ERROR);
@@ -258,7 +261,7 @@ public class ServerController2 implements Initializable {
    }*/
     //set user bar Chart 
     private void setUserBarChart(UserData data) {
-       
+
         bar_chart_id.getData().clear();
         bar_chart_id.getXAxis().setLabel("User Data");
         bar_chart_id.getYAxis().setLabel("Number");
@@ -283,4 +286,12 @@ public class ServerController2 implements Initializable {
         dataSeries.getData().add(new XYChart.Data("Collaborators", data.getNumberOfCollaborator()));
         bar_chart_id.getData().add(dataSeries);
     }
+
+    // update Number of online users
+    public static void updateOlineUser(int number) {
+        Platform.runLater(() -> {
+            onlineUsers_id.setText(number + "");
+        });
+    }
+
 }
