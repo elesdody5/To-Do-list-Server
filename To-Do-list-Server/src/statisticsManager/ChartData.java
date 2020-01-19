@@ -2,14 +2,14 @@
 package statisticsManager;
 
 
-public class chartData {
+public class ChartData {
     
     
     private int [] ySeries;
     private String [] xSeries;
     private String title;
 
-    public chartData(int[] ySeries, String[] xSeries, String title) {
+    public ChartData(int[] ySeries, String[] xSeries, String title) {
         this.ySeries = ySeries;
         this.xSeries = xSeries;
         this.title = title;

@@ -13,9 +13,13 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Vector;
+import javafx.application.Platform;
 import org.json.JSONException;
 import org.json.JSONObject;
+import server.ToDoListServer;
+import serverEntity.Items;
 import serverEntity.Notifications;
+import serverEntity.ToDoList;
 import serverEntity.User;
 
 /**
@@ -23,14 +27,14 @@ import serverEntity.User;
  * @author Ashraf Mohamed
  */
 public class Client {
-
-   private int id;
+    
+    private int id;
     private String clientName;
     private BufferedReader in;
     private PrintStream ps;
     private Socket s;
     private static Vector<Client> clientVector = new Vector<>();
-
+    
     public Client(int id, String clientName, RequestHandler httpRequestHandler) {
         this.id = id;
         this.clientName = clientName;
@@ -38,34 +42,35 @@ public class Client {
         this.in = httpRequestHandler.getBufferReader();
         this.ps = httpRequestHandler.getPrintStream();
     }
-
+    
     public int getId() {
         return id;
     }
-
+    
     public void setId(int id) {
         this.id = id;
     }
-
+    
     public String getClientName() {
         return clientName;
     }
-
+    
     public void setClientName(String clientName) {
         this.clientName = clientName;
     }
-
+    
     public static Vector<Client> getclientVector() {
         return clientVector;
     }
 
     /*Elesdody*/
     public static void notifyCollaborator(ArrayList<Notifications> notifications) {
-
+        
         for (Notifications notification : notifications) {
             for (Client client : clientVector) {
                 if (client.getId() == notification.getToUserId()) {
                     client.ps.println(REQUEST.NOTIFICATION);
+                    
                     client.ps.println(toNotifcationJson(notification));
                     // to notifiy user end of data
                     client.ps.println(REQUEST.END);
@@ -73,7 +78,7 @@ public class Client {
             }
         }
     }
-
+    
     public static ArrayList<User> getOnlineUser(ArrayList<User> friends) {
         ArrayList<User> online = new ArrayList<>();
         clientVector.forEach((client) -> {
@@ -81,26 +86,47 @@ public class Client {
                 if (frined.getId() == client.id) {
                     online.add(new User(client.id, client.clientName));
                 }
-
+                
             });
         });
         return online;
+        
+    }
+      public static boolean isInVector(int id) {
+        for (Client client : clientVector) {
+            if (client.getId() == id) {
+                return true;
+            }
+        }
+        return false;
 
     }
-
+    
     private static String toNotifcationJson(Notifications notification) {
         Gson gson = new GsonBuilder().create();
         return gson.toJson(notification);
+        
+    }
 
+    private static String toUserJson(User user) {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(user);
+        
+    }
+      private static String toTODOJson(ToDoList list) {
+        Gson gson = new GsonBuilder().create();
+        return gson.toJson(list);
+        
     }
 
     /*Elesdody*/
- /*ghadeer*/
+    /*ghadeer*/
     public static void notify(Notifications notification) {
-
+        
         for (Client client : clientVector) {
             if (client.getId() == notification.getToUserId()) {
                 client.ps.println(REQUEST.NOTIFICATION);
+                System.out.println("notify: " + notification.getToUserName());
                 client.ps.println(toNotifcationJson(notification));
                 // to notifiy user end of data
                 client.ps.println(REQUEST.END);
@@ -108,6 +134,63 @@ public class Client {
         }
     }
 
+    public static void addCollabortor(int userId, int todoId, ArrayList<User> allColl) {
+        
+        for (Client client : clientVector) {
+            for (User collId : allColl) {    
+              if(client.getId() != userId)  {
+                if (client.getId() == collId.getId()) {
+                    client.ps.println(REQUEST.NEWCOLLABORATOR);
+                    System.out.println("addCOll id: " + collId.getId());
+                    client.ps.println(toUserJson(collId));
+                    // to notifiy user end of data
+                    client.ps.println(REQUEST.END);
+                }
+              }
+            }  
+        }
+    }
+    
+    public static void addSharedListToNewCollabortor(int userId, ToDoList list) {
+        
+        for (Client client : clientVector) {   
+              if(client.getId() == userId)  {       
+                    client.ps.println(REQUEST.SHAREDTODO);
+                    System.out.println("addSharedList id: " + list.getId());
+                    client.ps.println(toTODOJson(list));
+                    // to notifiy user end of data
+                    client.ps.println(REQUEST.END);
+                }
+        }
+    }
+
+    public static void addTask(int userId, int todoId, ArrayList<Integer> allColl) {
+        
+        for (Client client : clientVector) {
+            for (int collId : allColl) {                
+                if (client.getId() != collId) {
+                    client.ps.println(REQUEST.TODO);
+                    System.out.println("addCOll id: " + collId);
+               // client.ps.println(toNotifcationJson(notification));
+                    // to notifiy user end of data
+                    client.ps.println(REQUEST.END);
+                }
+            }
+        }
+    }
+
+    public static void addFriend(User userObj, User friendObj) {
+//
+//        for (Client client : clientVector) {
+//            if (client.getId() == ) {
+//                client.ps.println(REQUEST.NOTIFICATION);
+//                System.out.println("notify: "+ notification.getToUserName());
+//                client.ps.println(toNotifcationJson(notification));
+//                // to notifiy user end of data
+//                client.ps.println(REQUEST.END);
+//            }
+//        }
+    }
 
     /*ghadeer*/
     public static void removeClient(int userId) {
@@ -117,16 +200,20 @@ public class Client {
             }
         }
     }
-
+    
     public static void addClient(Client client) {
         if (client != null) {
             clientVector.add(client);
         }
+        Platform.runLater(() -> {
+            ToDoListServer.controller.onlineUsers_id.setText(clientVector.size() + "");
+        });
     }
-
+    
     public static void notifiyFriends(User user, ArrayList<User> friends, String friendStatus) throws JSONException {
         //friend status (REQUEST.ONLINE - REQUEST.OFFLINE)
         JSONObject userAsJson = user.getUserAsJson();
+
         System.out.println(userAsJson.getInt("ID"));
         for (User u : friends) {
             for (int i = 0; i < clientVector.size(); i++) {
@@ -139,16 +226,15 @@ public class Client {
             }
         }
     }
-/*Aml */
-public static void notifyUsetWithFriendRequest (Notifications notification){
-    for(Client client :clientVector){
-        if (client.getId() == notification.getToUserId())
-        {
-            client.ps.println(REQUEST.NOTIFICATION);
-            client.ps.println(toNotifcationJson(notification));
-            client.ps.println(REQUEST.END);
+    /*Aml */
+    public static void notifyUsetWithFriendRequest(Notifications notification) {
+        for (Client client : clientVector) {
+            if (client.getId() == notification.getToUserId()) {
+                client.ps.println(REQUEST.NOTIFICATION);
+                client.ps.println(toNotifcationJson(notification));
+                client.ps.println(REQUEST.END);
+           }
         }
     }
+    /*Aml */
 }
-/*Aml */
-        }

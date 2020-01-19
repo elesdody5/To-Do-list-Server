@@ -36,6 +36,17 @@ public class Notifications {
         this.dataId = dataId;
     }
 
+    public Notifications(int id, int fromUserId, int toUserId, String fromUsername, int type, int status, int dataId, String dataName) {
+        this.id = id;
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
+        this.fromUsername = fromUsername;
+        this.type = type;
+        this.status = status;
+        this.dataId = dataId;
+        this.dataName = dataName;
+    }
+
 
     public Notifications(int fromUserId, int toUserId, int type, int status) {
         this.fromUserId = fromUserId;

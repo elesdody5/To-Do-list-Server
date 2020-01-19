@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package serverDatabase;
 
 import Enum.NotificationKeys;
@@ -26,6 +21,7 @@ import java.util.List;
 import serverEntity.Items;
 import serverEntity.Notifications;
 import serverEntity.ToDoList;
+import statisticsManager.Entity.TodoListData;
 import statisticsManager.Entity.UserData;
 
 /**
@@ -48,7 +44,7 @@ public class Repository {
     // TODO write query methods (select ,update ,insert ,delete )
 
     /*Aml*/
-    public int insertUser(String userName, String password) {
+   public int insertUser(String userName, String password) {
         int x = -10;
         try {
             String insertString = "INSERT INTO USER_TABLE  (USER_NAME, PASSWORD)  VALUES  (" + "'" + userName + "' , " + "'" + password + "'" + ")";
@@ -157,6 +153,7 @@ public class Repository {
         
        
     }
+
 
     /*Aml*/
 
@@ -381,14 +378,19 @@ public class Repository {
     public int insertTodoNotification(ArrayList<Notifications> notifications) throws SQLException {
         int x = 0;
         for (Notifications notification : notifications) {
-            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,status,DataId) Values(?,?,?,?,?) ")) {
+            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,status,DataId) Values(?,?,?,?,?) ", Statement.RETURN_GENERATED_KEYS)) {
                 pre.setInt(1, notification.getFromUserId());
                 pre.setInt(2, notification.getToUserId());
                 pre.setInt(3, notification.getType());
                 pre.setInt(4, NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST);
                 pre.setInt(5, notification.getDataId());
                 x = pre.executeUpdate();
-
+                if (x > 0) {
+                    ResultSet rs = pre.getGeneratedKeys();
+                    if (rs != null && rs.next()) {
+                        notification.setId((int) rs.getLong(1));
+                    }
+                }
             }
         }
         return x;
@@ -572,6 +574,41 @@ public class Repository {
         return userData;
     }
 
+    public TodoListData getTodoListStatisticsData(int listId) throws SQLException {
+        String title = "No_Title";
+        String ownerName = "No_Name";
+        int items = 0;
+        int collabs = 0;
+
+        PreparedStatement statement = db.prepareStatement("select user_Table.user_name as owner_name , todo_list.title as list_title from user_table join todo_list \n"
+                + "on user_Table.ID = todo_list.OwnerId AND todo_list.ID=?;");
+        statement.setInt(1, listId);
+        ResultSet resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            title = resultSet.getString("list_title");
+            ownerName = resultSet.getString("owner_name");
+        }
+        statement = db.prepareStatement("select count(item.ID)as items from item join todo_list on item.TodoId = todo_list.ID AND todo_list.ID = ?;");
+        statement.setInt(1, listId);
+        resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            items = resultSet.getInt("items");
+        }
+        statement = db.prepareStatement("select count(*) as collabs from collab join todo_list where collab.TodoId = todo_list.ID AND todo_list.ID=?;");
+        statement.setInt(1, listId);
+        resultSet = statement.executeQuery();
+        if (resultSet.next()) {
+            collabs = resultSet.getInt("collabs");
+        }
+        TodoListData todoListData = new TodoListData();
+        todoListData.setTitle(title);
+        todoListData.setOwnerName(ownerName);
+        todoListData.setNumberOfCollaborator(collabs);
+        todoListData.setNumberOfItems(items);
+
+        return todoListData;
+    }
+
     public ArrayList<ToDoList> getListofToDoList() throws SQLException {
         Statement st = db.createStatement();
         ResultSet resultSet = st.executeQuery("SELECT * FROM TODO_LIST");
@@ -600,6 +637,12 @@ public class Repository {
 
     /*Ashraf*/
  /*Ghader*/
+    int generatedId = -1;
+
+    public int sendGeneratedId() {
+        return generatedId;
+    }
+
     public int updateUserName(String id, String name) {
         if (isNameNotFound(name) == 1) {
             String sql = "Update User_table set User_name = ? where ID= ?";
@@ -670,9 +713,9 @@ public class Repository {
             stmt = db.prepareStatement(sql);
             stmt.setInt(1, status);
             stmt.setInt(2, id);
-            int res = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
-            return res;
+            return 1;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -689,6 +732,9 @@ public class Repository {
             stmt.setInt(1, userId);
             stmt.setInt(2, listId);
             int res = stmt.executeUpdate();
+            if (res > 0) {
+                getGeneratedId(stmt);
+            }
             stmt.close();
             return res;
         } catch (SQLException ex) {
@@ -696,6 +742,93 @@ public class Repository {
         }
 
         return 0;
+    }
+
+    public ArrayList<User> selectAllCollaboratorsInList(int listId) {
+
+        String sql = "SELECT * FROM Collab , User_table WHERE userId = id and TODOiD = ?";
+        PreparedStatement stmt;
+        ArrayList<User> allColl = new ArrayList<>();
+        try {
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, listId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                allColl.add(new User(rs.getInt("id"), rs.getString("user_name")));
+                rs.close();
+                stmt.close();
+            }
+            String getOwner = "SELECT * FROM TODO_LIST list, User_table user where OwnerId = user.id and list.id = ? ";
+            PreparedStatement stmt2;
+            stmt2 = db.prepareStatement(getOwner);
+            stmt2.setInt(1, listId);
+            ResultSet rs2 = stmt2.executeQuery();
+            if (rs.next()) {
+                allColl.add(new User(rs2.getInt("id"), rs2.getString("user_name")));
+                rs.close();
+            }
+        } catch (SQLException ex) {
+            System.err.println("cannot get all collaborator to share " + ex);
+        }
+
+        return allColl;
+    }
+
+    public ArrayList<Items> selectAllItemsInList(int listId) {
+        String sqlIdItem = "SELECT id FROM Item WHERE todoid = ?";
+        String sqlItems = "Select * from Item where TodoId = ?";
+        PreparedStatement stmtIdItem;
+        ArrayList<User> allMembers = new ArrayList<>();
+        ArrayList<Items> itemList = new ArrayList<>();
+
+        try {
+            stmtIdItem = db.prepareStatement(sqlIdItem);
+            stmtIdItem.setInt(1, listId);
+            ResultSet rsIdItem = stmtIdItem.executeQuery();
+            while (rsIdItem.next()) {
+                allMembers = getTaskMemberFromDataBase(rsIdItem.getInt("ID"));
+                PreparedStatement sencond_pre = db.prepareStatement(sqlItems);
+                sencond_pre.setInt(1, listId);
+                ResultSet item_set = sencond_pre.executeQuery();
+                while (item_set.next()) {
+                    Items item = new Items(rsIdItem.getInt("ID"), listId, item_set.getString("title"),
+                            item_set.getString("startDate"), item_set.getString("deadLine"), allMembers);
+                    item.setComment(item_set.getString("comment") != null ? item_set.getString("comment") : "");
+                    item.setDescription(item_set.getString("descreption") != null ? item_set.getString("descreption") : "");
+                    itemList.add(item);
+                    rsIdItem.close();
+                    stmtIdItem.close();
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("cannot get all collaborator to share " + ex);
+        }
+
+        return itemList;
+    }
+
+    public ToDoList selectSharedList(int listId, ArrayList<Items> items, ArrayList<User> coll) {
+
+        String sql = "SELECT * FROM TODO_LIST WHERE  id = ?";
+        PreparedStatement stmt;
+        ToDoList list = null;
+        try {
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, listId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                list = new ToDoList(listId, rs.getString("Title"), rs.getInt("OwnerId"),
+                        rs.getString("Color"), rs.getString("Descreptioin"), rs.getString("DeadLine"),
+                        rs.getString("StratDate"), items, coll);
+                rs.close();
+                stmt.close();
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("cannot get all collaborator to share " + ex);
+        }
+
+        return list;
     }
 
     public int addNewTeamMember(int userId, int itemId) {
@@ -707,6 +840,9 @@ public class Repository {
             stmt.setInt(1, userId);
             stmt.setInt(2, itemId);
             int res = stmt.executeUpdate();
+            if (res > 0) {
+                getGeneratedId(stmt);
+            }
             stmt.close();
             return res;
         } catch (SQLException ex) {
@@ -726,6 +862,9 @@ public class Repository {
             stmt.setInt(2, friendId);
             int res = stmt.executeUpdate();
             stmt.close();
+            if (res > 0) {
+                getGeneratedId(stmt);
+            }
             return res;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
@@ -736,7 +875,6 @@ public class Repository {
 
     //after receiver accepts list request we notify sender of this request
     public int addNewNotToSenderRequest(int fromUserId, int toUserId, int type, int status, int dataId) {
-        int generatedId = -1;
         String sql = "Insert into notification(fromUserId,toUserId,Type,Status,DATAId) Values(?,?,?,?,?)";
         PreparedStatement stmt;
         try {
@@ -749,22 +887,28 @@ public class Repository {
             stmt.setInt(5, dataId);
             int res = stmt.executeUpdate();
             if (res > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        generatedId = generatedKeys.getInt(1);
-                    } else {
-                        throw new SQLException("Creating user failed, no ID obtained.");
-                    }
-                }
-
+                getGeneratedId(stmt);
             }
             stmt.close();
-
+            return 1;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return 0;
+    }
+
+    public void getGeneratedId(PreparedStatement stmt) {
+
+        try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                generatedId = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating no row failed ");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /*Ghader*/
@@ -879,11 +1023,11 @@ public class Repository {
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
         /*  if(result==0)
-        {
-             PreparedStatement sqlstatment2 = db.prepareStatement("Delete from Task_Mem where ItemId=?");
-        sqlstatment2.setInt(1, id);
-        int result2 = sqlstatment.executeUpdate();
-        }*/
+         {
+         PreparedStatement sqlstatment2 = db.prepareStatement("Delete from Task_Mem where ItemId=?");
+         sqlstatment2.setInt(1, id);
+         int result2 = sqlstatment.executeUpdate();
+         }*/
         return result;
     }
 
@@ -938,3 +1082,4 @@ public class Repository {
 
     /*Sara*/
 }
+
