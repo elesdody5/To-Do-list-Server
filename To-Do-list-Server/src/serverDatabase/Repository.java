@@ -141,7 +141,6 @@ public class Repository {
         if (!result) {
             try {
                 int x = 0;
-              
 
                 PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,Status) Values(?,?,?,?) ");
                 pre.setInt(1, fromUserId);
@@ -166,7 +165,7 @@ public class Repository {
             statement.setInt(1, fromUserId);
             statement.setInt(2, toUserId);
             ResultSet result = statement.executeQuery();
-            
+
             if (result.next()) {
                 result.close();
                 return true;
@@ -179,7 +178,7 @@ public class Repository {
 
     /*Aml*/
 
-    /*Elesdody*/
+ /*Elesdody*/
     public int insertList(ToDoList list) throws SQLException {
         PreparedStatement pre = db.prepareStatement("insert into TODO_LIST (title,ownerId,startDate,deadLine,color,Descreption)VALUES (?,?,?,?,?,?)");
         pre.setString(1, list.getTitle());
@@ -413,7 +412,8 @@ public class Repository {
         return x;
 
     }
-public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
+
+    public int removeCollab(ArrayList<User> users, int todoId) throws SQLException {
         int result = 0;
         for (User user : users) {
             try (PreparedStatement pre = db.prepareStatement("DELETE FROM Collab WHERE UserId = ? And todoId=?")) {
@@ -422,11 +422,12 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
                 result = pre.executeUpdate();
             }
         }
-        return result ;
-}
+        return result;
+    }
+
     /*Elesdody*/
-    
-    /*Ashraf*/
+
+ /*Ashraf*/
     //get number of users
     public int getNumberOfUsers() {
         int numberOfUsers = 0;
@@ -607,7 +608,7 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
 
         return lists;
     }
-    
+
     public int getNumberOfLists() throws SQLException {
         Statement st = db.createStatement();
         ResultSet resultSet = st.executeQuery("SELECT COUNT(id) as lists FROM TODO_LIST");
@@ -616,9 +617,7 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
     }
 
     /*Ashraf*/
-    
-    
-    /*Ghader*/
+ /*Ghader*/
     public int updateUserName(String id, String name) {
         if (isNameNotFound(name) == 1) {
             String sql = "Update User_table set User_name = ? where ID= ?";
@@ -779,15 +778,15 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             }
             stmt.close();
 
-
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return 0;
     }
+
     /*Ghader*/
- 
+
  /*Sara*/
  /*Sara*/
     public void insertItemToDataBase(Items item) throws SQLException {
@@ -804,80 +803,84 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
         pstmt.setString(6, item.getComment());
 
         pstmt.executeUpdate();
-        
 
     }
- public ArrayList<Items>  getTaskFromDataBase(int id) throws SQLException {
-     String sqlstatment="select * from Item where TodoId=?";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, id);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<Items> todoListItems = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                Items item = new Items( resultSet.getString("title"),resultSet.getInt("toDoId"));
-                todoListItems.add(item);
-                
-            }
-            resultSet.close();
-           
-   return todoListItems;
+
+    public ArrayList<Items> getTaskFromDataBase(int id) throws SQLException {
+        String sqlstatment = "select * from Item where TodoId=?";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, id);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<Items> todoListItems = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            Items item = new Items(resultSet.getString("title"), resultSet.getInt("toDoId"));
+            todoListItems.add(item);
+
+        }
+        resultSet.close();
+
+        return todoListItems;
     }
-  public ArrayList<User> getTeamMemberFromDataBase(int id) throws SQLException {
-      String sqlstatment="SELECT * FROM  User_table ,Collab where ID=UserId AND TodoId=?";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, id);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<User> teamMemberList = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                User teamMember = new User( );
-                teamMember.setUserName(resultSet.getString("User_name"));
-                teamMember.setId(resultSet.getInt("ID"));
-                teamMemberList.add(teamMember);
-            }
-            resultSet.close();
-           
-   return teamMemberList;
 
-  }
-  public ArrayList<User> getTaskMemberFromDataBase(int Taskid) throws SQLException {
-      String sqlstatment="SELECT * FROM  User_table ,Task_Mem where ID=UserId AND ItemId=?";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, Taskid);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<User> taskMemberList = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                User TaskMember = new User( );
-                TaskMember.setUserName(resultSet.getString("User_name"));
-                TaskMember.setId(resultSet.getInt("ID"));
-                taskMemberList.add(TaskMember);
-            }
-            resultSet.close();
-           
-   return taskMemberList;
+    public ArrayList<User> getTeamMemberFromDataBase(int id) throws SQLException {
+        String sqlstatment = "SELECT * FROM  User_table ,Collab where ID=UserId AND TodoId=?";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, id);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<User> teamMemberList = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            User teamMember = new User();
+            teamMember.setUserName(resultSet.getString("User_name"));
+            teamMember.setId(resultSet.getInt("ID"));
+            teamMemberList.add(teamMember);
+        }
+        resultSet.close();
 
-  }
-    
-   public int updateTask(Items item) throws SQLException {
+        return teamMemberList;
+
+    }
+
+    public ArrayList<User> getTaskMemberFromDataBase(int Taskid) throws SQLException {
+        String sqlstatment = "SELECT * FROM  User_table ,Task_Mem where ID=UserId AND ItemId=?";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, Taskid);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<User> taskMemberList = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            User TaskMember = new User();
+            TaskMember.setUserName(resultSet.getString("User_name"));
+            TaskMember.setId(resultSet.getInt("ID"));
+            taskMemberList.add(TaskMember);
+        }
+        resultSet.close();
+
+        return taskMemberList;
+
+    }
+
+    public int updateTask(Items item) throws SQLException {
         PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption=? ,Comment=? where id = ?");
         sqlstatment.setString(1, item.getTitle());
-        sqlstatment.setString(2,item.getStartTime() );
+        sqlstatment.setString(2, item.getStartTime());
         sqlstatment.setString(3, item.getDeadLine());
-        sqlstatment.setString(4,item.getDescription());
+        sqlstatment.setString(4, item.getDescription());
         sqlstatment.setString(5, item.getComment());
         sqlstatment.setInt(6, item.getId());
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
         if (result != 0) {
 
-           return item.getId();
+            return item.getId();
         } else {
             return -1;
-        }    }
+        }
+    }
+
     private int getitemWithTitle(String title) throws SQLException {
-      PreparedStatement pre = db.prepareStatement("Select ID from Item where Title = ?");
+        PreparedStatement pre = db.prepareStatement("Select ID from Item where Title = ?");
         pre.setString(1, title);
         int id;
         try (ResultSet set = pre.executeQuery()) {
@@ -885,75 +888,87 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             id = set.getInt(1);
         }
         pre.close();
-        return id;   
+        return id;
     }
-     public int deleteTask(int id) throws SQLException {
-       PreparedStatement sqlstatment = db.prepareStatement("Delete from Item where ID=?");
+
+    public int deleteTask(int id) throws SQLException {
+        PreparedStatement sqlstatment = db.prepareStatement("Delete from Item where ID=?");
         sqlstatment.setInt(1, id);
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
-      /*  if(result==0)
+          if(result==0)
         {
              PreparedStatement sqlstatment2 = db.prepareStatement("Delete from Task_Mem where ItemId=?");
         sqlstatment2.setInt(1, id);
         int result2 = sqlstatment.executeUpdate();
-        }*/
-        return result;   
-    }
-      public void insertNotificationToDataBase(List<Notifications> notificationData) throws SQLException {
- String sql = "INSERT INTO notification(fromUserId,toUserId,Type,Status,DATAId) VALUES(?,?,?,?,?)";
-System.out.print(notificationData.size());
-        PreparedStatement pstmt = db.prepareStatement(sql);
-        for(int i =0;i<notificationData.size();i++){
-        pstmt.setInt(1, notificationData.get(i).getFromUserId());
-        pstmt.setInt(2, notificationData.get(i).getToUserId());
-        pstmt.setInt(3, notificationData.get(i).getType());
-        pstmt.setInt(4, notificationData.get(i).getStatus());
-        pstmt.setInt(5, notificationData.get(i).getDataId());
-
-        pstmt.executeUpdate();
         }
-        
-      }
-      
-      public ArrayList<Notifications> getNotificationsFromDataBase(int id) throws SQLException {
-           String sqlstatment="SELECT * FROM  notification  where DATAID=? AND Type=2";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, id);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<Notifications> notificationList = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                Notifications notification = new Notifications( );
-                notification.setDataId(resultSet.getInt("dataId"));
-                notification.setId(resultSet.getInt("id"));
-                notification.setToUserId(resultSet.getInt("toUserId"));
-                notification.setType(resultSet.getInt("type"));
-                notification.setStatus(resultSet.getInt("status"));
-                notification.setFromUserId(resultSet.getInt("fromUserId"));
-
-                notification.setId(resultSet.getInt("ID"));
-                notificationList.add(notification);
-            }
-            resultSet.close();
-           
-   return notificationList;
+        return result;
     }
- public int deleteTeamMember(int id) throws SQLException {
-      PreparedStatement sqlstatment = db.prepareStatement("Delete from Task_Mem where UserId=?");
+
+    public int insertNotificationToDataBase(List<Notifications> notificationData) throws SQLException {
+        String sqlstatment = "SELECT * FROM  notification  where fromUserId=? AND toUserId=? AND Type=? AND Status=? AND DATAId=? ";
+       
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        int res = 0;
+        for (int i = 0; i < notificationData.size(); i++) {
+            pstmt.setInt(1, notificationData.get(i).getFromUserId());
+            pstmt.setInt(2, notificationData.get(i).getToUserId());
+            pstmt.setInt(3, notificationData.get(i).getType());
+            pstmt.setInt(4, notificationData.get(i).getStatus());
+            pstmt.setInt(5, notificationData.get(i).getDataId());
+            ResultSet result = pstmt.executeQuery();
+            if (result.next()) {
+                res = -1;
+                return res;
+            }}
+                String sql = "INSERT INTO notification(fromUserId,toUserId,Type,Status,DATAId) VALUES(?,?,?,?,?)";
+
+                PreparedStatement pstmt2 = db.prepareStatement(sql);
+                for (int j = 0; j < notificationData.size(); j++) {
+                    pstmt2.setInt(1, notificationData.get(j).getFromUserId());
+                    pstmt2.setInt(2, notificationData.get(j).getToUserId());
+                    pstmt2.setInt(3, notificationData.get(j).getType());
+                    pstmt2.setInt(4, notificationData.get(j).getStatus());
+                    pstmt2.setInt(5, notificationData.get(j).getDataId());
+
+                    res = pstmt2.executeUpdate();
+                }
+                 
+        return res;
+    }
+
+    public ArrayList<Notifications> getNotificationsFromDataBase(int id) throws SQLException {
+        String sqlstatment = "SELECT * FROM  notification  where DATAID=? AND Type=2";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, id);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<Notifications> notificationList = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            Notifications notification = new Notifications();
+            notification.setDataId(resultSet.getInt("dataId"));
+            notification.setId(resultSet.getInt("id"));
+            notification.setToUserId(resultSet.getInt("toUserId"));
+            notification.setType(resultSet.getInt("type"));
+            notification.setStatus(resultSet.getInt("status"));
+            notification.setFromUserId(resultSet.getInt("fromUserId"));
+
+            notification.setId(resultSet.getInt("ID"));
+            notificationList.add(notification);
+        }
+        resultSet.close();
+
+        return notificationList;
+    }
+
+    public int deleteTeamMember(int id) throws SQLException {
+        PreparedStatement sqlstatment = db.prepareStatement("Delete from Task_Mem where UserId=?");
         sqlstatment.setInt(1, id);
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
-                return result;   
+        return result;
 
     }
 
-    
     /*Sara*/
-
-   
-
-   
-   
 }
-

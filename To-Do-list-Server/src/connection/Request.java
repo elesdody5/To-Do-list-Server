@@ -47,7 +47,7 @@ public class Request implements ClientRequest {
         dataCenter = new DataCenter();
     }
 
-    public JSONObject post(String[] paramter, JSONObject body, RequestHandler handler) {
+    public JSONObject post(String[] paramter, JSONObject body, RequestHandler handler) throws JSONException {
 
         /*Elesdody*/
         if (paramter[1].equals("list")) {
@@ -294,37 +294,14 @@ public class Request implements ClientRequest {
             }
         }
         if (paramter[1].equals("Assignnotification")) {
-            /*   int fromUserId = 0 ;
-              int toUserId = 0;
-              int type = 0;
-              int status=0;
-              int dataId=0;
-            try {
-                fromUserId =  (int) body.get("fromUserId");
-                toUserId =  (int) body.get("toUserId");
-                type = (int) body.get("type");
-                status=(int) body.get("status");
-                dataId=(int) body.get("dataId");
-            } catch (JSONException ex) {
-                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
-            }
-                Notifications notificationData=new Notifications();
-                notificationData.setFromUserId(fromUserId);
-                notificationData.setToUserId(toUserId);
-                notificationData.setType(type);
-                
-   try {
-                    repository.insertNotificationToDataBase(notificationData);
-                } catch (SQLException ex) {
-                    Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
-                }*/
+          
             JSONArray notificationArray = null;
             try {
                 notificationArray = body.getJSONArray("listOfNotifications");
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
-            List<Notifications> notificationList = new ArrayList<Notifications>();
+            ArrayList<Notifications> notificationList = new ArrayList<Notifications>();
             for (int i = 0; i < notificationArray.length(); i++) {
                 JSONObject notification = null;
                 try {
@@ -346,11 +323,20 @@ public class Request implements ClientRequest {
 
             }
             try {
-                repository.insertNotificationToDataBase(notificationList);
+             int resullt= repository.insertNotificationToDataBase(notificationList);
+                  if (resullt != -1) {
+                    Client.notifyCollaborator(notificationList);
+                    body.put("Notify_before", "no");
+                }
+                  else
+                  {
+                        body.put("Notify_before", "yes");
+                  }
+                 
             } catch (SQLException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+        
         } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
             try {
                 User user = getUserFromJson(body);
