@@ -44,6 +44,7 @@ public class RequestHandler extends Thread {
             this.s = s;
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
             ps = new PrintStream(s.getOutputStream());
+            repository=new Repository();
             start();
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -93,11 +94,12 @@ public class RequestHandler extends Thread {
                         int id = Integer.parseInt(paramter[1]);
                         ArrayList<User> friends = repository.getUserFriends(id);
                         User user = repository.getUserData(id);
+                        
                         Client.notifiyFriends(user,friends,REQUEST.FRIEND_OFFLINE);
                         Client.removeClient(id);  
                 }
             } catch (IOException | JSONException ex) {
-                System.out.println(ex.getMessage());
+                //System.out.println(ex.getMessage());
                 connected=false;
             } catch (SQLException ex) {
                 Logger.getLogger(RequestHandler.class.getName()).log(Level.SEVERE, null, ex);

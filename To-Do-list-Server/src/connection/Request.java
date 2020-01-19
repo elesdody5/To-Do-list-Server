@@ -75,7 +75,7 @@ public class Request implements ClientRequest {
                 // first insert in database
                 int resullt = repository.insertTodoNotification(notifications);
                 // remove friend from todo
-                int result = repository.removeCollab(getFriendsList(body.getJSONArray("removed_friends")));
+                int result = repository.removeCollab(getFriendsList(body.getJSONArray("removed_friends")), body.getInt("todoId"));
                 // notify other friends
                 if (resullt > 0) {
                     Client.notifyCollaborator(notifications);
@@ -116,23 +116,23 @@ public class Request implements ClientRequest {
                         body.put("result", "This user is already in your friend list");
                     } else {
                         int toUserID = repository.getUserID(friendName);
-                        System.out.println("FriendID" + toUserID);
-                        System.out.println("fromUserID" + fromUserID);
+//                        System.out.println("FriendID" + toUserID);
+//                        System.out.println("fromUserID" + fromUserID);
                         int resultInsertNotification = repository.insertIntoNotificationTables(fromUserID, toUserID);
                         if (resultInsertNotification == 1) {
                             body.put("result", "Friend Request sent now");
                             //real time notification
                             int notId;
                             notId = repository.sendGeneratedId();
-                            System.out.println("127 request new not id "+ notId);
                             Notifications not = new Notifications(notId, fromUserID, toUserID, NotificationKeys.REQUEST_FRIEND, NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST, 0);
+                            not.setfromUserName(fromUserName);
                             Client.notify(not);
                         } else {
                             body.put("result", "Friend Request is sent before");
                         }
                     }
                 } else {
-                    System.out.println("checkFriendNameInUserTable" + repository.isNameNotFound("abc"));
+                   // System.out.println("checkFriendNameInUserTable" + repository.isNameNotFound("abc"));
                     body.put("result", "This name is not in our users. Please check correct spelling ");
                 }
 
@@ -144,21 +144,30 @@ public class Request implements ClientRequest {
 
         /*Aml*/
 
-        /*Aml*/
-        /*Aml*/
-        /*Ghader*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
         if (paramter[1].equals("addNewColl")) {
             try {
                 System.out.println("add new coll" + body);
                 int userId = body.getInt("userId");
                 int listId = body.getInt("todoId");
                 int status = repository.addNewCollaboratorToList(userId, listId);
-//                if (status > 0) {
-//                       
-//                }
+                if (status > 0) {
+                  ArrayList<User> allColl  = null;
+                  ArrayList<Items> allItems = null;
+                  ToDoList sharedlist = null;
+                   allColl = repository.selectAllCollaboratorsInList(listId);
+                   allItems = repository.selectAllItemsInList(listId);
+                 if(allItems != null || allColl != null){  
+                   sharedlist = repository.selectSharedList(listId, allItems, allColl);
+                   Client.addCollabortor(userId, listId , allColl);
+                   Client.addSharedListToNewCollabortor(userId, sharedlist); 
+                 }
+                }
                 return status != -1 ? new JSONObject("{id:" + status + "}") : new JSONObject("{Error:\"Error  \"}");
             } catch (JSONException ex) {
-                System.err.println("Request 152 : cannot add new coll");
+                System.err.println("Request  cannot add new coll");
             }
 
         }
@@ -185,8 +194,8 @@ public class Request implements ClientRequest {
                 int friendId = body.getInt("friendId");
                 int status = repository.addNewFriend(userId, friendId);             
                 if (status > 0) {
-                    // ClientHandler.notifyCollaborator(notifications);
-                    status = repository.addNewFriend(friendId, userId);
+                    //TODO : add friend real time
+                    //Client.
                 }
                 return status != -1 ? new JSONObject("{result:" + status + "}") : new JSONObject("{Error:\"Error\"}");
             } catch (JSONException ex) {
@@ -201,13 +210,19 @@ public class Request implements ClientRequest {
                 int fromUserId = body.getInt("fromUserId");
                 int toUserId = body.getInt("toUserId");
                 int dataId = body.getInt("dataId");
+                String fromUserName = body.getString("fromUserName");
+                String toUserName = body.getString("toUserName");
+                String data = body.getString("data");
                 int status = repository.addNewNotToSenderRequest(fromUserId, toUserId, NotificationKeys.ADD_COLLABORATOR, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
                 if (status > 0) {
                     notId = repository.sendGeneratedId();
+                    System.out.println("status: "+status +"notid: "+ notId);
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.ADD_COLLABORATOR, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
+                    not.setDataName(data);
+                    not.setfromUserName(toUserName);
                     Client.notify(not);
                 }
-                return notId != -1 ? new JSONObject("{notId:" + notId + "}") : new JSONObject("{Error:\"Error  \"}");
+                return notId != -1 ? new JSONObject("{status:" + status + "}") : new JSONObject("{Error:\"Error  \"}");
             } catch (JSONException ex) {
                 System.err.println("Request 205 : cannot send not to sender /list");
             }
@@ -220,15 +235,20 @@ public class Request implements ClientRequest {
                 int fromUserId = body.getInt("fromUserId");
                 int toUserId = body.getInt("toUserId");
                 int dataId = body.getInt("dataId");
+                String fromUserName = body.getString("fromUserName");
+                String toUserName = body.getString("toUserName");
+                String data = body.getString("data");
                 int status = repository.addNewNotToSenderRequest(fromUserId, toUserId, NotificationKeys.ASSIGIN_TASK_MEMBER, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
                 if (status > 0) {
                     notId = repository.sendGeneratedId();
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.ASSIGIN_TASK_MEMBER, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
+                    not.setDataName(data);
+                    not.setfromUserName(toUserName);
                     Client.notify(not);
                 }
-                return notId != -1 ? new JSONObject("{notId:" + notId + "}") : new JSONObject("{Error:\"Error  \"}");
+                return notId != -1 ? new JSONObject("{status:" + status  + "}") : new JSONObject("{Error:\"Error  \"}");
             } catch (JSONException ex) {
-                System.err.println("Request 225 : : cannot send not to sender /task");
+                System.err.println("Request 241 : : cannot send not to sender /task");
             }
 
         }
@@ -239,20 +259,23 @@ public class Request implements ClientRequest {
                 int fromUserId = body.getInt("fromUserId");
                 int toUserId = body.getInt("toUserId");
                 int dataId = body.getInt("dataId");
+                String fromUserName = body.getString("fromUserName");
+                String toUserName = body.getString("toUserName");
                 int status = repository.addNewNotToSenderRequest(fromUserId, toUserId, NotificationKeys.REQUEST_FRIEND, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
                 if (status > 0) {
                     notId = repository.sendGeneratedId();
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.REQUEST_FRIEND, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
+                    not.setfromUserName(toUserName);
                     Client.notify(not);
                 }
-                return notId != -1 ? new JSONObject("{notId:" + notId + "}") : new JSONObject("{Error:\"Error  \"}");
+                return notId != -1 ? new JSONObject("{status:" + status + "}") : new JSONObject("{Error:\"Error  \"}");
             } catch (JSONException ex) {
-                System.err.println("Request 244 : : cannot send not to sender /friend");
+                System.err.println("Request 263 : : cannot send not to sender /friend");
             }
 
         }
         /*Ghader*/
-        /*Sara*/
+ /*Sara*/
         if (paramter[1].equals("Task")) {
             try {
                 String titleFromJson = (String) body.get("title");
@@ -278,6 +301,7 @@ public class Request implements ClientRequest {
         }
         if (paramter[1].equals("Assignnotification")) {
             /*   int fromUserId = 0 ;
+<<<<<<< HEAD
              int toUserId = 0;
              int type = 0;
              int status=0;
@@ -295,6 +319,25 @@ public class Request implements ClientRequest {
              notificationData.setFromUserId(fromUserId);
              notificationData.setToUserId(toUserId);
              notificationData.setType(type);
+=======
+              int toUserId = 0;
+              int type = 0;
+              int status=0;
+              int dataId=0;
+            try {
+                fromUserId =  (int) body.get("fromUserId");
+                toUserId =  (int) body.get("toUserId");
+                type = (int) body.get("type");
+                status=(int) body.get("status");
+                dataId=(int) body.get("dataId");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                Notifications notificationData=new Notifications();
+                notificationData.setFromUserId(fromUserId);
+                notificationData.setToUserId(toUserId);
+                notificationData.setType(type);
+>>>>>>> ghadeer/master
                 
              try {
              repository.insertNotificationToDataBase(notificationData);
@@ -354,10 +397,6 @@ public class Request implements ClientRequest {
                     System.out.println("login respond faild, not added to portListener any client");
                     // remove from vector
                 }
-                System.out.println(Client.getclientVector().size());
-                for (Client clientt : Client.getclientVector()) {
-                    System.out.println(clientt.getClientName());
-                }
                 return respond;
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -383,13 +422,19 @@ public class Request implements ClientRequest {
                 ArrayList<ToDoList> shared = repository.getUserSharedToDo(Integer.parseInt(paramter[2]));
                 // get user friends
                 ArrayList<User> friends = repository.getUserFriends(Integer.parseInt(paramter[2]));
+                // get online friends
+                ArrayList<User> onlineFriends = Client.getOnlineUser(friends);
                 // get notificaiton
                 ArrayList<Notifications> notificationses = repository.getUserNotification(Integer.parseInt(paramter[2]));
+
                 Gson gson = new GsonBuilder().create();
                 // convert friendsList to json
                 String friendsArray = gson.toJson(friends);
 
                 JSONArray friendsjsonArray = new JSONArray(friendsArray);
+                // convert onlineFrined list to json
+                String onlineList = gson.toJson(onlineFriends);
+                JSONArray onlineJsonArray = new JSONArray(onlineList);
                 // convert shared List to json
                 String sharedArray = gson.toJson(shared);
                 JSONArray sharedJSONArray = new JSONArray(sharedArray);
@@ -404,6 +449,7 @@ public class Request implements ClientRequest {
                 JSONObject userJosn = user.getUserAsJson();
                 // add friends to user
                 userJosn.put("friends", friendsjsonArray);
+                userJosn.put("online_friends",onlineJsonArray);
                 // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
                 // add shared List 
@@ -417,13 +463,13 @@ public class Request implements ClientRequest {
             }
         }
         /*Elesdody*/
-        /*Ashraf*/
-        /*Ashraf*/
-        /*Aml*/
-        /*Aml*/
-        /*Ghader*/
-        /*Ghader*/
-        /*Sara*/
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
         if (paramter[1].equals("getTasksOflist")) {
             ArrayList<Items> itemList = null;
             try {
@@ -552,13 +598,14 @@ public class Request implements ClientRequest {
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.updateNotificationStatus(id, reqStatus);
+                System.out.println("updating not status list: "+ status);
                 return status;
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         /*Ghader*/
-        /*Elesdody*/
+ /*Elesdody*/
         if (paramter[1].equals("list")) {
             try {
                 int result = repository.updateList(getTodoObject(body));
@@ -577,7 +624,7 @@ public class Request implements ClientRequest {
             }
         }
         /*Elesdody*/
-        /*sara*/
+ /*sara*/
         if (paramter[1].equals("task")) {
             try {
                 String titleFromJson = (String) body.get("title");
@@ -621,15 +668,31 @@ public class Request implements ClientRequest {
                 return -1;
             }
         }
+        if (paramter[1].equals("collab")) {
+
+            try {
+                User user = new User();
+                int todoId = Integer.parseInt(paramter[2]);
+                user.setId(Integer.parseInt(paramter[3]));
+                ArrayList users = new ArrayList();
+                users.add(user);
+                int result = repository.removeCollab(users, todoId);
+                return result;
+            } catch (SQLException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+                return -1;
+            }
+
+        }
         /*Elesdody*/
 
-        /*Ashraf*/
-        /*Ashraf*/
-        /*Aml*/
-        /*Aml*/
-        /*Ghader*/
-        /*Ghader*/
-        /*Sara*/
+ /*Ashraf*/
+ /*Ashraf*/
+ /*Aml*/
+ /*Aml*/
+ /*Ghader*/
+ /*Ghader*/
+ /*Sara*/
         if (paramter[1].equals("task")) {
             try {
                 int result = repository.deleteTask(Integer.parseInt(paramter[2]));
@@ -666,6 +729,7 @@ public class Request implements ClientRequest {
         ArrayList<Notifications> notifications = new ArrayList<>();
         for (int i = 0; i < notiJSONArray.length(); i++) {
             JSONObject json = notiJSONArray.getJSONObject(i);
+            System.out.println(json);
             notifications.add(new Notifications(json.getInt("fromUserId"), json.getString("fromUserName"), json.getInt("toUserId"), json.getInt("type"), json.getInt("status"), json.getInt("listId")));
         }
         return notifications;
@@ -697,6 +761,6 @@ public class Request implements ClientRequest {
 
     /*Ashraf*/
 
-    /*Aml*/
-    /*Aml*/
+ /*Aml*/
+ /*Aml*/
 }

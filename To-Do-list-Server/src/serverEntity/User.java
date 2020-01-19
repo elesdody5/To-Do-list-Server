@@ -37,6 +37,10 @@ public class User implements Entity{
     public int getId() {
         return id;
     }
+    public void setId(int id )
+    {
+        this.id = id;
+    }
 
 
     public String getUserName() {
@@ -66,9 +70,7 @@ public class User implements Entity{
         return user;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+   
    
     
 }
