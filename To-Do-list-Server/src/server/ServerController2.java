@@ -70,9 +70,10 @@ public class ServerController2 implements Initializable {
 
     @FXML
     private Label numberOfUsers_id;
-    
+
     @FXML
-    private static Label onlineUsers_id = new Label();
+    public  Label onlineUsers_id;
+
     @FXML
     private Label numberOfList_id;
 
@@ -81,26 +82,21 @@ public class ServerController2 implements Initializable {
     private ListView<ToDoList> todoList_id;
     @FXML
     private BarChart bar_chart_id;
-    @FXML
-    private HBox users_btn_id;
-    @FXML
-    private HBox lists_btn_id1;
+   
     @FXML
     private Pane userPane_id;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println("initializing method");
-
         dataCenter = new DataCenter();
         bar_chart_id.autosize();
         isStart = false;
         stop_id.setDisable(true);
-        
         setGeneralData();
         setUserList();
         setToDoList();
-        
+
         borderPane_id.setOnMousePressed((MouseEvent event) -> {
             xOffset = stage.getX() - event.getScreenX();
             yOffset = stage.getY() - event.getScreenY();
@@ -111,7 +107,6 @@ public class ServerController2 implements Initializable {
                 stage.setY(event.getScreenY() + yOffset);
             }
         });
-        
     }
 
     @FXML
@@ -287,11 +282,6 @@ public class ServerController2 implements Initializable {
         bar_chart_id.getData().add(dataSeries);
     }
 
-    // update Number of online users
-    public static void updateOlineUser(int number) {
-        Platform.runLater(() -> {
-            onlineUsers_id.setText(number + "");
-        });
-    }
+    
 
 }

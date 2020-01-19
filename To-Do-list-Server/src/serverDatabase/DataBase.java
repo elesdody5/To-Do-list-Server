@@ -31,7 +31,6 @@ public class DataBase {
     private DataBase() {
     }
 
-    
     static Connection getDatabase() throws SQLException {
         if (db == null) {
             synchronized (DataBase.class) {

@@ -17,19 +17,18 @@ public class ToDoListServer extends Application {
 
     private double xOffset, yOffset;
     private static PortListener portListener;
-
+    public static ServerController2 controller;
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/server/ServerGUI.fxml"));
         Parent root = (Parent) loader.load();
 
-        ServerController2 controller = loader.getController();
+        controller = loader.getController();
         controller.setStage(stage);
-
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.initStyle(StageStyle.TRANSPARENT);
-
+        
         stage.setScene(scene);
         stage.show();
         new PortListener();

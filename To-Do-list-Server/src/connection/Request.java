@@ -352,6 +352,7 @@ public class Request implements ClientRequest {
 
         } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
             try {
+                
                 User user = getUserFromJson(body);
                 JSONObject respond = repository.getUser(user);
                 // get last one been add to victor
@@ -359,7 +360,10 @@ public class Request implements ClientRequest {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
-
+                    if(Client.isInVector(userId)){
+                        respond.put("Code", RESPOND_CODE.IS_LOGIN);
+                        return respond;
+                    }
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
                     Client client = new Client(userId, userName, handler);
                     ArrayList<User> friends = repository.getUserFriends(userId);

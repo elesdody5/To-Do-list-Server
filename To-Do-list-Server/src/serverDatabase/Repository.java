@@ -900,7 +900,7 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
   }
     
    public int updateTask(Items item) throws SQLException {
-        PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption= ? ,Comment=? status = ? where id = ?");
+        PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption= ? ,Comment=? ,status = ? where id = ?");
         sqlstatment.setString(1, item.getTitle());
         sqlstatment.setString(2,item.getStartTime() );
         sqlstatment.setString(3, item.getDeadLine());
