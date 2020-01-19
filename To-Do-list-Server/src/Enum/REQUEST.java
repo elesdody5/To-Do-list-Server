@@ -25,6 +25,8 @@ public class REQUEST {
     public static final String NOTIFICATION = "notification";
     public static final String TASK = "task";
     public static final String TODO = "todo";
+    public static final String SHAREDTODO = "sharedtodo";
+    public static final String NEWCOLLABORATOR = "colltodo";
     public static final String LOGOUT = "LOGOUT";
     public static final String FRIEND_OFFLINE = "OFFLINE";
     public static final String FRIEND_ONLINE = "ONLINE";

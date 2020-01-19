@@ -10,8 +10,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,6 +18,8 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -34,6 +35,7 @@ import javafx.stage.Stage;
 import serverEntity.ToDoList;
 import serverEntity.User;
 import statisticsManager.DataCenter;
+import statisticsManager.Entity.TodoListData;
 import statisticsManager.Entity.UserData;
 import statisticsManager.TodoList.ListCellFactory;
 import statisticsManager.UserList.UserCellFactory;
@@ -65,39 +67,32 @@ public class ServerController2 implements Initializable {
     private Button stop_id;
     @FXML
     private ListView<User> userList_id;
-    @FXML
-    private Pane userPane_id;
-    @FXML
-    private HBox users_btn_id;
-    @FXML
-    private HBox lists_btn_id1;
-    @FXML
-    private Label friends_id;
-    @FXML
-    private Label lists_id;
-    @FXML
-    private Label tasks_id;
+
     @FXML
     private Label numberOfUsers_id;
+
     @FXML
-    private Label onlineUsers_id;
+    public  Label onlineUsers_id;
+
     @FXML
     private Label numberOfList_id;
 
     private int users;
-    private Client clientHandler;
     @FXML
     private ListView<ToDoList> todoList_id;
+    @FXML
+    private BarChart bar_chart_id;
+   
+    @FXML
+    private Pane userPane_id;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         System.out.println("initializing method");
-
         dataCenter = new DataCenter();
-
+        bar_chart_id.autosize();
         isStart = false;
         stop_id.setDisable(true);
-
         setGeneralData();
         setUserList();
         setToDoList();
@@ -106,15 +101,12 @@ public class ServerController2 implements Initializable {
             xOffset = stage.getX() - event.getScreenX();
             yOffset = stage.getY() - event.getScreenY();
         });
-
         borderPane_id.setOnMouseDragged((MouseEvent event) -> {
             if (!stage.isFullScreen()) {
                 stage.setX(event.getScreenX() + xOffset);
                 stage.setY(event.getScreenY() + yOffset);
             }
-
         });
-
     }
 
     @FXML
@@ -177,7 +169,6 @@ public class ServerController2 implements Initializable {
             ArrayList<User> list = dataCenter.getListOfUsers();
             users = (list != null) ? list.size() : 0;
 
-            System.out.println("users:" + list.size());
             ObservableList<User> users = FXCollections.observableArrayList(list);
             userList_id.setItems(users);
             userList_id.setCellFactory(new UserCellFactory());
@@ -187,11 +178,11 @@ public class ServerController2 implements Initializable {
                 public void changed(ObservableValue<? extends User> observable, User oldValue, User newValue) {
                     try {
                         UserData userData = dataCenter.getUserData(newValue.getId());
-                        friends_id.setText(userData.getNumberOfFriends() + "");
-                        lists_id.setText(userData.getNumberOfLists() + "");
-                        tasks_id.setText(userData.getNumberOfItemAssign() + "");
+                        setUserBarChart(userData);
                     } catch (SQLException ex) {
-                        Logger.getLogger(ServerController2.class.getName()).log(Level.SEVERE, null, ex);
+                        Alert alert = new Alert(AlertType.INFORMATION);
+                        alert.setContentText(" No Users in DataBase");
+                        alert.show();
                     }
                 }
 
@@ -215,13 +206,25 @@ public class ServerController2 implements Initializable {
             todoList_id.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ToDoList>() {
                 @Override
                 public void changed(ObservableValue<? extends ToDoList> observable, ToDoList oldValue, ToDoList newValue) {
-                    System.out.println("title: " + newValue.getTitle() + "\n" + "ID:" + newValue.getId());
+                    try {
+                        setToDoListBarChart(dataCenter.getTodoListData(newValue.getId()));
+                    } catch (SQLException ex) {
+                        TodoListData defaultData = new TodoListData();
+                        defaultData.setTitle("title");
+                        defaultData.setOwnerName("Owner");
+                        defaultData.setNumberOfCollaborator(0);
+                        defaultData.setNumberOfItems(0);
+                        setToDoListBarChart(defaultData);
+                        Alert alert = new Alert(AlertType.ERROR);
+                        alert.setContentText("Data Base Problem has occured, Please try again");
+                        alert.show();
+                    }
                 }
 
             });
         } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setContentText(" No Users in DataBase");
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setContentText("Data Base Problem has occured, Please restart and try again");
             alert.show();
         }
     }
@@ -239,7 +242,6 @@ public class ServerController2 implements Initializable {
 
             numberOfList_id.setText(String.valueOf(numberOfLists));
             numberOfUsers_id.setText(String.valueOf(numberOfUsers));
-            onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
 
         } catch (SQLException ex) {
             Alert alert = new Alert(AlertType.ERROR);
@@ -252,18 +254,34 @@ public class ServerController2 implements Initializable {
     /*public void setOnlineUsersNumber(int numberOfOnlineUsers){
        onlineUsers_id.setText(String.valueOf(numberOfOnlineUsers));
    }*/
-    //test 
-    public void setListOfTodoList() throws SQLException {
-        ArrayList<ToDoList> lists = dataCenter.getToDoList();
-        ObservableList<ToDoList> observableListOfToDoList = FXCollections.observableArrayList(lists);
-        todoList_id.getItems().addAll(observableListOfToDoList);
-        todoList_id.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        todoList_id.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ToDoList>() {
-            @Override
-            public void changed(ObservableValue<? extends ToDoList> observable, ToDoList oldValue, ToDoList newValue) {
-                System.out.println("title: " + newValue.getTitle() + "\n" + "ID:" + newValue.getId());
-            }
+    //set user bar Chart 
+    private void setUserBarChart(UserData data) {
 
-        });
+        bar_chart_id.getData().clear();
+        bar_chart_id.getXAxis().setLabel("User Data");
+        bar_chart_id.getYAxis().setLabel("Number");
+
+        XYChart.Series dataSeries = new XYChart.Series();
+        dataSeries.setName("User Statistics");
+        dataSeries.getData().add(new XYChart.Data("Friends", data.getNumberOfFriends()));
+        dataSeries.getData().add(new XYChart.Data("Lists", data.getNumberOfLists()));
+        dataSeries.getData().add(new XYChart.Data("Tasks", data.getNumberOfItemAssign()));
+        bar_chart_id.getData().add(dataSeries);
     }
+
+    //set todolist bar Chart 
+    private void setToDoListBarChart(TodoListData data) {
+        bar_chart_id.getData().clear();
+        bar_chart_id.getXAxis().setLabel("ToDo List Data");
+        bar_chart_id.getYAxis().setLabel("Number");
+
+        XYChart.Series dataSeries = new XYChart.Series();
+        dataSeries.setName("title: " + data.getTitle() + "   Owner: " + data.getOwnerName());
+        dataSeries.getData().add(new XYChart.Data("Items", data.getNumberOfItems()));
+        dataSeries.getData().add(new XYChart.Data("Collaborators", data.getNumberOfCollaborator()));
+        bar_chart_id.getData().add(dataSeries);
+    }
+
+    
+
 }
