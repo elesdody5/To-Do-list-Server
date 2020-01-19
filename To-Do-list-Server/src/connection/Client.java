@@ -70,7 +70,7 @@ public class Client {
             for (Client client : clientVector) {
                 if (client.getId() == notification.getToUserId()) {
                     client.ps.println(REQUEST.NOTIFICATION);
-                    System.out.println(notification.getDataName());
+                    
                     client.ps.println(toNotifcationJson(notification));
                     // to notifiy user end of data
                     client.ps.println(REQUEST.END);

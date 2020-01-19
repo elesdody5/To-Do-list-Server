@@ -1,7 +1,8 @@
 # TODO_LIST (Server Side)
 
 
-
+![Build Status](https://img.shields.io/badge/version-1.0-green)
+![Build Status](https://img.shields.io/badge/Contributors-5-orange)
 
 
 TODO_LIST is a java SE Desktop Application for Managing tasks between teams. .

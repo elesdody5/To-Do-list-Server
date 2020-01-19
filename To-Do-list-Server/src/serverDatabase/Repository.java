@@ -1,4 +1,3 @@
-
 package serverDatabase;
 
 import Enum.NotificationKeys;
@@ -138,15 +137,16 @@ public class Repository {
         if (!result) {
             try {
                 int x = 0;
-              
 
                 PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,Status) Values(?,?,?,?) ");
                 pre.setInt(1, fromUserId);
                 pre.setInt(2, toUserId);
                 pre.setInt(3, REQUEST_FRIEND);
                 pre.setInt(4, NORESPONSE_COLLABORATOR_REQUEST);
-
                 x = pre.executeUpdate();
+                if (x > 0) {
+                    getGeneratedId(pre);
+                }
                 return x;
             } catch (SQLException ex) {
                 Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
@@ -163,7 +163,7 @@ public class Repository {
             statement.setInt(1, fromUserId);
             statement.setInt(2, toUserId);
             ResultSet result = statement.executeQuery();
-            
+
             if (result.next()) {
                 result.close();
                 return true;
@@ -176,7 +176,7 @@ public class Repository {
 
     /*Aml*/
 
-    /*Elesdody*/
+ /*Elesdody*/
     public int insertList(ToDoList list) throws SQLException {
         PreparedStatement pre = db.prepareStatement("insert into TODO_LIST (title,ownerId,startDate,deadLine,color,Descreption)VALUES (?,?,?,?,?,?)");
         pre.setString(1, list.getTitle());
@@ -285,7 +285,6 @@ public class Repository {
             }
             collabset.close();
             item_set.close();
-            todo.setCollab(collaborator);
             todo.setTaskes(itemList);
             todoList.add(todo);
 
@@ -371,13 +370,6 @@ public class Repository {
         PreparedStatement pre = db.prepareStatement("Delete from TODO_List where id=?");
         pre.setInt(1, id);
         int result = pre.executeUpdate();
-        pre  = db.prepareStatement("Delete from Collab where Todoid=?");
-        pre.setInt(1, id);
-        pre  = db.prepareStatement("Delete from Item where Todoid=?");
-        pre.setInt(1, id);
-        // remove it from notification
-        pre  = db.prepareStatement("Delete from notification where dataId=? and type=1");
-        pre.setInt(1, id);
         pre.close();
         return result;
     }
@@ -405,20 +397,26 @@ public class Repository {
     public int insertTodoNotification(ArrayList<Notifications> notifications) throws SQLException {
         int x = 0;
         for (Notifications notification : notifications) {
-            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,status,DataId) Values(?,?,?,?,?) ")) {
+            try (PreparedStatement pre = db.prepareStatement("Insert into notification (fromUserId,toUserId,Type,status,DataId) Values(?,?,?,?,?) ", Statement.RETURN_GENERATED_KEYS)) {
                 pre.setInt(1, notification.getFromUserId());
                 pre.setInt(2, notification.getToUserId());
                 pre.setInt(3, notification.getType());
                 pre.setInt(4, NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST);
                 pre.setInt(5, notification.getDataId());
                 x = pre.executeUpdate();
-
+                if (x > 0) {
+                    ResultSet rs = pre.getGeneratedKeys();
+                    if (rs != null && rs.next()) {
+                        notification.setId((int) rs.getLong(1));
+                    }
+                }
             }
         }
         return x;
 
     }
-public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
+
+    public int removeCollab(ArrayList<User> users, int todoId) throws SQLException {
         int result = 0;
         for (User user : users) {
             try (PreparedStatement pre = db.prepareStatement("DELETE FROM Collab WHERE UserId = ? And todoId=?")) {
@@ -427,11 +425,12 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
                 result = pre.executeUpdate();
             }
         }
-        return result ;
-}
+        return result;
+    }
+
     /*Elesdody*/
-    
-    /*Ashraf*/
+
+ /*Ashraf*/
     //get number of users
     public int getNumberOfUsers() {
         int numberOfUsers = 0;
@@ -594,40 +593,41 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
         return userData;
     }
 
-    public TodoListData getTodoListStatisticsData(int listId) throws SQLException{
+    public TodoListData getTodoListStatisticsData(int listId) throws SQLException {
         String title = "No_Title";
         String ownerName = "No_Name";
-        int items =0;
+        int items = 0;
         int collabs = 0;
-        
-        PreparedStatement statement = db.prepareStatement("select user_Table.user_name as owner_name , todo_list.title as list_title from user_table join todo_list \n" +
-                                "on user_Table.ID = todo_list.OwnerId AND todo_list.ID=?;");
-        statement.setInt(1,listId);
+
+        PreparedStatement statement = db.prepareStatement("select user_Table.user_name as owner_name , todo_list.title as list_title from user_table join todo_list \n"
+                + "on user_Table.ID = todo_list.OwnerId AND todo_list.ID=?;");
+        statement.setInt(1, listId);
         ResultSet resultSet = statement.executeQuery();
-        if(resultSet.next()){
+        if (resultSet.next()) {
             title = resultSet.getString("list_title");
             ownerName = resultSet.getString("owner_name");
         }
         statement = db.prepareStatement("select count(item.ID)as items from item join todo_list on item.TodoId = todo_list.ID AND todo_list.ID = ?;");
-        statement.setInt(1,listId);
+        statement.setInt(1, listId);
         resultSet = statement.executeQuery();
-        if(resultSet.next()){
+        if (resultSet.next()) {
             items = resultSet.getInt("items");
         }
         statement = db.prepareStatement("select count(*) as collabs from collab join todo_list where collab.TodoId = todo_list.ID AND todo_list.ID=?;");
-        statement.setInt(1,listId);
+        statement.setInt(1, listId);
         resultSet = statement.executeQuery();
-        if(resultSet.next()){
+        if (resultSet.next()) {
             collabs = resultSet.getInt("collabs");
         }
-         TodoListData todoListData=new TodoListData();
-         todoListData.setTitle(title);
-         todoListData.setOwnerName(ownerName);
-         todoListData.setNumberOfCollaborator(collabs);
-         todoListData.setNumberOfItems(items);
-         
+        TodoListData todoListData = new TodoListData();
+        todoListData.setTitle(title);
+        todoListData.setOwnerName(ownerName);
+        todoListData.setNumberOfCollaborator(collabs);
+        todoListData.setNumberOfItems(items);
+
         return todoListData;
     }
+
     public ArrayList<ToDoList> getListofToDoList() throws SQLException {
         Statement st = db.createStatement();
         ResultSet resultSet = st.executeQuery("SELECT * FROM TODO_LIST");
@@ -646,7 +646,7 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
 
         return lists;
     }
-    
+
     public int getNumberOfLists() throws SQLException {
         Statement st = db.createStatement();
         ResultSet resultSet = st.executeQuery("SELECT COUNT(id) as lists FROM TODO_LIST");
@@ -655,9 +655,13 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
     }
 
     /*Ashraf*/
-    
-    
-    /*Ghader*/
+ /*Ghader*/
+    int generatedId = -1;
+
+    public int sendGeneratedId() {
+        return generatedId;
+    }
+
     public int updateUserName(String id, String name) {
         if (isNameNotFound(name) == 1) {
             String sql = "Update User_table set User_name = ? where ID= ?";
@@ -728,9 +732,9 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             stmt = db.prepareStatement(sql);
             stmt.setInt(1, status);
             stmt.setInt(2, id);
-            int res = stmt.executeUpdate();
+            stmt.executeUpdate();
             stmt.close();
-            return res;
+            return 1;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -747,6 +751,9 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             stmt.setInt(1, userId);
             stmt.setInt(2, listId);
             int res = stmt.executeUpdate();
+            if (res > 0) {
+                getGeneratedId(stmt);
+            }
             stmt.close();
             return res;
         } catch (SQLException ex) {
@@ -754,6 +761,93 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
         }
 
         return 0;
+    }
+
+    public ArrayList<User> selectAllCollaboratorsInList(int listId) {
+
+        String sql = "SELECT * FROM Collab , User_table WHERE userId = id and TODOiD = ?";
+        PreparedStatement stmt;
+        ArrayList<User> allColl = new ArrayList<>();
+        try {
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, listId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                allColl.add(new User(rs.getInt("id"), rs.getString("user_name")));
+                rs.close();
+                stmt.close();
+            }
+            String getOwner = "SELECT * FROM TODO_LIST list, User_table user where OwnerId = user.id and list.id = ? ";
+            PreparedStatement stmt2;
+            stmt2 = db.prepareStatement(getOwner);
+            stmt2.setInt(1, listId);
+            ResultSet rs2 = stmt2.executeQuery();
+            if (rs.next()) {
+                allColl.add(new User(rs2.getInt("id"), rs2.getString("user_name")));
+                rs.close();
+            }
+        } catch (SQLException ex) {
+            System.err.println("cannot get all collaborator to share " + ex);
+        }
+
+        return allColl;
+    }
+
+    public ArrayList<Items> selectAllItemsInList(int listId) {
+        String sqlIdItem = "SELECT id FROM Item WHERE todoid = ?";
+        String sqlItems = "Select * from Item where TodoId = ?";
+        PreparedStatement stmtIdItem;
+        ArrayList<User> allMembers = new ArrayList<>();
+        ArrayList<Items> itemList = new ArrayList<>();
+
+        try {
+            stmtIdItem = db.prepareStatement(sqlIdItem);
+            stmtIdItem.setInt(1, listId);
+            ResultSet rsIdItem = stmtIdItem.executeQuery();
+            while (rsIdItem.next()) {
+                allMembers = getTaskMemberFromDataBase(rsIdItem.getInt("ID"));
+                PreparedStatement sencond_pre = db.prepareStatement(sqlItems);
+                sencond_pre.setInt(1, listId);
+                ResultSet item_set = sencond_pre.executeQuery();
+                while (item_set.next()) {
+                    Items item = new Items(rsIdItem.getInt("ID"), listId, item_set.getString("title"),
+                            item_set.getString("startDate"), item_set.getString("deadLine"), allMembers);
+                    item.setComment(item_set.getString("comment") != null ? item_set.getString("comment") : "");
+                    item.setDescription(item_set.getString("descreption") != null ? item_set.getString("descreption") : "");
+                    itemList.add(item);
+                    rsIdItem.close();
+                    stmtIdItem.close();
+                }
+            }
+        } catch (SQLException ex) {
+            System.err.println("cannot get all collaborator to share " + ex);
+        }
+
+        return itemList;
+    }
+
+    public ToDoList selectSharedList(int listId, ArrayList<Items> items, ArrayList<User> coll) {
+
+        String sql = "SELECT * FROM TODO_LIST WHERE  id = ?";
+        PreparedStatement stmt;
+        ToDoList list = null;
+        try {
+            stmt = db.prepareStatement(sql);
+            stmt.setInt(1, listId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                list = new ToDoList(listId, rs.getString("Title"), rs.getInt("OwnerId"),
+                        rs.getString("Color"), rs.getString("Descreptioin"), rs.getString("DeadLine"),
+                        rs.getString("StratDate"), items, coll);
+                rs.close();
+                stmt.close();
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("cannot get all collaborator to share " + ex);
+        }
+
+        return list;
     }
 
     public int addNewTeamMember(int userId, int itemId) {
@@ -765,6 +859,9 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             stmt.setInt(1, userId);
             stmt.setInt(2, itemId);
             int res = stmt.executeUpdate();
+            if (res > 0) {
+                getGeneratedId(stmt);
+            }
             stmt.close();
             return res;
         } catch (SQLException ex) {
@@ -784,6 +881,9 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             stmt.setInt(2, friendId);
             int res = stmt.executeUpdate();
             stmt.close();
+            if (res > 0) {
+                getGeneratedId(stmt);
+            }
             return res;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
@@ -794,7 +894,6 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
 
     //after receiver accepts list request we notify sender of this request
     public int addNewNotToSenderRequest(int fromUserId, int toUserId, int type, int status, int dataId) {
-        int generatedId = -1;
         String sql = "Insert into notification(fromUserId,toUserId,Type,Status,DATAId) Values(?,?,?,?,?)";
         PreparedStatement stmt;
         try {
@@ -807,26 +906,32 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             stmt.setInt(5, dataId);
             int res = stmt.executeUpdate();
             if (res > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        generatedId = generatedKeys.getInt(1);
-                    } else {
-                        throw new SQLException("Creating user failed, no ID obtained.");
-                    }
-                }
-
+                getGeneratedId(stmt);
             }
             stmt.close();
-
-
+            return 1;
         } catch (SQLException ex) {
             Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return 0;
     }
+
+    public void getGeneratedId(PreparedStatement stmt) {
+
+        try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                generatedId = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating no row failed ");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Repository.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /*Ghader*/
- 
+
  /*Sara*/
  /*Sara*/
     public void insertItemToDataBase(Items item) throws SQLException {
@@ -843,81 +948,84 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
         pstmt.setString(6, item.getComment());
 
         pstmt.executeUpdate();
-        
 
     }
- public ArrayList<Items>  getTaskFromDataBase(int id) throws SQLException {
-     String sqlstatment="select * from Item where TodoId=?";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, id);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<Items> todoListItems = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                Items item = new Items( resultSet.getString("title"),resultSet.getInt("toDoId"));
-                todoListItems.add(item);
-                
-            }
-            resultSet.close();
-           
-   return todoListItems;
+
+    public ArrayList<Items> getTaskFromDataBase(int id) throws SQLException {
+        String sqlstatment = "select * from Item where TodoId=?";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, id);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<Items> todoListItems = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            Items item = new Items(resultSet.getString("title"), resultSet.getInt("toDoId"));
+            todoListItems.add(item);
+
+        }
+        resultSet.close();
+
+        return todoListItems;
     }
-  public ArrayList<User> getTeamMemberFromDataBase(int id) throws SQLException {
-      String sqlstatment="SELECT * FROM  User_table ,Collab where ID=UserId AND TodoId=?";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, id);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<User> teamMemberList = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                User teamMember = new User( );
-                teamMember.setUserName(resultSet.getString("User_name"));
-                teamMember.setId(resultSet.getInt("ID"));
-                teamMemberList.add(teamMember);
-            }
-            resultSet.close();
-           
-   return teamMemberList;
 
-  }
-  public ArrayList<User> getTaskMemberFromDataBase(int Taskid) throws SQLException {
-      String sqlstatment="SELECT * FROM  User_table ,Task_Mem where ID=UserId AND ItemId=?";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, Taskid);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<User> taskMemberList = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                User TaskMember = new User( );
-                TaskMember.setUserName(resultSet.getString("User_name"));
-                TaskMember.setId(resultSet.getInt("ID"));
-                taskMemberList.add(TaskMember);
-            }
-            resultSet.close();
-           
-   return taskMemberList;
+    public ArrayList<User> getTeamMemberFromDataBase(int id) throws SQLException {
+        String sqlstatment = "SELECT * FROM  User_table ,Collab where ID=UserId AND TodoId=?";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, id);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<User> teamMemberList = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            User teamMember = new User();
+            teamMember.setUserName(resultSet.getString("User_name"));
+            teamMember.setId(resultSet.getInt("ID"));
+            teamMemberList.add(teamMember);
+        }
+        resultSet.close();
 
-  }
-    
-   public int updateTask(Items item) throws SQLException {
-        PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption= ? ,Comment=? ,status = ? where id = ?");
+        return teamMemberList;
+
+    }
+
+    public ArrayList<User> getTaskMemberFromDataBase(int Taskid) throws SQLException {
+        String sqlstatment = "SELECT * FROM  User_table ,Task_Mem where ID=UserId AND ItemId=?";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, Taskid);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<User> taskMemberList = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            User TaskMember = new User();
+            TaskMember.setUserName(resultSet.getString("User_name"));
+            TaskMember.setId(resultSet.getInt("ID"));
+            taskMemberList.add(TaskMember);
+        }
+        resultSet.close();
+
+        return taskMemberList;
+
+    }
+
+    public int updateTask(Items item) throws SQLException {
+        PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption=? ,Comment=? where id = ?");
         sqlstatment.setString(1, item.getTitle());
-        sqlstatment.setString(2,item.getStartTime() );
+        sqlstatment.setString(2, item.getStartTime());
         sqlstatment.setString(3, item.getDeadLine());
-        sqlstatment.setString(4,item.getDescription());
+        sqlstatment.setString(4, item.getDescription());
         sqlstatment.setString(5, item.getComment());
-        sqlstatment.setInt(6, item.getStatus()?1:0);
-        sqlstatment.setInt(7, item.getId());
+        sqlstatment.setInt(6, item.getId());
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
         if (result != 0) {
 
-           return item.getId();
+            return item.getId();
         } else {
             return -1;
-        }    }
+        }
+    }
+
     private int getitemWithTitle(String title) throws SQLException {
-      PreparedStatement pre = db.prepareStatement("Select ID from Item where Title = ?");
+        PreparedStatement pre = db.prepareStatement("Select ID from Item where Title = ?");
         pre.setString(1, title);
         int id;
         try (ResultSet set = pre.executeQuery()) {
@@ -925,75 +1033,71 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
             id = set.getInt(1);
         }
         pre.close();
-        return id;   
+        return id;
     }
-     public int deleteTask(int id) throws SQLException {
-       PreparedStatement sqlstatment = db.prepareStatement("Delete from Item where ID=?");
+
+    public int deleteTask(int id) throws SQLException {
+        PreparedStatement sqlstatment = db.prepareStatement("Delete from Item where ID=?");
         sqlstatment.setInt(1, id);
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
-      /*  if(result==0)
-        {
-             PreparedStatement sqlstatment2 = db.prepareStatement("Delete from Task_Mem where ItemId=?");
-        sqlstatment2.setInt(1, id);
-        int result2 = sqlstatment.executeUpdate();
-        }*/
-        return result;   
+        /*  if(result==0)
+         {
+         PreparedStatement sqlstatment2 = db.prepareStatement("Delete from Task_Mem where ItemId=?");
+         sqlstatment2.setInt(1, id);
+         int result2 = sqlstatment.executeUpdate();
+         }*/
+        return result;
     }
-      public void insertNotificationToDataBase(List<Notifications> notificationData) throws SQLException {
- String sql = "INSERT INTO notification(fromUserId,toUserId,Type,Status,DATAId) VALUES(?,?,?,?,?)";
-System.out.print(notificationData.size());
+
+    public void insertNotificationToDataBase(List<Notifications> notificationData) throws SQLException {
+        String sql = "INSERT INTO notification(fromUserId,toUserId,Type,Status,DATAId) VALUES(?,?,?,?,?)";
+        System.out.print(notificationData.size());
         PreparedStatement pstmt = db.prepareStatement(sql);
-        for(int i =0;i<notificationData.size();i++){
-        pstmt.setInt(1, notificationData.get(i).getFromUserId());
-        pstmt.setInt(2, notificationData.get(i).getToUserId());
-        pstmt.setInt(3, notificationData.get(i).getType());
-        pstmt.setInt(4, notificationData.get(i).getStatus());
-        pstmt.setInt(5, notificationData.get(i).getDataId());
+        for (int i = 0; i < notificationData.size(); i++) {
+            pstmt.setInt(1, notificationData.get(i).getFromUserId());
+            pstmt.setInt(2, notificationData.get(i).getToUserId());
+            pstmt.setInt(3, notificationData.get(i).getType());
+            pstmt.setInt(4, notificationData.get(i).getStatus());
+            pstmt.setInt(5, notificationData.get(i).getDataId());
 
-        pstmt.executeUpdate();
+            pstmt.executeUpdate();
         }
-        
-      }
-      
-      public ArrayList<Notifications> getNotificationsFromDataBase(int id) throws SQLException {
-           String sqlstatment="SELECT * FROM  notification  where DATAID=? AND Type=2";
-     PreparedStatement pstmt = db.prepareStatement(sqlstatment);
-     pstmt.setInt(1, id);
-     ResultSet resultSet =pstmt.executeQuery();
-   ArrayList<Notifications> notificationList = new ArrayList<>();
-   while (resultSet.next()) {
-              //  int taskId = resultSet.getInt("ID");
-                Notifications notification = new Notifications( );
-                notification.setDataId(resultSet.getInt("dataId"));
-                notification.setId(resultSet.getInt("id"));
-                notification.setToUserId(resultSet.getInt("toUserId"));
-                notification.setType(resultSet.getInt("type"));
-                notification.setStatus(resultSet.getInt("status"));
-                notification.setFromUserId(resultSet.getInt("fromUserId"));
 
-                notification.setId(resultSet.getInt("ID"));
-                notificationList.add(notification);
-            }
-            resultSet.close();
-           
-   return notificationList;
     }
- public int deleteTeamMember(int id) throws SQLException {
-      PreparedStatement sqlstatment = db.prepareStatement("Delete from Task_Mem where UserId=?");
+
+    public ArrayList<Notifications> getNotificationsFromDataBase(int id) throws SQLException {
+        String sqlstatment = "SELECT * FROM  notification  where DATAID=? AND Type=2";
+        PreparedStatement pstmt = db.prepareStatement(sqlstatment);
+        pstmt.setInt(1, id);
+        ResultSet resultSet = pstmt.executeQuery();
+        ArrayList<Notifications> notificationList = new ArrayList<>();
+        while (resultSet.next()) {
+            //  int taskId = resultSet.getInt("ID");
+            Notifications notification = new Notifications();
+            notification.setDataId(resultSet.getInt("dataId"));
+            notification.setId(resultSet.getInt("id"));
+            notification.setToUserId(resultSet.getInt("toUserId"));
+            notification.setType(resultSet.getInt("type"));
+            notification.setStatus(resultSet.getInt("status"));
+            notification.setFromUserId(resultSet.getInt("fromUserId"));
+
+            notification.setId(resultSet.getInt("ID"));
+            notificationList.add(notification);
+        }
+        resultSet.close();
+
+        return notificationList;
+    }
+
+    public int deleteTeamMember(int id) throws SQLException {
+        PreparedStatement sqlstatment = db.prepareStatement("Delete from Task_Mem where UserId=?");
         sqlstatment.setInt(1, id);
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
-                return result;   
+        return result;
 
     }
 
-    
     /*Sara*/
-
-   
-
-   
-   
 }
-
