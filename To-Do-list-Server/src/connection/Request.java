@@ -5,7 +5,6 @@
  */
 package connection;
 
-
 import static Enum.NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST;
 import static Enum.NotificationKeys.REQUEST_FRIEND;
 import Enum.NotificationKeys;
@@ -145,25 +144,25 @@ public class Request implements ClientRequest {
  /*Aml*/
  /*Aml*/
  /*Ghader*/
-        if(paramter[1].equals("collAcceptListRequest")){
-                try {
-                 System.out.println(body);
+        if (paramter[1].equals("collAcceptListRequest")) {
+            try {
+                System.out.println(body);
                 int userId = body.getInt("userId");
                 int listId = body.getInt("todoId");
                 // 0 -> error to execute query
                 // 1 -> is updated 
                 int status = repository.addNewCollaboratorToList(userId, listId);
                 if (status > 0) {
-                   // ClientHandler.notifyCollaborator(notifications);
+                    // ClientHandler.notifyCollaborator(notifications);
 
                 }
                 return status != -1 ? new JSONObject("{id:" + status + "}") : new JSONObject("{Error:\"Error insert Collaborator \"}");
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
+
         }
- /*Ghader*/
+        /*Ghader*/
         if (paramter[1].equals("addNewColl")) {
             try {
                 System.out.println("add new coll" + body);
@@ -222,7 +221,7 @@ public class Request implements ClientRequest {
                 System.out.println("new id not to sender /list  " + notId);
                 if (notId > 0) {
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.ADD_COLLABORATOR, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
-                   // Client.notify(not);
+                    // Client.notify(not);
                 }
                 return notId != -1 ? new JSONObject("{notId:" + notId + "}") : new JSONObject("{Error:\"Error  \"}");
             } catch (JSONException ex) {
@@ -240,7 +239,7 @@ public class Request implements ClientRequest {
                 System.out.println("new id not to sender /  " + notId);
                 if (notId > 0) {
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.ASSIGIN_TASK_MEMBER, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
-                   // Client.notify(not);
+                    // Client.notify(not);
 
                 }
                 return notId != -1 ? new JSONObject("{notId:" + notId + "}") : new JSONObject("{Error:\"Error  \"}");
@@ -259,7 +258,7 @@ public class Request implements ClientRequest {
                 System.out.println("new id not to sender /friend  " + notId);
                 if (notId > 0) {
                     Notifications not = new Notifications(notId, fromUserId, toUserId, NotificationKeys.REQUEST_FRIEND, NotificationKeys.SEND_RESPONSE_BACK_TO_SENDER_ACCEPT, dataId);
-                   // Client.notify(not);
+                    // Client.notify(not);
 
                 }
                 return notId != -1 ? new JSONObject("{notId:" + notId + "}") : new JSONObject("{Error:\"Error  \"}");
@@ -362,7 +361,6 @@ public class Request implements ClientRequest {
                     String userName = respond.getString("User_name");
 
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
-
                     Client client = new Client(userId, userName, handler);
                     ArrayList<User> friends = repository.getUserFriends(userId);
                     Client.notifiyFriends(user, friends, REQUEST.FRIEND_ONLINE);
@@ -431,7 +429,7 @@ public class Request implements ClientRequest {
                 JSONObject userJosn = user.getUserAsJson();
                 // add friends to user
                 userJosn.put("friends", friendsjsonArray);
-                userJosn.put("online_friends",onlineJsonArray);
+                userJosn.put("online_friends", onlineJsonArray);
                 // add todolist to user 
                 userJosn.put("todo_list", todojsonArray);
                 // add shared List 
@@ -573,7 +571,6 @@ public class Request implements ClientRequest {
             }
         }
 
-
         if (paramter[1].equals("updateRequestStatus")) {
             try {
                 System.out.println(body);
@@ -624,6 +621,10 @@ public class Request implements ClientRequest {
                 item.setDescription(description);
                 item.setStartTime(starttime);
                 item.setComment(comment);
+                if (body.has("status")) {
+                    boolean status = body.getBoolean("status");
+                    item.setStatus(status);
+                }
                 int result = repository.updateTask(item);
                 return result;
             } catch (JSONException ex) {

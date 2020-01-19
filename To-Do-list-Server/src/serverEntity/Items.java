@@ -26,6 +26,7 @@ public class Items implements Entity {
     private String deadLine;
     private String startTime;
     private ArrayList<User> taskMember;
+    private boolean status;
 
     public String getComment() {
         return comment;
@@ -127,5 +128,13 @@ public class Items implements Entity {
         }
         return toDoTaskJsonObject;
 
+    }
+
+    public boolean getStatus() {
+        return status;
+    }
+    public void setStatus(boolean status )
+    {
+    this.status=status;
     }
 }

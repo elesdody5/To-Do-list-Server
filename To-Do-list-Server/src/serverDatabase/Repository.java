@@ -285,6 +285,7 @@ public class Repository {
             }
             collabset.close();
             item_set.close();
+            todo.setCollab(collaborator);
             todo.setTaskes(itemList);
             todoList.add(todo);
 
@@ -370,6 +371,13 @@ public class Repository {
         PreparedStatement pre = db.prepareStatement("Delete from TODO_List where id=?");
         pre.setInt(1, id);
         int result = pre.executeUpdate();
+        pre  = db.prepareStatement("Delete from Collab where Todoid=?");
+        pre.setInt(1, id);
+        pre  = db.prepareStatement("Delete from Item where Todoid=?");
+        pre.setInt(1, id);
+        // remove it from notification
+        pre  = db.prepareStatement("Delete from notification where dataId=? and type=1");
+        pre.setInt(1, id);
         pre.close();
         return result;
     }
@@ -892,13 +900,14 @@ public int removeCollab(ArrayList<User> users,int todoId) throws SQLException {
   }
     
    public int updateTask(Items item) throws SQLException {
-        PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption=? ,Comment=? where id = ?");
+        PreparedStatement sqlstatment = db.prepareStatement("Update Item set Title=?,StartDate= ?,DeadLine=?,Descreption= ? ,Comment=? status = ? where id = ?");
         sqlstatment.setString(1, item.getTitle());
         sqlstatment.setString(2,item.getStartTime() );
         sqlstatment.setString(3, item.getDeadLine());
         sqlstatment.setString(4,item.getDescription());
         sqlstatment.setString(5, item.getComment());
-        sqlstatment.setInt(6, item.getId());
+        sqlstatment.setInt(6, item.getStatus()?1:0);
+        sqlstatment.setInt(7, item.getId());
         int result = sqlstatment.executeUpdate();
         sqlstatment.close();
         if (result != 0) {
