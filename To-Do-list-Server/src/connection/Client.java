@@ -90,6 +90,15 @@ public class Client {
         return online;
         
     }
+      public static boolean isInVector(int id) {
+        for (Client client : clientVector) {
+            if (client.getId() == id) {
+                return true;
+            }
+        }
+        return false;
+
+    }
     
     private static String toNotifcationJson(Notifications notification) {
         Gson gson = new GsonBuilder().create();
@@ -211,4 +220,17 @@ public class Client {
             }
         }
     }
+    /*Aml */
+    public static void notifyUsetWithFriendRequest(Notifications notification) {
+        for (Client client : clientVector) {
+            if (client.getId() == notification.getToUserId()) {
+                client.ps.println(REQUEST.NOTIFICATION);
+                client.ps.println(toNotifcationJson(notification));
+                client.ps.println(REQUEST.END);
+           }
+        }
+    }
+    /*Aml */
 }
+
+

@@ -5,6 +5,9 @@
  */
 package connection;
 
+
+import static Enum.NotificationKeys.NORESPONSE_COLLABORATOR_REQUEST;
+import static Enum.NotificationKeys.REQUEST_FRIEND;
 import Enum.NotificationKeys;
 import Enum.REQUEST;
 import Enum.RESPOND_CODE;
@@ -118,6 +121,7 @@ public class Request implements ClientRequest {
                         int toUserID = repository.getUserID(friendName);
 //                        System.out.println("FriendID" + toUserID);
 //                        System.out.println("fromUserID" + fromUserID);
+
                         int resultInsertNotification = repository.insertIntoNotificationTables(fromUserID, toUserID);
                         if (resultInsertNotification == 1) {
                             body.put("result", "Friend Request sent now");
@@ -146,6 +150,25 @@ public class Request implements ClientRequest {
 
  /*Aml*/
  /*Aml*/
+ /*Ghader*/
+        if(paramter[1].equals("collAcceptListRequest")){
+                try {
+                 System.out.println(body);
+                int userId = body.getInt("userId");
+                int listId = body.getInt("todoId");
+                // 0 -> error to execute query
+                // 1 -> is updated 
+                int status = repository.addNewCollaboratorToList(userId, listId);
+                if (status > 0) {
+                   // ClientHandler.notifyCollaborator(notifications);
+
+                }
+                return status != -1 ? new JSONObject("{id:" + status + "}") : new JSONObject("{Error:\"Error insert Collaborator \"}");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        
+        }
  /*Ghader*/
         if (paramter[1].equals("addNewColl")) {
             try {
@@ -379,6 +402,7 @@ public class Request implements ClientRequest {
 
         } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
             try {
+                
                 User user = getUserFromJson(body);
                 JSONObject respond = repository.getUser(user);
                 // get last one been add to victor
@@ -386,6 +410,10 @@ public class Request implements ClientRequest {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
+                    if(Client.isInVector(userId)){
+                        respond.put("Code", RESPOND_CODE.IS_LOGIN);
+                        return respond;
+                    }
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
 
                     Client client = new Client(userId, userName, handler);
@@ -393,10 +421,17 @@ public class Request implements ClientRequest {
                     Client.notifiyFriends(user, friends, REQUEST.FRIEND_ONLINE);
                     Client.addClient(client);
                     //dataCenter.updateOnlineUsers(Client.getclientVector().size());
+
                 } else {
                     System.out.println("login respond faild, not added to portListener any client");
                     // remove from vector
                 }
+
+                System.out.println(Client.getclientVector().size());
+                for (Client clientt : Client.getclientVector()) {
+                    System.out.println(clientt.getClientName());
+                }
+
                 return respond;
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
@@ -590,9 +625,12 @@ public class Request implements ClientRequest {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+
         if (paramter[1].equals("updateRequestStatus")) {
             try {
                 System.out.println(body);
+
                 int id = body.getInt("notId");
                 int reqStatus = body.getInt("status");
                 // 0 -> error to execute query
