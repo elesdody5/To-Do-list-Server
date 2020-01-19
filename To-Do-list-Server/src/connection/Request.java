@@ -114,11 +114,7 @@ public class Request implements ClientRequest {
                 String friendName = body.getString("friendName");
                 boolean a1 = repository.checkUser(friendName);
                 if (a1) {
-
-                    if (repository.checkUserInFriendList(friendName, fromUserID)) {
-                        body.put("result", "This user is already in your friend list");
-                    } else {
-                        int toUserID = repository.getUserID(friendName);
+                         int toUserID = repository.getUserID(friendName);
                         int resultInsertNotification = repository.insertIntoNotificationTables(fromUserID, toUserID);
                         if (resultInsertNotification == 1) {
                             body.put("result", "Friend Request  sent now");
@@ -128,16 +124,28 @@ public class Request implements ClientRequest {
                         } else {
                             body.put("result", "Friend Request is sent before");
                         }
-                    }
+                    
                 } else {
                     System.out.println("checkFriendNameInUserTable" + repository.isNameNotFound("abc"));
-                    body.put("result", "This name is not in our users. Please check correct spelling ");
+                    body.put("result", "This name is not in our users ");
                 }
 
             } catch (JSONException ex) {
                 Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
             }
 
+        }else if (paramter[1].equals("removeFriend")) {
+            try {
+                int userID = Integer.parseInt(body.getString("userID"));
+                System.out.println("in repository");
+              int result =  repository.removeFriend(userID);
+              if (result== 1)
+                   body.put("result", "success remove friend");
+              else
+                   body.put("result", "fail remove friend");
+            } catch (JSONException ex) {
+                Logger.getLogger(Request.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         /*Aml*/
