@@ -162,7 +162,6 @@ public class Request implements ClientRequest {
             }
 
         }
-        /*Ghader*/
         if (paramter[1].equals("addNewColl")) {
             try {
                 System.out.println("add new coll" + body);
@@ -352,7 +351,7 @@ public class Request implements ClientRequest {
 
         } /*Sara*/ /*Ashraf*/ else if (paramter[1].equals(REQUEST.LOGIN)) {
             try {
-                
+
                 User user = getUserFromJson(body);
                 JSONObject respond = repository.getUser(user);
                 // get last one been add to victor
@@ -360,7 +359,7 @@ public class Request implements ClientRequest {
                     //add user to server clients
                     int userId = respond.getInt("ID");
                     String userName = respond.getString("User_name");
-                    if(Client.isInVector(userId)){
+                    if (Client.isInVector(userId)) {
                         respond.put("Code", RESPOND_CODE.IS_LOGIN);
                         return respond;
                     }
@@ -718,8 +717,9 @@ public class Request implements ClientRequest {
         ArrayList<Notifications> notifications = new ArrayList<>();
         for (int i = 0; i < notiJSONArray.length(); i++) {
             JSONObject json = notiJSONArray.getJSONObject(i);
-            System.out.println(json);
-            notifications.add(new Notifications(json.getInt("fromUserId"), json.getString("fromUserName"), json.getInt("toUserId"), json.getInt("type"), json.getInt("status"), json.getInt("listId")));
+            Notifications notification = new Notifications(json.getInt("fromUserId"), json.getString("fromUserName"), json.getInt("toUserId"), json.getInt("type"), json.getInt("status"), json.getInt("listId"));
+            notification.setDataName(json.getString("listTitle"));
+            notifications.add(notification);
         }
         return notifications;
     }

@@ -15,6 +15,7 @@ public class RESPOND_CODE {
     public static final int FAILD = 2;
     public static final int ERROR = 3;
     public static final int IS_LOGIN = 7;
+
     
 
 }
